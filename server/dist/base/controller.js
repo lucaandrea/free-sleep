@@ -1,5 +1,5 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="96323595-db0c-530e-8d99-ea1a188c8bce")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="441ab4d2-12ef-5b2f-a3d4-3e105ede0503")}catch(e){}}();
 import { BaseDecoder, movePacket, stopPacket } from './protocol.js';
 import { BaseError, baseConfigurationSchema, basePositionSchema } from './types.js';
 export class BaseController {
@@ -77,8 +77,9 @@ export class BaseController {
         if (this.state !== 'connected' || this.status().stale)
             throw new BaseError('Waiting for a current base position');
     }
-    write(packet, revision) {
+    write(packet, revision, assertCurrent) {
         const operation = this.writes.then(async () => {
+            assertCurrent?.();
             if (revision !== undefined && revision !== this.revision)
                 throw new BaseError('Movement cancelled', 409);
             if (this.state !== 'connected')
@@ -89,7 +90,8 @@ export class BaseController {
         return operation;
     }
     // Stop invalidates the delayed feet command and never waits behind an entire movement.
-    async move(input) {
+    async move(input, assertCurrent) {
+        assertCurrent?.();
         const position = basePositionSchema.parse(input);
         this.assertReady();
         if (this.busy || this.stopping)
@@ -97,24 +99,25 @@ export class BaseController {
         this.busy = true;
         const revision = this.revision;
         try {
-            await this.write(movePacket('head', position.head, position.speed), revision);
+            await this.write(movePacket('head', position.head, position.speed), revision, assertCurrent);
             await new Promise((resolve) => setTimeout(resolve, 500));
             this.assertReady();
-            await this.write(movePacket('feet', position.feet, position.speed), revision);
+            await this.write(movePacket('feet', position.feet, position.speed), revision, assertCurrent);
         }
         finally {
             this.busy = false;
         }
         return this.status();
     }
-    async stop() {
+    async stop(assertCurrent) {
+        assertCurrent?.();
         this.revision++;
         // Keep the notification generation active: stopping cancels writes, not telemetry.
         if (this.stopping)
             throw new BaseError('Stop already in progress', 409);
         this.stopping = true;
         try {
-            await this.write(stopPacket());
+            await this.write(stopPacket(), undefined, assertCurrent);
         }
         finally {
             this.stopping = false;
@@ -131,4 +134,4 @@ export class BaseController {
     }
 }
 //# sourceMappingURL=controller.js.map
-//# debugId=96323595-db0c-530e-8d99-ea1a188c8bce
+//# debugId=441ab4d2-12ef-5b2f-a3d4-3e105ede0503

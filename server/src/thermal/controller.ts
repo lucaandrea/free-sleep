@@ -70,19 +70,24 @@ export class ComfortController {
       catch (error) { await this.suspend('Adaptive comfort is suspended because its settings could not be saved.'); throw error; }
     });
   }
-  execute(command: DeviceUpdate, source: ControlSource, apply: Apply): Promise<void> {
-    return this.serial(() => this.executeLocked(command, source, apply));
+  execute(command: DeviceUpdate, source: ControlSource, apply: Apply, assertCurrent?: () => void): Promise<void> {
+    return this.serial(() => {
+      assertCurrent?.();
+      return this.executeLocked(command, source, apply, assertCurrent);
+    });
   }
 
-  private async executeLocked(command: DeviceUpdate, source: ControlSource, apply: Apply) {
+  private async executeLocked(command: DeviceUpdate, source: ControlSource, apply: Apply, assertCurrent?: () => void) {
     if (this.stopped && source === 'adaptive') return;
     let document: ComfortDocument;
     try { document = await this.load(); }
     catch (error) {
+      assertCurrent?.();
       await this.suspend('Adaptive comfort is suspended because its saved data could not be read.');
       if (source === 'adaptive') throw error;
       return apply(command);
     }
+    assertCurrent?.();
     if (source === 'manual') {
       let changed = false;
       for (const side of sides) {

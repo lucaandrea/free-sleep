@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { connectFranken } from './frankenServer.js';
 import logger from '../logger.js';
+import type { DispatchGuard } from '../control/dispatchGuard.js';
 
 
 export const frankenCommands = {
@@ -30,7 +31,8 @@ export const invertedFrankenCommands = _.invert(frankenCommands);
 export type FrankenCommand = keyof typeof frankenCommands;
 
 
-export async function executeFunction(command: FrankenCommand, arg = 'empty'): Promise<void> {
+export async function executeFunction(command: FrankenCommand, arg = 'empty', assertCurrent?: DispatchGuard): Promise<void> {
+  assertCurrent?.();
   logger.debug(`Executing command | command: ${command} | arg: ${arg}`);
 
   const franken = await connectFranken();
@@ -39,7 +41,7 @@ export async function executeFunction(command: FrankenCommand, arg = 'empty'): P
   // the error will bubble up to the main loop of the device-api-client (protocol handling)
   // and the client will crash disconnecting from device-api - this is safe, it's correctly cleaned-up,
   // deviceApiLoop will take care of reconnecting to device-api
-  const response = await franken.callFunction(command, arg);
+  const response = await franken.callFunction(command, arg, undefined, assertCurrent);
   logger.debug(response);
 
   return response;

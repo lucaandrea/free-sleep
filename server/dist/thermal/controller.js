@@ -1,5 +1,5 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="e934aabd-5e48-582d-bd34-d34520c766e0")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="0539f10a-04c2-56b2-9bca-7e4c8c44b48d")}catch(e){}}();
 import { comfortConfigSchema } from './types.js';
 import { decideComfort, learnComfort, MANUAL_PAUSE_MS, routineAt } from './policy.js';
 const sides = ['left', 'right'];
@@ -76,10 +76,13 @@ export class ComfortController {
             }
         });
     }
-    execute(command, source, apply) {
-        return this.serial(() => this.executeLocked(command, source, apply));
+    execute(command, source, apply, assertCurrent) {
+        return this.serial(() => {
+            assertCurrent?.();
+            return this.executeLocked(command, source, apply, assertCurrent);
+        });
     }
-    async executeLocked(command, source, apply) {
+    async executeLocked(command, source, apply, assertCurrent) {
         if (this.stopped && source === 'adaptive')
             return;
         let document;
@@ -87,11 +90,13 @@ export class ComfortController {
             document = await this.load();
         }
         catch (error) {
+            assertCurrent?.();
             await this.suspend('Adaptive comfort is suspended because its saved data could not be read.');
             if (source === 'adaptive')
                 throw error;
             return apply(command);
         }
+        assertCurrent?.();
         if (source === 'manual') {
             let changed = false;
             for (const side of sides) {
@@ -209,4 +214,4 @@ export class ComfortController {
     }
 }
 //# sourceMappingURL=controller.js.map
-//# debugId=e934aabd-5e48-582d-bd34-d34520c766e0
+//# debugId=0539f10a-04c2-56b2-9bca-7e4c8c44b48d

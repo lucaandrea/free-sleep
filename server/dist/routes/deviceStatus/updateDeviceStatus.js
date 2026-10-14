@@ -1,5 +1,5 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="445c4fa1-07bd-557a-be78-6bc21333c304")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="b0648e5e-5687-5d6d-b476-7a15e9edc815")}catch(e){}}();
 import _ from 'lodash';
 import cbor from 'cbor';
 import { executeFunction } from '../../8sleep/deviceApi.js';
@@ -64,25 +64,26 @@ const updateSide = async (side, sideStatus, execute = executeFunction, adaptive 
     if (isAlarmVibrating !== undefined) {
         logger.debug('Can only set isAlarmVibrating to false for now...');
         if (!isAlarmVibrating)
-            await executeFunction('ALARM_CLEAR', 'empty');
+            await execute('ALARM_CLEAR', 'empty');
         await memoryDB.read();
         memoryDB.data[side].isAlarmVibrating = false;
         await memoryDB.write();
     }
 };
-const updateSettings = async (settings) => {
+const updateSettings = async (settings, execute = executeFunction) => {
     const renamedSettings = _.mapKeys(settings, (value, key) => INVERTED_SETTINGS_KEY_MAPPING[key] || key);
     const encodedBuffer = cbor.encode(renamedSettings);
     const hexString = encodedBuffer.toString('hex');
-    await executeFunction('SET_SETTINGS', hexString);
+    await execute('SET_SETTINGS', hexString);
 };
-export const updateDeviceStatus = async (deviceStatus, source = 'manual') => coordinateTemperature(deviceStatus, source, async (update, notAfter) => {
+export const updateDeviceStatus = async (deviceStatus, source = 'manual', assertCurrent) => coordinateTemperature(deviceStatus, source, async (update, notAfter) => {
+    assertCurrent?.();
     const connection = notAfter !== undefined ? connectedFranken() : undefined;
     if (notAfter !== undefined && !connection)
         throw new Error('Adaptive comfort requires an existing Pod connection');
     const execute = connection
-        ? (command, argument = 'empty') => connection.callFunction(command, argument, notAfter)
-        : executeFunction;
+        ? (command, argument = 'empty') => connection.callFunction(command, argument, notAfter, assertCurrent)
+        : (command, argument = 'empty') => executeFunction(command, argument, assertCurrent);
     logger.info(`Updating device status..`);
     if (update.isPriming)
         await execute('PRIME');
@@ -91,8 +92,8 @@ export const updateDeviceStatus = async (deviceStatus, source = 'manual') => coo
     if (update?.right)
         await updateSide('right', update.right, execute, notAfter !== undefined);
     if (update?.settings)
-        await updateSettings(update.settings);
+        await updateSettings(update.settings, execute);
     logger.info('Finished updating device status');
-});
+}, assertCurrent);
 //# sourceMappingURL=updateDeviceStatus.js.map
-//# debugId=445c4fa1-07bd-557a-be78-6bc21333c304
+//# debugId=b0648e5e-5687-5d6d-b476-7a15e9edc815

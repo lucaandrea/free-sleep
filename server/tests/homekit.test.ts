@@ -12,6 +12,7 @@ import { createHomeKitAccessories, type HomeKitHardware } from '../src/integrati
 import { HomeKitStatusReader } from '../src/integrations/homekit/status.js';
 import { HomeKitBridgeController } from '../src/integrations/homekit/controller.js';
 import { createHomeKitPreparation, loadHomeKitIdentity } from '../src/integrations/homekit/identity.js';
+import { deviceStatusFixture } from './fixtures/deviceStatus.js';
 
 const identity = { id: '29b4ecb3-1c21-4fbf-aee1-40b4d70949ba', username: 'C2:AA:BB:CC:DD:EE', pin: '321-54-876' };
 const hapError = (status: number) => (error: unknown) => error instanceof HapStatusError && error.hapStatus === status;
@@ -24,11 +25,7 @@ function deferred<Value>() {
 }
 
 function hardwareFixture() {
-  const side = { currentTemperatureLevel: 0, currentTemperatureF: 77, targetTemperatureF: 86,
-    secondsRemaining: 300, isOn: true, isAlarmVibrating: false };
-  const status: DeviceStatus = { left: { ...side }, right: { ...side, currentTemperatureF: 80.6, targetTemperatureF: 73.4 },
-    waterLevel: 'full', isPriming: false, settings: { v: 1, gainLeft: 1, gainRight: 1, ledBrightness: 50 },
-    coverVersion: 'test', hubVersion: 'test', freeSleep: { version: 'test', branch: 'test' }, wifiStrength: -45 };
+  const status = deviceStatusFixture();
   const writes: DeepPartial<DeviceStatus>[] = [];
   const moves: BasePosition[] = [];
   let reads = 0;

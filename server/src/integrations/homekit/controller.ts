@@ -1,11 +1,14 @@
 import { Bridge, Categories, Characteristic, Service, uuid } from 'hap-nodejs';
 import { createHomeKitAccessories, type HomeKitHardware } from './accessories.js';
 import type { HomeKitIdentity } from './identity.js';
+import type { HomeKitBridgeStatus } from './ipc.js';
 
 type BridgeState = 'disabled' | 'stopped' | 'starting' | 'running' | 'stopping' | 'error';
-interface BridgeOptions {
+export interface BridgeOptions {
   enabled: boolean;
   port: number;
+  bind?: string;
+  onStatus?: (status: HomeKitBridgeStatus) => void;
   prepare: () => Promise<HomeKitIdentity>;
   hardware: HomeKitHardware;
   createBridge?: (identity: HomeKitIdentity) => Bridge;
@@ -56,7 +59,7 @@ export class HomeKitBridgeController {
     this.state = options.enabled ? 'stopped' : 'disabled';
   }
 
-  status() {
+  status(): HomeKitBridgeStatus {
     const running = this.state === 'running';
     return {
       enabled: this.options.enabled,
@@ -67,6 +70,8 @@ export class HomeKitBridgeController {
       error: this.error,
     };
   }
+
+  private notify() { this.options.onStatus?.(this.status()); }
 
   private deactivate(session: BridgeSession) {
     if (session.poll) clearInterval(session.poll);
@@ -93,6 +98,7 @@ export class HomeKitBridgeController {
     this.startup = startup;
     this.state = 'starting';
     this.error = null;
+    this.notify();
     this.operation = this.operation.then(async () => {
       if (revision !== this.revision) return;
       try {
@@ -116,7 +122,7 @@ export class HomeKitBridgeController {
           session.publishing = Promise.resolve().then(() => {
             startup.signal.throwIfAborted();
             return bridge.publish({ username: identity.username, pincode: identity.pin,
-              category: Categories.BRIDGE, port: this.options.port });
+              category: Categories.BRIDGE, port: this.options.port, bind: this.options.bind });
           });
           await Promise.all([session.publishing, discovery.promise]);
         } finally {
@@ -124,6 +130,7 @@ export class HomeKitBridgeController {
         }
         if (startup.signal.aborted) return;
         this.state = 'running';
+        this.notify();
         session.poll = setInterval(() => {
           if (session.refreshing) return;
           session.refreshing = true;
@@ -137,6 +144,7 @@ export class HomeKitBridgeController {
           this.desiredRunning = false;
           this.state = 'error';
           this.error = message;
+          this.notify();
         }
         try {
           await this.cleanup();
@@ -145,6 +153,7 @@ export class HomeKitBridgeController {
         }
         if (revision === this.revision) {
           this.error = message;
+          this.notify();
         }
       }
     });
@@ -156,6 +165,7 @@ export class HomeKitBridgeController {
     this.desiredRunning = false;
     const revision = ++this.revision;
     this.state = 'stopping';
+    this.notify();
     this.startup?.abort();
     if (this.session) this.deactivate(this.session);
     this.operation = this.operation.then(async () => {
@@ -164,11 +174,13 @@ export class HomeKitBridgeController {
         if (revision === this.revision) {
           this.state = 'stopped';
           this.error = null;
+          this.notify();
         }
       } catch {
         if (revision === this.revision) {
           this.state = 'error';
           this.error = 'HomeKit could not finish stopping. Restart the server before retrying';
+          this.notify();
         }
       }
     });

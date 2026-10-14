@@ -10,6 +10,7 @@ import { routineAt, learnComfort, decideComfort, ADJUSTMENT_INTERVAL_MS } from '
 import { PresenceMonitor } from '../src/thermal/presence.js';
 import type { DailySchedule, SideSchedule } from '../src/db/schedulesSchema.js';
 import type { JournalEntry } from '../src/analytics/journal.js';
+import { createDispatchGuard } from '../src/control/dispatchGuard.js';
 
 const start = Date.parse('2026-10-13T23:00:00Z');
 const daily: DailySchedule = { power: { on: '22:00', off: '08:00', enabled: true, onTemperature: 80 },
@@ -41,6 +42,34 @@ function harness() {
     advance: (milliseconds: number) => { now += milliseconds; context.observedAt = now; context.presence.left.lastUpdatedAt = new Date(now).toISOString(); } };
 }
 const active = { mode: 'active' as const, minimumF: 70, maximumF: 95 };
+
+test('Cancelled manual requests cannot pause adaptive comfort after waiting in its queue or loading state', async () => {
+  const sample = harness();
+  await sample.controller.configure('left', active);
+  let release!: () => void;
+  const busy = sample.controller.execute({}, 'manual', () => new Promise<void>(resolve => { release = resolve; }));
+  await new Promise(resolve => setImmediate(resolve));
+  const cancellation = new AbortController();
+  const waiting = sample.controller.execute({ left: { targetTemperatureF: 85 } }, 'manual', sample.apply,
+    createDispatchGuard(cancellation.signal, Date.now() + 8000));
+  const rejected = assert.rejects(waiting, /cancelled/);
+  cancellation.abort(); release(); await busy; await rejected;
+  assert.equal((await sample.store.read()).left.pausedUntil, 0);
+  assert.equal(sample.sent.length, 0);
+
+  let finishRead!: (document: ComfortDocument) => void;
+  let saves = 0;
+  const controller = new ComfortController({ read: () => new Promise(resolve => { finishRead = resolve; }),
+    write: async () => { saves += 1; } }, async () => sample.context, () => start);
+  const cancelledRead = new AbortController();
+  const reading = controller.execute({ left: { targetTemperatureF: 85 } }, 'manual', sample.apply,
+    createDispatchGuard(cancelledRead.signal, Date.now() + 8000));
+  const readRejected = assert.rejects(reading, /cancelled/);
+  await new Promise(resolve => setImmediate(resolve));
+  cancelledRead.abort(); finishRead(await sample.store.read()); await readRejected;
+  assert.equal(saves, 0);
+  assert.equal(sample.sent.length, 0);
+});
 
 test('routine windows follow local overnight dates, DST and disabled/ambiguous boundaries', () => {
   const schedules = week();

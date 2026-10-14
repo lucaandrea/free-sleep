@@ -1,5 +1,5 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="8f12027e-cb97-5867-b79d-8cba3766e18c")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="10e628e1-1a98-528c-b86f-f90ac024f86b")}catch(e){}}();
 import express from 'express';
 import path from 'node:path';
 import { z } from 'zod';
@@ -29,7 +29,7 @@ export const comfortController = new ComfortController(comfortStore(path.join(co
 let timer;
 let checking = false;
 export function startComfort() {
-    registerComfortController((command, source, apply) => comfortController.execute(command, source, apply));
+    registerComfortController((command, source, apply, assertCurrent) => comfortController.execute(command, source, apply, assertCurrent));
     if (timer)
         return;
     timer = setInterval(() => {
@@ -61,4 +61,4 @@ router.post('/', async (request, response) => {
 });
 export default router;
 //# sourceMappingURL=runtime.js.map
-//# debugId=8f12027e-cb97-5867-b79d-8cba3766e18c
+//# debugId=10e628e1-1a98-528c-b86f-f90ac024f86b

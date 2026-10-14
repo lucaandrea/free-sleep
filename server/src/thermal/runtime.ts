@@ -27,7 +27,7 @@ export const comfortController = new ComfortController(comfortStore(path.join(co
 let timer: NodeJS.Timeout | undefined;
 let checking = false;
 export function startComfort() {
-  registerComfortController((command, source, apply) => comfortController.execute(command, source, apply));
+  registerComfortController((command, source, apply, assertCurrent) => comfortController.execute(command, source, apply, assertCurrent));
   if (timer) return;
   timer = setInterval(() => {
     if (checking) return;

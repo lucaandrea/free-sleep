@@ -1,5 +1,5 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="e6c7fcc4-0b3c-52fb-b86a-e98839733a84")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="e1ae56b4-1058-5c35-ae62-7da0744e7a7a")}catch(e){}}();
 import { Bridge, Characteristic, Service, uuid } from 'hap-nodejs';
 import { createHomeKitAccessories } from './accessories.js';
 // publish() starts the TCP listener; only advertised confirms that mDNS discovery is ready.
@@ -50,6 +50,7 @@ export class HomeKitBridgeController {
             error: this.error,
         };
     }
+    notify() { this.options.onStatus?.(this.status()); }
     deactivate(session) {
         if (session.poll)
             clearInterval(session.poll);
@@ -76,6 +77,7 @@ export class HomeKitBridgeController {
         this.startup = startup;
         this.state = 'starting';
         this.error = null;
+        this.notify();
         this.operation = this.operation.then(async () => {
             if (revision !== this.revision)
                 return;
@@ -101,7 +103,7 @@ export class HomeKitBridgeController {
                     session.publishing = Promise.resolve().then(() => {
                         startup.signal.throwIfAborted();
                         return bridge.publish({ username: identity.username, pincode: identity.pin,
-                            category: 2 /* Categories.BRIDGE */, port: this.options.port });
+                            category: 2 /* Categories.BRIDGE */, port: this.options.port, bind: this.options.bind });
                     });
                     await Promise.all([session.publishing, discovery.promise]);
                 }
@@ -111,6 +113,7 @@ export class HomeKitBridgeController {
                 if (startup.signal.aborted)
                     return;
                 this.state = 'running';
+                this.notify();
                 session.poll = setInterval(() => {
                     if (session.refreshing)
                         return;
@@ -126,6 +129,7 @@ export class HomeKitBridgeController {
                     this.desiredRunning = false;
                     this.state = 'error';
                     this.error = message;
+                    this.notify();
                 }
                 try {
                     await this.cleanup();
@@ -135,6 +139,7 @@ export class HomeKitBridgeController {
                 }
                 if (revision === this.revision) {
                     this.error = message;
+                    this.notify();
                 }
             }
         });
@@ -146,6 +151,7 @@ export class HomeKitBridgeController {
         this.desiredRunning = false;
         const revision = ++this.revision;
         this.state = 'stopping';
+        this.notify();
         this.startup?.abort();
         if (this.session)
             this.deactivate(this.session);
@@ -155,12 +161,14 @@ export class HomeKitBridgeController {
                 if (revision === this.revision) {
                     this.state = 'stopped';
                     this.error = null;
+                    this.notify();
                 }
             }
             catch {
                 if (revision === this.revision) {
                     this.state = 'error';
                     this.error = 'HomeKit could not finish stopping. Restart the server before retrying';
+                    this.notify();
                 }
             }
         });
@@ -168,4 +176,4 @@ export class HomeKitBridgeController {
     }
 }
 //# sourceMappingURL=controller.js.map
-//# debugId=e6c7fcc4-0b3c-52fb-b86a-e98839733a84
+//# debugId=e1ae56b4-1058-5c35-ae62-7da0744e7a7a
