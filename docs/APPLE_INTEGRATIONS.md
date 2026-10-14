@@ -51,6 +51,8 @@ The Pod's optional local HAP bridge exposes two thermostats and named switches f
 
 ## Sources and validation boundary
 
+Bridge discovery, identity persistence, command handling and shutdown now have dedicated local coverage. See [HomeKit bridge reliability](HOMEKIT_BRIDGE.md) for the additive lifecycle status, seventeen HAP tests and remaining network/device qualification, including the library's socket-error limitation.
+
 - [Apple background refresh requests](https://developer.apple.com/documentation/backgroundtasks/bgapprefreshtaskrequest) and [SwiftUI app refresh](https://developer.apple.com/documentation/swiftui/backgroundtask/apprefresh(_:)) define opportunistic scheduling and cancellation handling.
 - [HealthKit sync identifiers](https://developer.apple.com/documentation/healthkit/hkmetadatakeysyncidentifier) and [sync versions](https://developer.apple.com/documentation/healthkit/hkmetadatakeysyncversion) support updating an app's earlier samples.
 - [App Intent local authentication](https://developer.apple.com/documentation/appintents/intentauthenticationpolicy/requireslocaldeviceauthentication) requires unlocking for the personal Health actions.

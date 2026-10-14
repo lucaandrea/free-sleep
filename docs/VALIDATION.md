@@ -82,6 +82,13 @@ See [journal and Coach behavior](JOURNAL_COACH.md) for the additive selected-dat
 
 Captures in [screenshots](screenshots): `connections-web-saved.jpg`, `connections-web-home.jpg`, `connections-ios-saved.jpg` and `connections-ios-home.jpg`. The native images include the simulator mirror. The implementation is described in [connection setup](CONNECTIONS.md). Real server reachability, signed iPhone Home permission, actual pairing and physical scene execution remain unverified.
 
+## HomeKit bridge follow-up — 2026-10-14
+
+- All 68 server tests passed, including seventeen new HomeKit tests using real HAP services/characteristics and injected hardware. Test bridges override publication and unpublication; no listener or mDNS advertisement is created. Identity tests write only temporary directories and remove them afterward.
+- The tests cover atomic concurrent identity creation, private file permissions, preservation of corrupt identities, one-time HAP storage configuration, five-second cache expiry/coalescing, stale-read rejection after writes, partial command failure, temperature boundaries/conversion, side isolation, demand-state updates, offline errors, duplicate actions, independent Stop, retries, readiness, discovery timeout, failed publication, cancellation during initialization/publication, polling shutdown, serialized restart and cleanup failures.
+- Server TypeScript compilation and lint passed with the same 21 existing warnings. Tracked server distribution files were regenerated and debug IDs injected locally, without source-map uploads. Web and native code are unchanged; the existing status fields remain compatible and `state` is additive.
+- Pairing, mDNS, network error recovery and physical controls remain unverified. In particular, the installed HAP library does not surface all internal socket failures through its public API; this pass does not establish survival of a fatal socket error. See [HomeKit bridge reliability](HOMEKIT_BRIDGE.md) for that limitation and publisher-isolation follow-up.
+
 ## Remaining device and service checks
 
 - Stock Pod access, firmware compatibility, installation/recovery, D-Bus permissions, BLE service discovery and real motion/Stop/calibration.
