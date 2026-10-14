@@ -14,6 +14,8 @@ Sleep includes the same episode browser and vital charts as the web app, with th
 
 The coverage card shows the server's period counts and date states. Older servers remain readable and display an update instruction when coverage is absent. Native demo calculations are tested against seven shared server-generated sparse/calendar cases; live calculations remain on the server. See [analytics coverage](../docs/DATA_QUALITY.md).
 
+Coach displays calculated observations with expandable dates, contributing counts and methods, matching the web app. Model suggestions are labelled separately for review. Older servers remain readable but need an update to supply the calculation details. Demo receipts are compared with the shared server fixtures; no real model is called. See [Coach evidence](../docs/COACH_EVIDENCE.md).
+
 Tests cover connection validation, analytics decoding, Health sample provenance, cancellation and partial failure, Pod/side isolation, reconciliation versions, automatic sync windows, preservation of schedule fields and alarm date/time contracts. HealthKit permissions, actual background refresh, Apple Home pairing and Siri behavior still need a signed iPhone.
 
 All sixteen App Intents include parameter summaries. Request tests invoke the fifteen API-backed actions with isolated URLSession transports, covering side selection, exact payloads, returned values and errors without saved credentials or network access. Adaptive-comfort Shortcuts need the server and gateway's `POST /api/comfort/mode` route, which changes the mode while preserving the latest limits. There is no fallback to the old read-and-rewrite behavior.

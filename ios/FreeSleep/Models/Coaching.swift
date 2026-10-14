@@ -7,4 +7,5 @@ struct Coaching: Codable, Sendable {
     var limitations: [String]
     var provider: String
     var model: String
+    var grounding: CoachGrounding? = nil
 }

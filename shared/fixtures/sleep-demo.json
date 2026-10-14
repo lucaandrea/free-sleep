@@ -33822,6 +33822,28 @@
         "HRV and breathing estimates have not been validated.",
         "A weekly change needs at least 3 nights with known presence in each period. This is an app display rule, not a medical confidence threshold."
       ],
+      "grounding": {
+        "version": 1,
+        "facts": [
+          {
+            "id": "bed-presence",
+            "title": "Bed presence",
+            "observation": "For the recorded period ending 2026-10-13, average bed presence is 456 minutes per recorded night.",
+            "context": "2026-10-07 → 2026-10-13 · America/Los_Angeles",
+            "sample": "7 nights with known presence",
+            "calculation": "Mean of known bed-presence durations from the longest episode per wake date, rounded to the nearest minute. Missing or unknown presence is excluded. Presence is not measured sleep."
+          },
+          {
+            "id": "bedtime-variation",
+            "title": "Bed-entry consistency",
+            "observation": "Bed-entry timing varies by about 0 minutes across recent recorded nights.",
+            "context": "2026-10-07 → 2026-10-13 · America/Los_Angeles",
+            "sample": "7 recorded nights",
+            "calculation": "Population standard deviation of bed-entry clock times across recorded main episodes, rounded to the nearest minute. Lower values mean more consistent timing; they do not measure sleep quality."
+          }
+        ],
+        "suggestions": "rules"
+      },
       "provider": "rules",
       "model": "Demo insights"
     },
@@ -33840,6 +33862,36 @@
         "HRV and breathing estimates have not been validated.",
         "Both periods have at least 3 nights with known presence. This is a descriptive comparison, not proof of a change in sleep quality."
       ],
+      "grounding": {
+        "version": 1,
+        "facts": [
+          {
+            "id": "bed-presence",
+            "title": "Bed presence",
+            "observation": "For the recorded period ending 2026-10-13, average bed presence is 456 minutes per recorded night.",
+            "context": "2026-10-07 → 2026-10-13 · America/Los_Angeles",
+            "sample": "7 nights with known presence",
+            "calculation": "Mean of known bed-presence durations from the longest episode per wake date, rounded to the nearest minute. Missing or unknown presence is excluded. Presence is not measured sleep."
+          },
+          {
+            "id": "bedtime-variation",
+            "title": "Bed-entry consistency",
+            "observation": "Bed-entry timing varies by about 0 minutes across recent recorded nights.",
+            "context": "2026-10-07 → 2026-10-13 · America/Los_Angeles",
+            "sample": "7 recorded nights",
+            "calculation": "Population standard deviation of bed-entry clock times across recorded main episodes, rounded to the nearest minute. Lower values mean more consistent timing; they do not measure sleep quality."
+          },
+          {
+            "id": "weekly-presence-change",
+            "title": "Weekly presence change",
+            "observation": "Average bed presence changed by 0 minutes.",
+            "context": "2026-10-07 → 2026-10-13 · America/Los_Angeles · Previous: 2026-09-30 → 2026-10-06",
+            "sample": "7 recent and 7 previous nights with known presence",
+            "calculation": "Recent mean bed presence minus the previous mean, using only known-presence nights. Each period needs at least three. This describes the available records and does not establish a cause."
+          }
+        ],
+        "suggestions": "rules"
+      },
       "provider": "rules",
       "model": "Demo insights"
     },
@@ -33858,6 +33910,36 @@
         "HRV and breathing estimates have not been validated.",
         "Both periods have at least 3 nights with known presence. This is a descriptive comparison, not proof of a change in sleep quality."
       ],
+      "grounding": {
+        "version": 1,
+        "facts": [
+          {
+            "id": "bed-presence",
+            "title": "Bed presence",
+            "observation": "For the recorded period ending 2026-10-13, average bed presence is 456 minutes per recorded night.",
+            "context": "2026-10-07 → 2026-10-13 · America/Los_Angeles",
+            "sample": "7 nights with known presence",
+            "calculation": "Mean of known bed-presence durations from the longest episode per wake date, rounded to the nearest minute. Missing or unknown presence is excluded. Presence is not measured sleep."
+          },
+          {
+            "id": "bedtime-variation",
+            "title": "Bed-entry consistency",
+            "observation": "Bed-entry timing varies by about 0 minutes across recent recorded nights.",
+            "context": "2026-10-07 → 2026-10-13 · America/Los_Angeles",
+            "sample": "7 recorded nights",
+            "calculation": "Population standard deviation of bed-entry clock times across recorded main episodes, rounded to the nearest minute. Lower values mean more consistent timing; they do not measure sleep quality."
+          },
+          {
+            "id": "weekly-presence-change",
+            "title": "Weekly presence change",
+            "observation": "Average bed presence changed by 0 minutes.",
+            "context": "2026-10-07 → 2026-10-13 · America/Los_Angeles · Previous: 2026-09-30 → 2026-10-06",
+            "sample": "7 recent and 7 previous nights with known presence",
+            "calculation": "Recent mean bed presence minus the previous mean, using only known-presence nights. Each period needs at least three. This describes the available records and does not establish a cause."
+          }
+        ],
+        "suggestions": "rules"
+      },
       "provider": "rules",
       "model": "Demo insights"
     }

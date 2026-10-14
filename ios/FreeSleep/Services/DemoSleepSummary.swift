@@ -48,6 +48,6 @@ enum DemoSleepSummary {
         return .init(headline: summary.recordedNights > 0 ? "A little context for your nights" : "Your story starts with a night",
             observations: observations, suggestions: suggestions,
             limitations: ["Presence is not measured sleep; sleep stages and diagnoses cannot be inferred here.", "HRV and breathing estimates have not been validated."] + (analytics.quality?.coverage.map { [$0.comparisonReason] } ?? []),
-            provider: provider, model: "Demo insights")
+            provider: provider, model: "Demo insights", grounding: DemoCoachFacts.grounding(analytics, observations: observations))
     }
 }

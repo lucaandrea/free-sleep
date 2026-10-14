@@ -90,5 +90,7 @@ test('coaching qualifies historical periods, withholds sparse changes and sends 
 });
 test('shared native coverage expectations match the current server contract', async () => {
   const fixture = JSON.parse(await readFile(new URL('../../shared/fixtures/coverage-cases.json', import.meta.url), 'utf8'));
-  assert.deepEqual(fixture, [...results.entries()].map(([name, analytics]) => ({ name, analytics })));
+  assert.deepEqual(fixture, [...results.entries()].map(([name, analytics]) => ({
+    name, analytics, coaching: { ...localInsights(analytics), provider: 'rules', model: 'Demo insights' },
+  })));
 });

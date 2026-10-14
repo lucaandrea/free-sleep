@@ -10,6 +10,7 @@ import PageHeader from '@components/PageHeader';
 import SideControl from '@components/SideControl';
 import FormField from '@components/FormField';
 import Surface from './Surface';
+import CoachEvidence from './CoachEvidence';
 
 type Provider = { provider: string; configured: boolean; model: string };
 export default function CoachWorkspace({ side }: { side: 'left' | 'right' }) {
@@ -108,8 +109,13 @@ export default function CoachWorkspace({ side }: { side: 'left' | 'right' }) {
     { result && <Surface title={ result.headline } eyebrow={ result.model }>
       <Stack spacing={ 2 }>
         <Typography variant="caption" color="text.secondary">{ side[0].toUpperCase() + side.slice(1) } side · { days } days</Typography>
+        { result.grounding?.version === 1 && <Typography variant="h5">Calculated observations</Typography> }
         { result.observations.map((text, index) => <Typography key={ index }>{ text }</Typography>) }
+        <CoachEvidence grounding={ result.grounding } />
         <Typography variant="h5">Try one small change</Typography>
+        { result.grounding && <Typography variant="caption" color="text.secondary">
+          { result.grounding.suggestions === 'rules' ? 'Local suggestions' : 'Model suggestions · review before making changes' }
+        </Typography> }
         { result.suggestions.map((text, index) => <Typography key={ index }>{ text }</Typography>) }
         { result.limitations.map((text, index) => <Typography variant="caption" color="text.secondary" key={ index }>{ text }</Typography>) }
       </Stack>

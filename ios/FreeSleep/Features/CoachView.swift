@@ -58,8 +58,14 @@ private struct CoachForm: View {
             if let result = session.result {
                 SleepCard(title: result.headline, eyebrow: result.model) {
                     Text("\(side.rawValue.capitalized) side · \(days) days").sleepText(.caption).foregroundStyle(SleepTheme.secondary)
+                    if result.grounding?.version == 1 { Text("Calculated observations").sleepText(.cardTitle) }
                     ForEach(Array(result.observations.enumerated()), id: \.offset) { _, text in Text(text).sleepText(.body) }
+                    CoachEvidenceView(grounding: result.grounding)
                     Text("Try one small change").sleepText(.cardTitle)
+                    if let grounding = result.grounding {
+                        Text(grounding.suggestions == "rules" ? "Local suggestions" : "Model suggestions · review before making changes")
+                            .sleepText(.caption).foregroundStyle(SleepTheme.secondary)
+                    }
                     ForEach(Array(result.suggestions.enumerated()), id: \.offset) { _, text in Text(text).sleepText(.body) }
                     ForEach(Array(result.limitations.enumerated()), id: \.offset) { _, text in Text(text).sleepText(.caption).foregroundStyle(SleepTheme.secondary) }
                 }

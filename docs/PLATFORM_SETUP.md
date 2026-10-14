@@ -50,6 +50,8 @@ Use `server/.env.features.example` as a template for **additional environment va
 
 The coach sends numerical analytics, numerical journal patterns, and the question you type only after consent for that request. Journal notes and HealthKit samples are excluded. Models have no hardware tools. Cloud providers have not been called with the owner's credentials during this implementation.
 
+Configured models must support their provider's structured-output schema. The server now resolves displayed observations from calculated facts and keeps generated suggestions separate. Unsupported, truncated or invalid model responses fail without switching providers or retrying automatically. See [Coach evidence](COACH_EVIDENCE.md) for current API formats and qualification limits.
+
 ## Replit hosting
 
 Use a **Reserved VM**, one instance, for the persistent Pod WebSocket. `.replit` builds the web UI and starts `gateway/server.mjs`; do not run the embedded Pod server in Replit. This follows [Replit's deployment types](https://docs.replit.com/features/publishing/deployment-types).

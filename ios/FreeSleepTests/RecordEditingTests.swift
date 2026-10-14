@@ -28,6 +28,7 @@ struct RecordEditingTests {
             let coach = DemoSleepSummary.coaching(computed, provider: "rules")
             #expect(coach.observations == fixture.coaching[String(days)]?.observations)
             #expect(coach.suggestions == fixture.coaching[String(days)]?.suggestions)
+            #expect(coach.grounding == fixture.coaching[String(days)]?.grounding)
         }
     }
     @MainActor @Test func editsAndDeletesPreservePartnerAndRawReadingsAndRejectStaleSnapshots() throws {

@@ -32,9 +32,9 @@ The clients use the server report for live data. Older responses still decode, a
 
 ## Coach and data sharing
 
-Local coaching names the recorded period's end date and includes the coverage explanation. A sparse comparison does not produce a weekly-change observation. An opted-in model request receives the existing numerical summary (including its end date), aggregate coverage counts and the existing habit-pattern/question payload. Per-date coverage inventories, raw episodes, readings and saved notes are not added to model requests.
+Local coaching names the recorded period's end date and includes the coverage explanation. A sparse comparison does not produce a weekly-change observation. An opted-in model request receives the existing numerical summary (including its end date), aggregate coverage counts, calculated aggregate fact statements and the existing habit-pattern/question payload. Per-date coverage inventories, raw episodes, readings and saved notes are not added to model requests.
 
-Provider instructions require period-qualified wording and prohibit inferring a weekly change when it is unavailable. Mock adapter tests check request content; they do not establish that a real model follows those instructions. Generated statements still require model-quality evaluation before stronger reliability claims.
+Models select IDs from the calculated facts; the server supplies the displayed observation and calculation receipt. A model cannot select a withheld weekly change or rewrite an observation. Suggestions remain generated prose and still require real-model quality evaluation. See [Coach evidence and provider contract](COACH_EVIDENCE.md) for validation and limitations.
 
 ```mermaid
 flowchart LR

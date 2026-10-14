@@ -24,4 +24,6 @@ Coaching names the recorded period's end date, which may be historical. Weekly p
 
 Demo mode labels its simulated provider **Demo model · no external calls**. Both clients read deterministic coaching generated from `shared/fixtures/sleep-demo.json` for each history range. These fixtures verify presentation and request lifecycle, not model quality or clinical accuracy.
 
+Results now show **Calculated observations** and an expandable calculation explanation with period and sample counts. Models select available fact IDs; the server supplies the displayed observations and limitations. Generated suggestions remain separately labelled proposals requiring review. Older servers show an update instruction when calculation receipts are absent. See [Coach evidence and provider contracts](COACH_EVIDENCE.md).
+
 See [validation evidence](VALIDATION.md) for executed checks. Real provider accounts, signed-device integrations and physical Pod behavior remain separate qualification work.
