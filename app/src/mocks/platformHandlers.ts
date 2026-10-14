@@ -4,6 +4,7 @@ import type { ComfortStatus, ComfortConfig } from '../../../server/src/thermal/t
 import { DemoSleepHistory } from '../../../server/src/records/demo';
 import sleepDemo from '../../../shared/fixtures/sleep-demo.json';
 import { localInsights } from '../../../server/src/ai/coach';
+import { getSettings } from './mockData';
 const journalEntries: import('../../../server/src/analytics/journal').JournalEntry[] = [];
 const sleepHistory = new DemoSleepHistory(sleepDemo);
 const isoIntervals = (raw: string) => (JSON.parse(raw) as number[][]).map(interval =>
@@ -33,7 +34,7 @@ export const platformHandlers = [
     const side = parameters.get('side'); const date = parameters.get('date');
     const entries = journalEntries.filter(entry => entry.side === side);
     return HttpResponse.json({ entries, selectedDate: date, selected: entries.find(entry => entry.date === date) ?? null,
-      timeZone: 'America/Los_Angeles', patterns: { associations: [],
+      timeZone: getSettings().timeZone, patterns: { associations: [],
         note: 'Self-reported habits are associations, not causes. Each comparison needs at least five recorded nights in both groups.' } });
   }),
   http.post('/api/journal', async ({ request }) => {
@@ -46,10 +47,11 @@ export const platformHandlers = [
   }),
   http.get('/api/analytics', ({ request }) => {
     const parameters = new URL(request.url).searchParams;
-    return HttpResponse.json(sleepHistory.analytics(parameters.get('side') ?? 'left', Number(parameters.get('days') ?? 30)));
+    const analytics = sleepHistory.analytics(parameters.get('side') ?? 'left', Number(parameters.get('days') ?? 30), getSettings().timeZone);
+    return HttpResponse.json(analytics);
   }),
   http.get('/api/analytics/episodes/:id', ({ params, request }) => {
-    const detail = sleepHistory.detail(new URL(request.url).searchParams.get('side') ?? '', Number(params.id));
+    const detail = sleepHistory.detail(new URL(request.url).searchParams.get('side') ?? '', Number(params.id), getSettings().timeZone);
     return detail ? HttpResponse.json(detail)
       : HttpResponse.json({ error: { message: 'This sample episode is unavailable.' } }, { status: 404 });
   }),
@@ -90,7 +92,7 @@ export const platformHandlers = [
     if (input.provider !== 'rules' && !input.shareSummary) {
       return HttpResponse.json({ error: { message: 'Allow sharing for this simulated request first.' } }, { status: 400 });
     }
-    const result = { ...localInsights(sleepHistory.analytics(input.side, input.days)), model: 'Demo insights' };
+    const result = { ...localInsights(sleepHistory.analytics(input.side, input.days, getSettings().timeZone)), model: 'Demo insights' };
     return HttpResponse.json({ ...result, provider: input.provider });
   }),
   http.get('/api/integrations/homekit', () => HttpResponse.json({ enabled: false, running: false, pairingCode: null, error: null })),

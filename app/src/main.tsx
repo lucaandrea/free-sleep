@@ -13,6 +13,8 @@ import api from './api/api';
 
 const ControlTempPage = lazy(() => import('./pages/ControlTempPage/ControlTempPage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage/SettingsPage'));
+const DevicePreferencesPage = lazy(() => import('./pages/Platform/DevicePreferencesPage'));
+const SystemHealthPage = lazy(() => import('./pages/Platform/SystemHealthPage'));
 import Layout from './components/Layout';
 import { AppStoreProvider } from '@state/appStore.tsx';
 const SchedulePage = lazy(() => import('./pages/SchedulePage/SchedulePage.tsx'));
@@ -76,7 +78,9 @@ const App = () => {
                   </Route>
 
                   <Route path="settings" element={ <ConnectionsPage/> }/>
-                  <Route path="settings/device" element={ <SettingsPage/> }/>
+                  <Route path="settings/device" element={ <DevicePreferencesPage/> }/>
+                  <Route path="settings/advanced" element={ <SettingsPage/> }/>
+                  <Route path="settings/health" element={ <SystemHealthPage/> }/>
                   <Route path="schedules" element={ <SchedulePage/> }/>
                 </Route>
               </SentryRoutes>

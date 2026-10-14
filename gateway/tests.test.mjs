@@ -52,6 +52,10 @@ test('allowlist excludes maintenance, encoded paths and origin escapes', () => {
     assert.equal(allowedRequest('POST', route), false, route);
   }
   assert.equal(allowedRequest('GET', '/api/analytics?side=left&days=30'), true);
+  assert.equal(allowedRequest('GET', '/api/settings/preferences'), true);
+  assert.equal(allowedRequest('POST', '/api/settings/preferences'), true);
+  assert.equal(allowedRequest('DELETE', '/api/settings/preferences'), false);
+  assert.equal(allowedRequest('POST', '/api/settings/preferences/extra'), false);
   assert.equal(allowedRequest('GET', '/api/analytics/episodes/42?side=right'), true);
   for (const route of ['/api/analytics/episodes/0', '/api/analytics/episodes/42x', '/api/analytics/episodes/42/extra']) {
     assert.equal(allowedRequest('GET', route), false);
@@ -110,6 +114,10 @@ test('outbound agent preserves queries, method, JSON and uses only the local tok
   assert.equal((await fetch(`${origin}/api/comfort/mode`, { method: 'POST', headers, body: JSON.stringify(mode) })).status, 200);
   assert.equal(received.at(-1).route, '/api/comfort/mode');
   assert.deepEqual(JSON.parse(received.at(-1).body), mode);
+  const preferences = { podID: 'test', expected: { timeZone: 'UTC' }, preferences: { timeZone: 'Europe/London' } };
+  assert.equal((await fetch(`${origin}/api/settings/preferences`, { method: 'POST', headers, body: JSON.stringify(preferences) })).status, 200);
+  assert.equal(received.at(-1).route, '/api/settings/preferences');
+  assert.deepEqual(JSON.parse(received.at(-1).body), preferences);
   const routine = { side: 'left', days: ['monday', 'friday'], schedule: { temperatures: {} }, expected: { monday: {}, friday: {} } };
   const saved = await fetch(`${origin}/api/schedules/routine`, { method: 'POST', headers, body: JSON.stringify(routine) });
   assert.equal(saved.status, 200);

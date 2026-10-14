@@ -27,6 +27,8 @@ final class AppModel {
     let journalWorkspace = JournalWorkspace()
     let demoAlarms: DemoAlarms
     let demoHistory = DemoSleepHistory()
+    private(set) var demoPreferences = DeviceDemo.shared?.preferences
+    private(set) var preferencesRevision = 0
     private(set) var recordRevision = 0
     private(set) var recordMessage: String?
     var connected: Bool { device != nil }
@@ -44,6 +46,19 @@ final class AppModel {
         analytics = nil; analyticsRefreshedAt = .distantPast
         journalWorkspace.saved()
     }
+    func preferencesChanged(_ snapshot: PreferencesSnapshot) {
+        preferencesRevision += 1
+        settings = snapshot.preferences.settings(podID: snapshot.podID)
+        analytics = nil; analyticsRefreshedAt = .distantPast; recordRevision += 1
+        journalWorkspace.saved()
+        if demo {
+            demoPreferences = snapshot
+            demoHistory.timeZone = snapshot.preferences.timeZone
+            demoAlarms.timeZone = TimeZone(identifier: snapshot.preferences.timeZone) ?? .gmt
+            demoAlarms.away = [.left: snapshot.preferences.left.awayMode, .right: snapshot.preferences.right.awayMode]
+            loadDemo()
+        }
+    }
 
     init() {
         demo = AppMode.isDemo
@@ -58,6 +73,7 @@ final class AppModel {
             let client = try PodClient.configured()
             let requestedConnection = connectionRevision
             let requestedRecords = recordRevision
+            let requestedPreferences = preferencesRevision
             let requestedSide = side; let requestedDays = days
             let key = "\(client.baseURL.absoluteString)|\(side.rawValue):\(days)"
             if key != analyticsKey { analytics = nil }
@@ -73,6 +89,7 @@ final class AppModel {
             guard !Task.isCancelled, requestedSide == side, requestedDays == days,
                   requestedConnection == connectionRevision,
                   requestedRecords == recordRevision,
+                  requestedPreferences == preferencesRevision,
                   (try? PodClient.configured().baseURL) == client.baseURL else { return }
             device = results.0; base = results.1; analytics = results.2; settings = results.3
             if refreshNights {
@@ -130,6 +147,7 @@ final class AppModel {
         catch { actionMessage = error.localizedDescription }
     }
     private func loadDemo() {
+        if settings == nil, let snapshot = demoPreferences { settings = snapshot.preferences.settings(podID: snapshot.podID) }
         if device == nil { device = .init(left: .init(currentTemperatureF: 82, targetTemperatureF: 84, isOn: true),
             right: .init(currentTemperatureF: 80, targetTemperatureF: 80, isOn: false), isPriming: false, waterLevel: "full") }
         if base == nil { base = .init(state: "connected", position: .init(left: .init(head: 0, feet: 0), right: .init(head: 0, feet: 0)),

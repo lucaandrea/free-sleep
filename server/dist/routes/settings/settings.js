@@ -1,11 +1,16 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="80801e8d-5a7f-558f-bc6b-720d86fc1800")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="6026ad96-e62d-5253-961c-8fa1792a8874")}catch(e){}}();
 import _ from 'lodash';
 import express from 'express';
 import logger from '../../logger.js';
 const router = express.Router();
 import settingsDB, { updateSettings } from '../../db/settings.js';
 import { SettingsSchema } from '../../db/settingsSchema.js';
+import { preferencesRouter } from '../../preferences/router.js';
+router.use('/settings/preferences', preferencesRouter({
+    read: async () => { await settingsDB.read(); return settingsDB.data; },
+    update: updateSettings,
+}));
 router.get('/settings', async (req, res) => {
     await settingsDB.read();
     res.json(settingsDB.data);
@@ -40,4 +45,4 @@ router.post('/settings', async (req, res) => {
 });
 export default router;
 //# sourceMappingURL=settings.js.map
-//# debugId=80801e8d-5a7f-558f-bc6b-720d86fc1800
+//# debugId=6026ad96-e62d-5253-961c-8fa1792a8874

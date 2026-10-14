@@ -9,7 +9,7 @@ struct JournalCard: View {
     @State private var loadError: String?
     @State private var status: (key: String, text: String, failed: Bool)?
     private var workspace: JournalWorkspace { model.journalWorkspace }
-    private var timeZone: String { model.demo ? "America/Los_Angeles" : model.settings?.timeZone ?? model.analytics?.timeZone ?? "UTC" }
+    private var timeZone: String { model.settings?.timeZone ?? model.analytics?.timeZone ?? "UTC" }
     private var dateKey: String { selectedDate ?? JournalDate.key(Date(), timeZone: timeZone) }
     private var pod: String { model.demo ? "demo" : address + "|" + (model.settings?.id ?? "") }
     private var key: String { "\(pod)|\(model.side.rawValue)|\(dateKey)" }

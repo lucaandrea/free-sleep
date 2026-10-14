@@ -1,7 +1,7 @@
 import Foundation
 
-struct PodSettings: Decodable, Sendable {
-    struct Side: Decodable, Sendable { var name: String; var awayMode: Bool }
+struct PodSettings: Codable, Sendable {
+    struct Side: Codable, Sendable { var name: String; var awayMode: Bool }
     var id: String
     var timeZone: String
     var temperatureFormat: String

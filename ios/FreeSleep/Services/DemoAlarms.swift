@@ -6,10 +6,17 @@ final class DemoAlarms {
     init(workspace: RoutineWorkspace? = nil) { self.workspace = workspace }
     private var overrides: [BedSide: AlarmPreview] = [:]
     private var replacedDates: [BedSide: Date] = [:]
-    private let timeZone = TimeZone(identifier: "America/Los_Angeles")!
+    var timeZone = TimeZone(identifier: "America/Los_Angeles")!
+    var away: [BedSide: Bool] = [:]
 
     func preview(side: BedSide, now: Date = .now) -> AlarmPreview {
+        if away[side] == true { return AlarmPreview(side: side, timeZone: timeZone.identifier, state: "away") }
         if var saved = overrides[side], let expiry = saved.expiresAt.flatMap(AlarmPreview.date), expiry > now {
+            saved.timeZone = timeZone.identifier
+            if var occurrence = saved.alarm {
+                occurrence.time = saved.format(occurrence.at, pattern: "HH:mm")
+                saved.alarm = occurrence
+            }
             if let occurrence = saved.alarm, let date = AlarmPreview.date(occurrence.at), date <= now {
                 saved.state = "paused"; saved.alarm = nil
             }

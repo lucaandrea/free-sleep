@@ -5,8 +5,10 @@ import Foundation
 final class DemoSleepHistory {
     private let fixture: SleepDemo?
     private var records: [SleepDemo.Record]
+    var timeZone: String
     init(fixture: SleepDemo? = .shared) {
         self.fixture = fixture
+        timeZone = fixture?.analytics.timeZone ?? "UTC"
         records = BedSide.allCases.flatMap { side in (fixture?.records ?? []).map { original in
             var record = original; record.side = side.rawValue; return record
         } }
@@ -15,13 +17,13 @@ final class DemoSleepHistory {
         guard let fixture, let record = records.first(where: { $0.id == id && $0.side == side.rawValue }) else {
             throw PodError.message("This sample episode is unavailable.")
         }
-        return try DemoEpisode.detail(record, fixture: fixture)
+        return try DemoEpisode.detail(record, fixture: fixture, timeZone: timeZone)
     }
     func analytics(side: BedSide, days: Int) -> SleepAnalytics? {
         guard let fixture else { return nil }
         let episodes = records.filter { $0.side == side.rawValue && $0.entered_bed_at >= fixture.anchor - Double(days - 1) * 86400 }
-            .compactMap { try? DemoEpisode.detail($0, fixture: fixture).episode }.sorted { $0.startedAt < $1.startedAt }
-        return DemoSleepSummary.analytics(episodes, timeZone: fixture.analytics.timeZone)
+            .compactMap { try? DemoEpisode.detail($0, fixture: fixture, timeZone: timeZone).episode }.sorted { $0.startedAt < $1.startedAt }
+        return DemoSleepSummary.analytics(episodes, timeZone: timeZone)
     }
     func change(id: Int, change: SleepRecordChange) throws {
         let identity = SleepRecordIdentity(side: change.side, expected: change.expected)
@@ -54,8 +56,9 @@ private extension SleepRecordIdentity {
 
 // Mirror the server's deterministic interval and chart calculations for the labelled preview.
 enum DemoEpisode {
-    static func detail(_ record: SleepDemo.Record, fixture: SleepDemo) throws -> EpisodeDetail {
+    static func detail(_ record: SleepDemo.Record, fixture: SleepDemo, timeZone: String? = nil) throws -> EpisodeDetail {
         guard var detail = fixture.details[String(record.id)] else { throw PodError.message("This sample episode is unavailable.") }
+        if let timeZone { detail.timeZone = timeZone }
         let raw = (try? JSONDecoder().decode([[Double]].self, from: Data(record.present_intervals.utf8))) ?? []
         let clipped = raw.filter { $0.count == 2 && $0.allSatisfy(\.isFinite) }.map {
             [max($0[0], record.entered_bed_at), min($0[1], record.left_bed_at)]

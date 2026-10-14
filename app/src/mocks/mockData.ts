@@ -1,3 +1,5 @@
+import deviceDemo from '../../../shared/fixtures/device-demo.json';
+import { PreferencesSchema } from '../../../server/src/preferences/contract';
 import routinesDemo from '../../../shared/fixtures/routines-demo.json';
 import moment from 'moment-timezone';
 import type { Services } from '@api/services.ts';
@@ -120,14 +122,15 @@ const createVitalsRecords = (): VitalsRecord[] => {
 
 const createSchedules = (): Schedules => structuredClone(routinesDemo) as Schedules;
 
+const initialPreferences = PreferencesSchema.parse(deviceDemo.preferences.preferences);
 const createSettings = (): Settings => ({
-  id: 'demo-user',
-  timeZone: 'America/Los_Angeles',
-  temperatureFormat: 'fahrenheit',
-  rebootDaily: true,
+  id: deviceDemo.preferences.podID,
+  timeZone: initialPreferences.timeZone,
+  temperatureFormat: initialPreferences.temperatureFormat,
+  rebootDaily: initialPreferences.rebootDaily,
   left: {
-    name: 'Left side',
-    awayMode: false,
+    name: initialPreferences.left.name,
+    awayMode: initialPreferences.left.awayMode,
     scheduleOverrides: {
       temperatureSchedules: { disabled: false, expiresAt: '' },
       alarm: { disabled: false, timeOverride: '', expiresAt: '' },
@@ -152,8 +155,8 @@ const createSettings = (): Settings => ({
     }
   },
   right: {
-    name: 'Right side',
-    awayMode: false,
+    name: initialPreferences.right.name,
+    awayMode: initialPreferences.right.awayMode,
     scheduleOverrides: {
       temperatureSchedules: { disabled: false, expiresAt: '' },
       alarm: { disabled: false, timeOverride: '', expiresAt: '' },
@@ -177,7 +180,7 @@ const createSettings = (): Settings => ({
       },
     }
   },
-  primePodDaily: { enabled: true, time: '14:30' },
+  primePodDaily: structuredClone(initialPreferences.primePodDaily),
 });
 
 const createServices = (): Services => ({

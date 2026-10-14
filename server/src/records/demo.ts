@@ -11,14 +11,14 @@ export class DemoSleepHistory {
     this.records = ['left', 'right'].flatMap(side => fixture.records.map(record => ({ ...record, side })));
   }
   list(side: string) { return this.records.filter(record => record.side === side).map(record => ({ ...record })); }
-  analytics(side: string, days: number) {
+  analytics(side: string, days: number, timeZone = this.fixture.analytics.timeZone) {
     return summarizeSleep(this.list(side).filter(record => record.entered_bed_at >= this.fixture.anchor - (days - 1) * 86400),
-      this.fixture.vitals, this.fixture.analytics.timeZone);
+      this.fixture.vitals, timeZone);
   }
-  detail(side: string, id: number) {
+  detail(side: string, id: number, timeZone = this.fixture.analytics.timeZone) {
     const record = this.records.find(item => item.side === side && item.id === id);
     return record ? episodeDetail(record, this.fixture.vitals.filter(sample => sample.timestamp >= record.entered_bed_at
-      && sample.timestamp <= record.left_bed_at), this.fixture.analytics.timeZone) : null;
+      && sample.timestamp <= record.left_bed_at), timeZone) : null;
   }
   mutate(id: number, body: unknown, remove = false) {
     const input = (remove ? sleepRecordIdentity : sleepRecordChange).safeParse(body);

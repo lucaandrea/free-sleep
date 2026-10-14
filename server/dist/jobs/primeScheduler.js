@@ -1,5 +1,5 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="18fb011b-1b78-51cb-b17f-761e787aa7b0")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="8f7e9105-d437-5d59-bae9-31518957f815")}catch(e){}}();
 import schedule from 'node-schedule';
 import logger from '../logger.js';
 import { updateDeviceStatus } from '../routes/deviceStatus/updateDeviceStatus.js';
@@ -9,6 +9,7 @@ import settingsDB from '../db/settings.js';
 import serverStatus from '../serverStatus.js';
 import servicesDB from '../db/services.js';
 import reboot from './reboot.js';
+import { primingClock } from './primingClock.js';
 const scheduleRebootJob = (onHour, onMinute, timeZone) => {
     const dailyRule = new schedule.RecurrenceRule();
     dailyRule.hour = onHour;
@@ -61,11 +62,11 @@ export const schedulePrimingRebootAndCalibration = (settingsData) => {
         return;
     const dailyRule = new schedule.RecurrenceRule();
     const { time } = primePodDaily;
-    const [onHour, onMinute] = time.split(':').map(Number);
+    const { hour: onHour, minute: onMinute, rebootHour } = primingClock(time);
     dailyRule.hour = onHour;
     dailyRule.minute = onMinute;
     dailyRule.tz = timeZone;
-    scheduleRebootJob(onHour - 1, onMinute, timeZone);
+    scheduleRebootJob(rebootHour, onMinute, timeZone);
     scheduleCalibrationJob(onHour, 0, timeZone, 'left');
     scheduleCalibrationJob(onHour, 30, timeZone, 'right');
     logger.debug(`Scheduling daily prime job at ${primePodDaily.time}`);
@@ -85,4 +86,4 @@ export const schedulePrimingRebootAndCalibration = (settingsData) => {
     });
 };
 //# sourceMappingURL=primeScheduler.js.map
-//# debugId=18fb011b-1b78-51cb-b17f-761e787aa7b0
+//# debugId=8f7e9105-d437-5d59-bae9-31518957f815

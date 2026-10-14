@@ -6,6 +6,12 @@ const router = express.Router();
 
 import settingsDB, { updateSettings } from '../../db/settings.js';
 import { SettingsSchema } from '../../db/settingsSchema.js';
+import { preferencesRouter } from '../../preferences/router.js';
+
+router.use('/settings/preferences', preferencesRouter({
+  read: async () => { await settingsDB.read(); return settingsDB.data; },
+  update: updateSettings,
+}));
 
 router.get('/settings', async (req: Request, res: Response) => {
   await settingsDB.read();

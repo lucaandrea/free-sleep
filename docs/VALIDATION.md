@@ -125,6 +125,16 @@ See [record editing and API compatibility](EPISODES.md#correct-or-remove-a-recor
 
 The iPhone adaptive-comfort Shortcut now requires the updated server and gateway's `POST /api/comfort/mode` route. Older versions reject it; there is no read-and-rewrite fallback. See [Apple integrations](APPLE_INTEGRATIONS.md#shortcuts-and-siri) and [comfort API](ADAPTIVE_COMFORT.md#storage-and-api). No owner's Pod, Health/Home records, real provider or deployment was used.
 
+## Device preferences and system health follow-up — 2026-10-14
+
+- All 96 server tests passed on Node 24. Five new tests cover the shared preference fixture, strict field/name/time validation, actual serialized settings persistence, preservation of concurrent unrelated edits and hidden fields, whole-request conflicts, timezone dependencies, actual Express HTTP success/400/409/500 responses and storage rollback. A node-schedule recurrence test verifies that priming at 00:15 schedules the preceding reboot at 23:15 in the Pod timezone.
+- Native build and all 50 Swift Testing tests passed on the isolated iOS 27 simulator. Five new tests cover field validation, original identity and exact preference request bodies through PodClient, normalization, duplicate saves, retained failed drafts, superseded connections, reset, wrong-Pod replies and demo timezone/Away behavior. One-time demo alarms retain their absolute instant when timezone labels change.
+- Web typecheck, demo/hosted builds, all six contract tests and lint passed. Server compilation/lint and all six gateway tests passed; the gateway tests include exact preference route/method matching and payload forwarding. There are zero lint errors; eight existing web and 19 server warnings remain, along with Vite's shared-chunk warning. Generated server/web output is updated with local Sentry debug-ID injection only; no source maps were uploaded.
+- Browser demo checks saved Celsius and a side-name edit, rejected a blank name and reset a draft. The final run uses the same initial preference and health fixture as iOS. Manual System health refresh returned the expected six services, including a retrying stream and inactive priming. No browser console errors were reported. The browser viewport was desktop; this follow-up does not claim a new narrow-web validation.
+- The native demo saved Celsius, displayed the save confirmation, and rendered the daily-care controls and service-health cards. These are simulated in-memory edits and reported sample states, not physical Pod settings, priming or reboots.
+
+Captures in [screenshots](screenshots): `preferences-web-saved.jpg`, `health-web.jpg`, `preferences-ios-top.jpg`, `preferences-ios-saved.jpg` and `health-ios.jpg`. Native images include the simulator mirror. See [device preferences](DEVICE_PREFERENCES.md) for the additive API and client/server/gateway update requirement. Advanced maintenance, LED controls, service management and logs remain web-only. No owner credentials, Health/Home records, hardware or deployment was used.
+
 ## Remaining device and service checks
 
 - Stock Pod access, firmware compatibility, installation/recovery, D-Bus permissions, BLE service discovery and real motion/Stop/calibration.

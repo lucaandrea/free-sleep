@@ -1,5 +1,5 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="05959e26-5641-511a-9937-590d2cfdc0da")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="1f2c59b5-97b9-5580-a643-452e5055d871")}catch(e){}}();
 import { episodeDetail } from '../analytics/episode.js';
 import { summarizeSleep } from '../analytics/summary.js';
 import { exitsInWindow, recordSeconds, sleepRecordChange, sleepRecordIdentity } from './sleepMutation.js';
@@ -11,13 +11,13 @@ export class DemoSleepHistory {
         this.records = ['left', 'right'].flatMap(side => fixture.records.map(record => ({ ...record, side })));
     }
     list(side) { return this.records.filter(record => record.side === side).map(record => ({ ...record })); }
-    analytics(side, days) {
-        return summarizeSleep(this.list(side).filter(record => record.entered_bed_at >= this.fixture.anchor - (days - 1) * 86400), this.fixture.vitals, this.fixture.analytics.timeZone);
+    analytics(side, days, timeZone = this.fixture.analytics.timeZone) {
+        return summarizeSleep(this.list(side).filter(record => record.entered_bed_at >= this.fixture.anchor - (days - 1) * 86400), this.fixture.vitals, timeZone);
     }
-    detail(side, id) {
+    detail(side, id, timeZone = this.fixture.analytics.timeZone) {
         const record = this.records.find(item => item.side === side && item.id === id);
         return record ? episodeDetail(record, this.fixture.vitals.filter(sample => sample.timestamp >= record.entered_bed_at
-            && sample.timestamp <= record.left_bed_at), this.fixture.analytics.timeZone) : null;
+            && sample.timestamp <= record.left_bed_at), timeZone) : null;
     }
     mutate(id, body, remove = false) {
         const input = (remove ? sleepRecordIdentity : sleepRecordChange).safeParse(body);
@@ -46,4 +46,4 @@ export class DemoSleepHistory {
     }
 }
 //# sourceMappingURL=demo.js.map
-//# debugId=05959e26-5641-511a-9937-590d2cfdc0da
+//# debugId=1f2c59b5-97b9-5580-a643-452e5055d871

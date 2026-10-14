@@ -28,7 +28,7 @@ The web theme and native design components consume these values. Both use system
 - Next-alarm card, timezone/date labels and one-time change, skip and restore actions. iOS uses a native time picker and sheet.
 - Routines: Monday–Sunday selector, overnight temperature timeline, power/adjustment/alarm groups, outlined fields, numeric alarm controls and weekday/weekend copying. Both use the same demo week in `shared/fixtures/routines-demo.json` and keep drafts per Pod, side and day. See [routine behavior](ROUTINES.md).
 - Journal: labelled outlined fields, habit checkboxes, notes, save/reset actions and dates in the Pod timezone. Drafts stay in memory by Pod, side and wake date. Coach uses the same 7/30/90-day choice, provider field, question, per-request sharing control and result provenance. Sample coaching is generated from the shared sleep fixture. See [journal and Coach behavior](JOURNAL_COACH.md).
-- Settings: connection fields, Test/Save actions, separate Appearance section, Home bridge status/refresh and consistent section order/copy. Native Health permissions and Home scenes remain platform capabilities. See [connection setup](CONNECTIONS.md).
+- Settings: connection fields, Test/Save actions, separate Appearance section, Home bridge status/refresh and consistent section order/copy. Device settings now shares the timezone, units, side names, Away mode and daily-care form, including save/reset/reload. System health shares service cards and manual/automatic refresh. Native Health permissions and Home scenes remain platform capabilities. See [connection setup](CONNECTIONS.md) and [device preferences](DEVICE_PREFERENCES.md).
 
 This is not a claim that every screen is visually identical. OS chrome, permission sheets and native accessibility text layout differ. The following product differences remain explicit work:
 
@@ -38,9 +38,9 @@ This is not a claim that every screen is visually identical. OS chrome, permissi
 | Sleep | Record editors retain OS date/time picker and sheet/dialog chrome |
 | Coach | OS menu picker chrome and accessibility text layout |
 | Routines | Native time/menu picker chrome and confirmation presentation; accessibility text sizes use an adaptive day picker |
-| Settings | Advanced device/diagnostic pages remain web-only; Health permissions, Home scenes and system pickers remain native |
+| Settings | Advanced maintenance, LEDs, services and logs remain web-only; Health permissions, Home scenes and system pickers remain native |
 
-Use the same side, data, appearance, viewport width and text-size setting when comparing. The existing demo states differ in priming and scheduled-alarm notifications; those banners must not be removed merely to make captures match.
+Use the same side, data, appearance, viewport width and text-size setting when comparing. Initial device preferences and service health come from the same fixture. Remaining demo device-status banners and scheduled-alarm notifications must not be removed merely to make captures match.
 
 ## Verification
 

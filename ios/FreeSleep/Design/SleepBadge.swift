@@ -1,11 +1,19 @@
 import SwiftUI
 
 struct SleepBadge: View {
-    enum Tone { case neutral, success, info }
+    enum Tone { case neutral, success, info, error, warning }
     let title: String
     var tone: Tone = .neutral
     var dot = false
-    private var tint: Color { tone == .success ? SleepTheme.success : tone == .info ? SleepTheme.info : SleepTheme.secondary }
+    private var tint: Color {
+        switch tone {
+        case .neutral: SleepTheme.secondary
+        case .success: SleepTheme.success
+        case .info: SleepTheme.info
+        case .error: SleepTheme.error
+        case .warning: SleepTheme.warning
+        }
+    }
     var body: some View {
         HStack(spacing: 6) {
             if dot { Circle().fill(tint).frame(width: 6, height: 6).accessibilityHidden(true) }

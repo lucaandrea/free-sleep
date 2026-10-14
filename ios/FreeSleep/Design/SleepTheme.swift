@@ -7,6 +7,7 @@ enum SleepTheme {
     static let success = Color("SleepSuccess")
     static let info = Color("SleepInfo")
     static let error = Color("SleepError")
+    static let warning = Color("SleepWarning")
     static let primaryButton = Color("SleepPrimaryButton")
     static let primaryButtonText = Color("SleepPrimaryButtonText")
     static let bedLine = Color("SleepBedLine")

@@ -4,6 +4,7 @@ struct ConnectionsView: View {
     @Environment(AppModel.self) private var model
     @AppStorage("appearance") private var appearance = "light"
     var body: some View {
+        NavigationStack {
         SleepPage(title: "Make it yours.", narrow: true) {
             PodConnectionCard(demo: model.demo)
             SleepCard(title: "Appearance", eyebrow: "YOUR SPACE") {
@@ -20,6 +21,11 @@ struct ConnectionsView: View {
                 Text("Bed movement affects both sides. Your iPhone must be able to reach the Pod or your secure gateway.")
                     .sleepText(.caption).foregroundStyle(SleepTheme.secondary)
             }
+            SleepCard(title: "Fine-tune your setup") {
+                NavigationLink("Device settings") { DevicePreferencesView() }.buttonStyle(SleepButtonStyle())
+                NavigationLink("System health") { SystemHealthView() }.buttonStyle(SleepButtonStyle())
+            }
+        }
         }
     }
 }

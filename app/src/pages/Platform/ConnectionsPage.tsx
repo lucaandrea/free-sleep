@@ -41,7 +41,7 @@ export default function ConnectionsPage() {
     <Surface title="Fine-tune your setup">
       <Stack direction="row" sx={ { flexWrap: 'wrap', gap: 1 } }>
         <Button component={ Link } to="/settings/device" variant="outlined">Device settings</Button>
-        <Button component={ Link } to="/status" variant="outlined">System health</Button>
+        <Button component={ Link } to="/settings/health" variant="outlined">System health</Button>
         <Button component={ Link } to="/data/logs" variant="outlined">Logs</Button>
       </Stack>
     </Surface>
