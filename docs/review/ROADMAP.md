@@ -1,12 +1,12 @@
 # Free Sleep — twelve next improvements
 
-Research snapshot: 14 October 2026. Reviewed implementation: `e05cd99`.
+Research snapshot: 14 October 2026. Design captures: `e05cd99`; completed implementation reviewed through `f5e2b51`.
 
 These are proposals, not shipped features. Effort is relative engineering scope, not a deadline. Start with data-quality explanations (#9), model evaluation and budgeting (#3), then the evidence-linked morning brief (#1). Expand Health context (#2) after signed-device validation.
 
 ## Current foundation
 
-The repository already contains the shared web/SwiftUI design system, base preview/control adapter, presence analytics, journal, optional AI adapters, bounded feedback-based comfort, native Health workflows, Home bridge and App Intents. These have local/source/simulator evidence. Physical Pod/base operation, signed integrations, provider quality and Replit deployment remain unverified. Full visual parity also remains unfinished.
+The repository already contains the shared web/SwiftUI design system, base preview/control adapter, presence analytics, journal, optional AI adapters, bounded feedback-based comfort, one-time alarm change/skip/restore, native Health workflows, Home bridge and App Intents. These have local/source/simulator evidence. Physical Pod/base operation, signed integrations, provider quality and Replit deployment remain unverified. Full visual parity also remains unfinished.
 
 ## Model recommendation
 
@@ -18,6 +18,23 @@ The repository already contains the shared web/SwiftUI design system, base previ
 | Deeper review candidate | Gemini 4 Argon · gemini-4-argon | Evaluate only if simpler candidates miss the quality bar. A long context window alone does not justify sending more personal data. [Google · What’s new in Gemini 4 Argon](https://ai.google.dev/gemini-api/docs/latest-model) |
 | Optional voice | Gemini 3.8 Live · gemini-3.8-live | Use for an explicitly chosen spoken check-in. It is a separate audio feature and privacy decision from the text coach. [Google · Live API](https://ai.google.dev/gemini-api/docs/live-api) |
 | Forecast experiment | Simple thermal baseline → TimesFM 2.5 challenger | Evaluate on a capable local host in shadow mode. The model predicts; the bounded controller decides whether a reviewed command is allowed. [Google Research · TimesFM releases and weight licenses](https://github.com/google-research/timesfm) |
+
+## The twelve proposals at a glance
+
+| ID | Proposed update | Phase | Effort |
+| --- | --- | --- | --- |
+| 1 | A morning brief with receipts | First | Medium |
+| 2 | One timeline for Apple Health and your bed | First | Large |
+| 3 | A quality and cost center for AI | First | Medium |
+| 4 | A private coach that works offline | Next | Large |
+| 5 | Personal experiments, one change at a time | Next | Large |
+| 6 | Predictive comfort before bedtime | Later | Large |
+| 7 | A 20-second spoken morning check-in | Next | Medium |
+| 8 | Describe a routine; review the exact changes | Next | Large |
+| 9 | Explain changes and detect bad data | First | Medium |
+| 10 | A wind-down scene that fits your evening | Later | Large |
+| 11 | Position profiles that remember comfort | Later | Large |
+| 12 | An optional photo-assisted context journal | Later | Medium |
 
 These are app-specific engineering recommendations, not clinical validation or measured provider rankings. Use the smallest candidate that passes an evidence-grounded evaluation. Keep the provider choice explicit and measure full token cost, including reasoning.
 
@@ -69,13 +86,13 @@ Choose a provider with visible evidence, a monthly budget and an understandable 
 
 **New work:** Provider adapters and explicit sharing already exist. Add a repeatable evaluation set, model/version history, usage accounting, a hard request budget and a user-visible comparison of tested results.
 
-**AI approach:** Benchmark Sol, Sonnet and Flash on identical de-identified or synthetic cases. Include Gemini 4 Argon as a deeper-reasoning challenger. Test factual grounding, numbers, missing data, misleading notes, response time and total billed tokens. A second model may flag issues but cannot define the ground truth.
+**AI approach:** Benchmark Sol, Sonnet and Flash on identical de-identified or synthetic cases. Include Gemini 4 Argon as a deeper-reasoning challenger. Test factual grounding, numbers, missing data, misleading notes, response time and total billed tokens. A second model may flag issues but cannot define the ground truth. For the native coach, use Apple’s new Evaluations framework with the same evidence fixtures and measured criteria.
 
 **Dependencies:** Provider keys for live evaluation, expected answers from deterministic calculations, per-provider retention settings and a budget ledger. Cloud data never silently switches to another vendor.
 
 **Acceptance:** All critical fixtures pass with zero fabricated measurements or device commands. The budget blocks further paid calls at its configured ceiling. Publish measured quality/cost results before changing the default.
 
-Research: [OpenAI · GPT-6.1 Sol](https://developers.openai.com/api/docs/models/gpt-6.1-sol), [Anthropic · Current model catalog](https://platform.claude.com/docs/en/models/overview), [Google · Gemini model catalog](https://ai.google.dev/gemini-api/docs/models), [Google · What’s new in Gemini 4 Argon](https://ai.google.dev/gemini-api/docs/latest-model)
+Research: [OpenAI · GPT-6.1 Sol](https://developers.openai.com/api/docs/models/gpt-6.1-sol), [Anthropic · Current model catalog](https://platform.claude.com/docs/en/models/overview), [Google · Gemini model catalog](https://ai.google.dev/gemini-api/docs/models), [Google · What’s new in Gemini 4 Argon](https://ai.google.dev/gemini-api/docs/latest-model), [Apple · Meet the Evaluations framework, WWDC26](https://developer.apple.com/videos/play/wwdc2026/298/)
 
 ### 4. A private coach that works offline
 
@@ -161,7 +178,7 @@ Build a schedule in natural language and inspect every affected day, side and se
 
 **AI approach:** Constrain the model to a schedule schema. Resolve dates and daylight-saving transitions in application code. Apply only a user-confirmed plan through existing authenticated services; keep model tools read-only.
 
-**Dependencies:** Finish the shared Routines layout and alarm parity first. Preserve unknown schedule fields, provide rollback, and handle ambiguous weekdays, sides and overnight intervals.
+**Dependencies:** Finish and validate the common Routines editor; that work is currently in progress. One-time alarm change/skip/restore is already implemented and locally validated in f5e2b51. Preserve unknown schedule fields, provide rollback, and resolve ambiguous weekdays, sides and overnight intervals.
 
 **Acceptance:** A DST/timezone fixture suite passes. The preview shows all edits and any rejected request. No base movement, schedule write or temperature command occurs during generation.
 
@@ -241,7 +258,7 @@ Research: [Apple · Foundation Models framework](https://developer.apple.com/fou
 
 ## What is new in the research
 
-Apple’s 2026 Foundation Models additions support evaluating private native input and explanation workflows. Gemini’s current catalog includes 4 Argon for reasoning, 3.8 Flash for responsive work and 3.8 Live for voice. OpenAI’s Sol and Anthropic’s Sonnet are current candidates for the bounded cloud coach. No live comparison has been performed here.
+Apple’s 2026 Foundation Models additions support private native input and explanation workflows. Its new Evaluations framework can test the native coach against recorded evidence fixtures and track regressions across prompt/model changes. Gemini’s current catalog includes 4 Argon for reasoning, 3.8 Flash for responsive work and 3.8 Live for voice. OpenAI’s Sol and Anthropic’s Sonnet are current candidates for the bounded cloud coach. No live comparison has been performed here.
 
 SensorFM is a wearable-representation research direction, not a drop-in validated sleep-staging feature. TimesFM 3 is newer, but its downloaded weights are restricted to non-commercial, non-production use; weights through 2.5 remain Apache-2.0. Evaluate the latter or a simple thermal baseline for a local production path. Authorized cloud use of 3 has different terms. Apple Private Cloud Compute access also has eligibility conditions to check before relying on it.
 
@@ -249,7 +266,7 @@ Cost illustration: Sol’s listed standard $2 input / $10 output per million tok
 
 ## Release prerequisites
 
-- Finish shared alarm, Routines, journal, raw-data and Settings flows; compare equal data/state on both platforms.
+- Finish and validate the in-progress shared Routines editor, then journal, raw-data and Settings flows. Alarm change/skip/restore is locally validated; compare equal data/state for the remaining screens.
 - Verify stock-Pod access/recovery, base telemetry/calibration/Stop, temperature control and overnight behavior.
 - Test a signed iPhone’s Health authorization/sync and Shortcuts; pair the real Home bridge.
 - Deploy and verify the authenticated Replit gateway, reconnect and offline behavior.
@@ -271,5 +288,6 @@ Cost illustration: Sol’s listed standard $2 input / $10 output per million tok
 - [Apple · HealthKit](https://developer.apple.com/documentation/healthkit) — Native, authorized access to personal health records. Data origin and the user’s selected bed side remain essential.
 - [Apple · Apple Home](https://developer.apple.com/apple-home/) — Platform context for user-selected Home accessories and scenes. A LAN bridge and real pairing still need qualification.
 - [Apple · App Intents](https://developer.apple.com/documentation/appintents) — Typed actions for Shortcuts and system surfaces. Discovery in a build is distinct from execution on a signed phone.
+- [Apple · Meet the Evaluations framework, WWDC26](https://developer.apple.com/videos/play/wwdc2026/298/) — The new framework integrates datasets, quantitative metrics and model-judged criteria with Swift Testing. Use it to qualify the native coach across model and prompt changes; ground numerical truth in application calculations.
 
 The standalone visual review is [free-sleep-before-after.html](free-sleep-before-after.html). Regenerate both documents with `python3 docs/review/build_review.py` from the repository root.
