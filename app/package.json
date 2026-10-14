@@ -12,7 +12,8 @@
     "lint:fix": "eslint . --fix",
     "preview": "vite preview",
     "build:hosted": "VITE_ENV=hosted tsc -b && VITE_ENV=hosted vite build",
-    "demo": "VITE_ENV=demo vite"
+    "demo": "VITE_ENV=demo vite",
+    "test": "node --experimental-strip-types --test tests/*.test.mjs"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

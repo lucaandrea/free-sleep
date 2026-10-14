@@ -2,6 +2,8 @@
 
 This branch is a software implementation awaiting device qualification. The owner's Pod 4 Ultra still runs stock Eight Sleep software; their subscription has about ten days remaining as of 2026-10-13. Nothing in this work has installed software on, paired with, or moved that Pod. Subscription expiry alone does not install Free Sleep or establish access to its hardware.
 
+Adaptive comfort is off by default. Its [configuration and qualification guide](ADAPTIVE_COMFORT.md) describes preview mode, feedback learning, temperature limits, manual pauses and the required presence heartbeat. Update the Python biometrics service alongside the server before evaluating this feature.
+
 ## Before migrating the stock Pod
 
 1. Preserve the current working setup while recording firmware versions, bed model, existing schedules, temperature preferences, and base presets. Request/export any existing sleep history through Eight Sleep's supported account process while access remains. This implementation has no Eight Sleep account importer and does not promise access to subscription history after cancellation.

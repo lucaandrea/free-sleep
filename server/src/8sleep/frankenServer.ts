@@ -44,11 +44,12 @@ export class Franken {
 
   static readonly separator = Buffer.from('\n\n');
 
-  public async sendMessage(message: string) {
+  public async sendMessage(message: string, notAfter?: number) {
     logger.debug(`Sending message to sock | message: ${message}`);
     let responseBytes: Buffer;
     try {
       responseBytes = await this.sequentialQueue.exec(async () => {
+        if (notAfter !== undefined && Date.now() > notAfter) throw new Error('Temperature decision expired before dispatch');
         const requestBytes = Buffer.concat([Buffer.from(message), Franken.separator]);
         await this.write(requestBytes);
         const resp = await this.messageStream.readMessage(FRANKEN_RESPONSE_TIMEOUT_MS);
@@ -77,13 +78,13 @@ export class Franken {
     return arg.replace(/\n/gm, '');
   }
 
-  public async callFunction(command: FrankenCommand, arg: string) {
+  public async callFunction(command: FrankenCommand, arg: string, notAfter?: number) {
     logger.debug(`Calling function | command: ${command} | arg: ${arg}`);
     const commandNumber = frankenCommands[command];
     const cleanedArg = this.tryStripNewlines(arg);
     logger.debug(`commandNumber: ${commandNumber}`);
     logger.debug(`cleanedArg: ${cleanedArg}`);
-    await this.sendMessage(`${commandNumber}\n${cleanedArg}`);
+    await this.sendMessage(`${commandNumber}\n${cleanedArg}`, notAfter);
   }
 
   public async getDeviceStatus(getGestures=false): Promise<DeviceStatus> {
@@ -157,6 +158,11 @@ function promiseWithTimeout<T>(promise: Promise<T>, onTimeout: () => Error) {
 
 let frankenServer: FrankenServer | undefined;
 let franken: Franken | undefined;
+
+// Autonomous controls may use a live connection, but must not wait for reconnect and replay later.
+export function connectedFranken(): Franken | undefined {
+  return franken && !franken.isClosed ? franken : undefined;
+}
 let connectPromise: Promise<Franken> | undefined;
 
 function waitForFrankenWithTimeout(server: FrankenServer) {

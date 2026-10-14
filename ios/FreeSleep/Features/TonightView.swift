@@ -12,6 +12,7 @@ struct TonightView: View {
                 BaseCard()
             }
             if let message = model.actionMessage { Label(message, systemImage: "exclamationmark.circle").foregroundStyle(.red) }
+            ComfortCard().id(model.side)
             SleepCard(title: "A glance at last night", eyebrow: "YOUR ROUTINE") {
                 let night = model.analytics?.nights.last
                 ViewThatFits(in: .horizontal) {

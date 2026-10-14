@@ -1,5 +1,5 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="aaafc18d-6811-509f-bec5-f8d78e393e3a")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="9427ac20-38ad-5600-8a86-c3495ee76bb9")}catch(e){}}();
 import schedule from 'node-schedule';
 import { getDayIndexForSchedule, logJob } from './utils.js';
 import { updateDeviceStatus } from '../routes/deviceStatus/updateDeviceStatus.js';
@@ -21,7 +21,7 @@ const scheduleAdjustment = (timeZone, side, day, time, temperature, powerOnTime)
                 [side]: {
                     targetTemperatureF: temperature,
                 }
-            });
+            }, 'schedule');
             serverStatus.status.temperatureSchedule.status = 'healthy';
             serverStatus.status.temperatureSchedule.message = '';
         }
@@ -44,4 +44,4 @@ export const scheduleTemperatures = (settingsData, side, day, dailySchedule) => 
     });
 };
 //# sourceMappingURL=temperatureScheduler.js.map
-//# debugId=aaafc18d-6811-509f-bec5-f8d78e393e3a
+//# debugId=9427ac20-38ad-5600-8a86-c3495ee76bb9

@@ -29,7 +29,7 @@ const scheduleAdjustment = (timeZone: TimeZone, side: Side, day: DayOfWeek, time
         [side]: {
           targetTemperatureF: temperature,
         }
-      });
+      }, 'schedule');
       serverStatus.status.temperatureSchedule.status = 'healthy';
       serverStatus.status.temperatureSchedule.message = '';
     } catch (error: unknown) {

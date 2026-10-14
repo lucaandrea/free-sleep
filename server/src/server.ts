@@ -5,6 +5,7 @@ import { Server } from 'http';
 import logger from './logger.js';
 import { baseController } from './base/index.js';
 import { startHomeKit, stopHomeKit } from './integrations/homekit.js';
+import { startComfort, stopComfort } from './thermal/runtime.js';
 import { connectFranken, disconnectFranken } from './8sleep/frankenServer.js';
 import { FrankenMonitor } from './8sleep/frankenMonitor.js';
 import './jobs/jobScheduler.js';
@@ -60,6 +61,7 @@ async function gracefulShutdown(signal: string) {
     process.exit(1);
   }, 15_000);
   baseController.close();
+  stopComfort();
   await stopHomeKit();
   logger.debug('Stopping node-schedule');
   await schedule.gracefulShutdown();
@@ -111,6 +113,7 @@ const initFrankenMonitor = () => {
 
 // Main startup function
 async function startServer() {
+  startComfort();
   setupMiddleware(app);
   setupRoutes(app);
   // Listen on desired port

@@ -28,6 +28,7 @@ import urllib.request
 import urllib.error
 
 from get_logger import get_logger
+from stream.presence_heartbeat import PresenceHeartbeat
 from heart.exceptions import BadSignalWarning
 from vitals.run_data_types import RuntimeParams
 from vitals.cleaning import interpolate_outliers_in_wave
@@ -61,6 +62,7 @@ class BiometricProcessor:
             api_port=3000,  # Added API configuration
     ):
         self.present = False
+        self.presence_heartbeat = PresenceHeartbeat()
         self.side = side
         self.sensor_count = sensor_count
         self.insertion_frequency = insertion_frequency
@@ -130,6 +132,9 @@ class BiometricProcessor:
         Args:
             is_present: Boolean indicating if presence is detected
         """
+        if not self.presence_heartbeat.due(is_present):
+            return
+        self.presence_heartbeat.attempt()
         try:
             # Build the payload based on which side this processor handles
             payload = {
@@ -152,6 +157,7 @@ class BiometricProcessor:
             # Make the request with timeout
             with urllib.request.urlopen(req, timeout=2) as response:
                 if response.status == 200:
+                    self.presence_heartbeat.success(is_present)
                     logger.debug(f'Successfully updated presence API for {self.side} side: {is_present}')
                 else:
                     response_body = response.read().decode('utf-8')
@@ -171,12 +177,7 @@ class BiometricProcessor:
             self.not_present_for = 0
             self.present_for = self.present_for + 1
 
-            # Update presence to True if not already set
-            if not self.present:
-                self.present = True
-                self._update_presence_api(True)
-            else:
-                self.present = True
+            self.present = True
         else:
             self.not_present_for += 1
             if self.not_present_for == self.no_presence_tolerance:
@@ -185,8 +186,8 @@ class BiometricProcessor:
                 self.present_for = 0
                 self.reset()
 
-                # Update API that presence is no longer detected
-                self._update_presence_api(False)
+        # A periodic heartbeat lets consumers reject stale presence if this stream stops.
+        self._update_presence_api(self.present)
 
     def _calculate_vitals(self, signal: np.ndarray, epoch: int, update_breathing=False, update_hrv=False):
         try:

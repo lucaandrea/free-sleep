@@ -10,6 +10,7 @@ import TemperatureCard from './TemperatureCard';
 import BaseCard from './BaseCard';
 import Surface from './Surface';
 import PodNotifications from './PodNotifications';
+import ComfortCard from './ComfortCard';
 
 export default function TonightPage() {
   const { side } = useAppStore();
@@ -31,6 +32,7 @@ export default function TonightPage() {
         <TemperatureCard key={ side } side={ side } />
         <BaseCard />
       </Box>
+      <ComfortCard key={ `comfort-${side}` } side={ side } />
       <Surface
         title="A glance at last night"
         eyebrow="YOUR ROUTINE"

@@ -23,6 +23,7 @@ import journal from '../analytics/journalRoutes.js';
 import ai from '../ai/index.js';
 import integrations from '../integrations/index.js';
 import healthExport from '../integrations/healthExport.js';
+import comfort from '../thermal/runtime.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,6 +31,7 @@ const __dirname = path.dirname(__filename);
 export default function (app: Express) {
   logger.debug('Registering routes...');
   app.use('/api/base', base);
+  app.use('/api/comfort', comfort);
   app.use('/api/analytics', analytics);
   app.use('/api/journal', journal);
   app.use('/api/ai', ai);

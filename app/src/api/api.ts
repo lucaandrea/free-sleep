@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const inDev = import.meta.env.VITE_ENV === 'dev';
+const inDemo = import.meta.env.VITE_ENV === 'demo';
 
 if (inDev && !import.meta.env.VITE_POD_IP) {
   console.warn(
@@ -10,7 +11,7 @@ if (inDev && !import.meta.env.VITE_POD_IP) {
     'ex: \'VITE_POD_IP=<YOUR_POD_IP> npm run dev\''
   );
 }
-const storedURL = localStorage.getItem('freeSleepURL');
+const storedURL = inDemo ? null : localStorage.getItem('freeSleepURL');
 const baseURL = storedURL || (inDev && import.meta.env.VITE_POD_IP ? `http://${import.meta.env.VITE_POD_IP}:3000` : `${window.location.origin}`);
 
 const axiosInstance = axios.create({
@@ -19,7 +20,7 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use(request => {
-  const token = sessionStorage.getItem('freeSleepToken');
+  const token = inDemo ? null : sessionStorage.getItem('freeSleepToken');
   if (token) request.headers.Authorization = `Bearer ${token}`;
   return request;
 });

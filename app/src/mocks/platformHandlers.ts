@@ -1,4 +1,6 @@
 import { http, HttpResponse } from 'msw/http';
+import { defaultComfortState } from '../../../server/src/thermal/types';
+import type { ComfortStatus, ComfortConfig } from '../../../server/src/thermal/types';
 import { summarizeSleep } from '../../../server/src/analytics/summary';
 
 const anchor = Date.parse('2026-10-13T06:00:00Z') / 1000;
@@ -17,7 +19,22 @@ let position = { head: 0, feet: 0 };
 const status = () => ({ state: 'connected', position: { left: position, right: position }, updatedAt: Date.now(),
   stale: false, busy: false, independentControl: false, experimental: true, error: null });
 
+const comfortDemo = (): ComfortStatus => ({ config: defaultComfortState().config, offsetF: 0, pausedUntil: null, feedbackThrough: null,
+  decision: { reason: 'Adaptive comfort is off.', baselineF: 80, proposedF: 80, eligible: false }, history: [] });
+const comfort = { left: comfortDemo(), right: comfortDemo() };
 export const platformHandlers = [
+  http.get('/api/comfort', ({ request }) => {
+    const side = new URL(request.url).searchParams.get('side') === 'right' ? 'right' : 'left';
+    return HttpResponse.json(comfort[side]);
+  }),
+  http.post('/api/comfort', async ({ request }) => {
+    const input = await request.json() as { side: 'left' | 'right'; config: ComfortConfig; reset?: boolean };
+    const status = comfort[input.side]; status.config = input.config;
+    if (input.reset) status.offsetF = 0;
+    status.decision.reason = input.config.mode === 'off' ? 'Adaptive comfort is off.' : 'Demo preview. No temperatures will change.';
+    status.history.unshift({ at: Date.now(), message: `Adaptive comfort set to ${input.config.mode}.`, targetF: null });
+    return HttpResponse.json(status);
+  }),
   http.get('/api/journal', () => HttpResponse.json({ entries: journalEntries, patterns: { associations: [],
     note: 'Self-reported habits are associations, not causes. Each comparison needs at least five recorded nights in both groups.' } })),
   http.post('/api/journal', async ({ request }) => {

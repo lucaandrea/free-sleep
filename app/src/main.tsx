@@ -9,6 +9,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { lazy, StrictMode } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { theme } from './theme';
+import api from './api/api';
 
 const ControlTempPage = lazy(() => import('./pages/ControlTempPage/ControlTempPage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage/SettingsPage'));
@@ -92,14 +93,13 @@ async function enableMocking() {
   if (import.meta.env.VITE_ENV !== 'demo') {
     return;
   }
-  // eslint-disable-next-line no-console
-  console.info('Enabling MSW worker!');
-
+  const { createDemoAdapter } = await import('./mocks/demoAdapter');
+  const { handlers } = await import('./mocks/handlers');
+  const { platformHandlers } = await import('./mocks/platformHandlers');
+  api.defaults.adapter = createDemoAdapter([...platformHandlers, ...handlers], window.location.origin);
   const { worker } = await import('./mocks/browser');
-
-  // `worker.start()` returns a Promise that resolves
-  // once the Service Worker is up and ready to intercept requests.
-  return worker.start();
+  // The worker serves legacy EventSource logs; normal API calls no longer depend on its lifecycle.
+  try { await worker.start(); } catch { console.warn('Demo log streaming is unavailable. API previews remain local.'); }
 }
 
 enableMocking().then(() => {

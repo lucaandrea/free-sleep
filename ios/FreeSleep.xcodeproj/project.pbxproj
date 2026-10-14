@@ -10,6 +10,7 @@
 		01F9BBFC6C94AFF82328D6E2 /* PodClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 185D26C9C0A9601AB05B8424 /* PodClient.swift */; };
 		04E6C99EF6A3FB222E72EF88 /* RoutinesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79660A534946AD8CDD7CC316 /* RoutinesView.swift */; };
 		060BFF38D535538C740864D3 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3D27F9E94EAB257B5041682 /* RootView.swift */; };
+		0D156D110A88029E9DD4CB06 /* ComfortCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 397033E9CA790DBF8A241D5A /* ComfortCard.swift */; };
 		0E87E47DD765563489CC70F3 /* FreeSleepShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59555AB47FBAE7C43765908E /* FreeSleepShortcuts.swift */; };
 		0EAD20A2326B066E9AAB242D /* StopBaseIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B434EC9AD7EB7F2714336FB6 /* StopBaseIntent.swift */; };
 		11573FA8259FC980E0CF1824 /* AppleHomeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63CC344D4D3528E90AF0E98B /* AppleHomeService.swift */; };
@@ -46,6 +47,7 @@
 		BC5EC1C0FBF6DA104AB14221 /* FreeSleepApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42077EF2507B78E9D502DD36 /* FreeSleepApp.swift */; };
 		C27677694B9EF5A0226B9343 /* SleepPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC3532B532CDCD29707F8A29 /* SleepPage.swift */; };
 		C36F0B2B752F5124B76CF4D6 /* BaseCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76B632833DFE5D7F11C7C416 /* BaseCard.swift */; };
+		C38C24C9D504BF616112E917 /* ComfortStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6ECC43B02F1D8D340BAF39CD /* ComfortStatus.swift */; };
 		CC60FA283D3C426B73A76F13 /* FreeSleepTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20D358A1A8D513CCA647C34 /* FreeSleepTests.swift */; };
 		D0B76F7601CF1B1EFDED3185 /* ConnectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6F21131DB91A9BE07747C42 /* ConnectionsView.swift */; };
 		D8994C54053A0B27BD4367B3 /* TokenStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D400DC1BAE6D1428DDA45CC /* TokenStore.swift */; };
@@ -76,6 +78,7 @@
 		338BB87387707E7A57B3DA47 /* TonightView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TonightView.swift; sourceTree = "<group>"; };
 		35EE62D0C8CC36A7524A35FD /* HealthSampleBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthSampleBuilder.swift; sourceTree = "<group>"; };
 		380D9B50ED5BAEED3BD0E95A /* SetTemperatureIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetTemperatureIntent.swift; sourceTree = "<group>"; };
+		397033E9CA790DBF8A241D5A /* ComfortCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComfortCard.swift; sourceTree = "<group>"; };
 		416300BE6F0878E58CCF20A3 /* InsightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsView.swift; sourceTree = "<group>"; };
 		42077EF2507B78E9D502DD36 /* FreeSleepApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeSleepApp.swift; sourceTree = "<group>"; };
 		4393FC79F303779AE14BDF51 /* BasePreset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasePreset.swift; sourceTree = "<group>"; };
@@ -91,6 +94,7 @@
 		63CC344D4D3528E90AF0E98B /* AppleHomeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleHomeService.swift; sourceTree = "<group>"; };
 		63CEE115B2348D3F1B08087B /* SetPowerIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetPowerIntent.swift; sourceTree = "<group>"; };
 		6D400DC1BAE6D1428DDA45CC /* TokenStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenStore.swift; sourceTree = "<group>"; };
+		6ECC43B02F1D8D340BAF39CD /* ComfortStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComfortStatus.swift; sourceTree = "<group>"; };
 		76B632833DFE5D7F11C7C416 /* BaseCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCard.swift; sourceTree = "<group>"; };
 		79660A534946AD8CDD7CC316 /* RoutinesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutinesView.swift; sourceTree = "<group>"; };
 		9686B8DBB2CC3893DEEB30DA /* FreeSleep.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FreeSleep.entitlements; sourceTree = "<group>"; };
@@ -135,6 +139,7 @@
 				BEA0D136E471C9D603A5E51E /* BedSide.swift */,
 				E31D10A3B1E836D462A4C925 /* Coaching.swift */,
 				0843AB6AD38D374CCD4446FE /* CoachProvider.swift */,
+				6ECC43B02F1D8D340BAF39CD /* ComfortStatus.swift */,
 				5F84326021EA05E2A4164BB9 /* DailySchedule.swift */,
 				A36B1337ACFC8F9D41715283 /* DeviceStatus.swift */,
 				E8335933BCCBA6FA9F23624C /* HealthExportRecords.swift */,
@@ -226,6 +231,7 @@
 				76B632833DFE5D7F11C7C416 /* BaseCard.swift */,
 				F3B08B5237483CA0A94740A4 /* BedPreview.swift */,
 				C34950CCFD7C1D84321B33B6 /* CoachView.swift */,
+				397033E9CA790DBF8A241D5A /* ComfortCard.swift */,
 				E6F21131DB91A9BE07747C42 /* ConnectionsView.swift */,
 				416300BE6F0878E58CCF20A3 /* InsightsView.swift */,
 				9D837912B5318EFBA7679C2D /* JournalCard.swift */,
@@ -360,6 +366,8 @@
 				1DAD4803728F980F3B627FE3 /* CoachProvider.swift in Sources */,
 				B9CB539A554A38459A6DEA49 /* CoachView.swift in Sources */,
 				451744E3E6C643669BF803F8 /* Coaching.swift in Sources */,
+				0D156D110A88029E9DD4CB06 /* ComfortCard.swift in Sources */,
+				C38C24C9D504BF616112E917 /* ComfortStatus.swift in Sources */,
 				D0B76F7601CF1B1EFDED3185 /* ConnectionsView.swift in Sources */,
 				3C8955DC44016B52D1D0F499 /* DailySchedule.swift in Sources */,
 				309BEE8A3AB77B7690159DE5 /* DeviceStatus.swift in Sources */,

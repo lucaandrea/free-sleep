@@ -15,8 +15,9 @@ Requested 2026-10-13. The user's Pod 4 Ultra is still on stock software; subscri
 - [x] Prepare authenticated remote-web deployment for Replit.
 - [x] Run TypeScript/lint/tests, browser checks, iOS build and simulator checks.
 - [x] Document installation, validation boundaries and copyable commit title/description.
+- [x] Add opt-in feedback-based adaptive comfort, preview mode, persistent manual pauses, presence heartbeat and matching controls.
 
-These checked items describe source and local simulation. They do not mark the overall user goal complete. Closed-loop thermal Autopilot and proprietary medical/staging features are not implemented.
+These checked items describe source and local simulation. They do not mark the overall user goal complete. [Adaptive comfort](ADAPTIVE_COMFORT.md) learns a bounded routine offset from check-ins; it does not reproduce proprietary sleep-stage-driven Autopilot or medical features.
 
 ## Acceptance still requiring the user's environment
 

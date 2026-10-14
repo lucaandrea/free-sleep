@@ -28,7 +28,7 @@ export default [
   {
     languageOptions: {
       parserOptions: {
-        projectService: true,
+        projectService: { allowDefaultProject: ['tests/*.mjs'] },
         tsconfigRootDir: import.meta.dirname,
       },
     },
@@ -126,5 +126,11 @@ export default [
       semi: ["error", "always"],
       "space-in-parens": ["error", "never"]
     }
+  },
+  {
+    files: ['tests/*.mjs'],
+    languageOptions: {
+      globals: globals.node,
+    },
   },
 ];

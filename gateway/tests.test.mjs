@@ -16,6 +16,9 @@ test('allowlist excludes maintenance, encoded paths and origin escapes', () => {
   }
   assert.equal(allowedRequest('GET', '/api/analytics?side=left&days=30'), true);
   assert.equal(allowedRequest('POST', '/api/base/stop'), true);
+  assert.equal(allowedRequest('GET', '/api/comfort?side=left'), true);
+  assert.equal(allowedRequest('POST', '/api/comfort'), true);
+  assert.equal(allowedRequest('DELETE', '/api/comfort'), false);
   assert.equal(authorized(accessToken, accessToken), false);
   assert.equal(authorized(`Bearer ${accessToken}x`, accessToken), false);
   assert.throws(() => createGateway({ accessToken, tunnelToken: accessToken }));

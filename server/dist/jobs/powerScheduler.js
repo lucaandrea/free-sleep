@@ -1,5 +1,5 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="6b43c70f-e2b3-5d28-8caa-657592d8aaa4")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="ab57cf1d-25ed-5115-a1ef-26a7838aa53f")}catch(e){}}();
 import schedule from 'node-schedule';
 import { updateDeviceStatus } from '../routes/deviceStatus/updateDeviceStatus.js';
 import { getDayIndexForSchedule, getDayOfWeekIndex, logJob } from './utils.js';
@@ -33,7 +33,7 @@ export const schedulePowerOn = (settingsData, side, day, power) => {
                     isOn: true,
                     targetTemperatureF: power.onTemperature
                 }
-            });
+            }, 'schedule');
             serverStatus.status.powerSchedule.status = 'healthy';
             serverStatus.status.powerSchedule.message = '';
         }
@@ -101,7 +101,7 @@ export const schedulePowerOffAndSleepAnalysis = (settingsData, side, day, power)
                 [side]: {
                     isOn: false,
                 }
-            });
+            }, 'schedule');
             serverStatus.status.powerSchedule.status = 'healthy';
             serverStatus.status.powerSchedule.message = '';
         }
@@ -114,4 +114,4 @@ export const schedulePowerOffAndSleepAnalysis = (settingsData, side, day, power)
     });
 };
 //# sourceMappingURL=powerScheduler.js.map
-//# debugId=6b43c70f-e2b3-5d28-8caa-657592d8aaa4
+//# debugId=ab57cf1d-25ed-5115-a1ef-26a7838aa53f

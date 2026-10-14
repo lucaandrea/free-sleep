@@ -1,5 +1,5 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="86c3039b-83dd-5452-9aa8-7ca8b80b69e7")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="45285660-d9ab-511d-a804-12f5f932f18e")}catch(e){}}();
 import * as Sentry from '@sentry/node';
 import express from 'express';
 import path from 'path';
@@ -24,11 +24,13 @@ import journal from '../analytics/journalRoutes.js';
 import ai from '../ai/index.js';
 import integrations from '../integrations/index.js';
 import healthExport from '../integrations/healthExport.js';
+import comfort from '../thermal/runtime.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 export default function (app) {
     logger.debug('Registering routes...');
     app.use('/api/base', base);
+    app.use('/api/comfort', comfort);
     app.use('/api/analytics', analytics);
     app.use('/api/journal', journal);
     app.use('/api/ai', ai);
@@ -79,4 +81,4 @@ export default function (app) {
     logger.debug('Registered routes!');
 }
 //# sourceMappingURL=routes.js.map
-//# debugId=86c3039b-83dd-5452-9aa8-7ca8b80b69e7
+//# debugId=45285660-d9ab-511d-a804-12f5f932f18e
