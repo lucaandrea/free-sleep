@@ -135,7 +135,7 @@ def followup_gallery(identifier, revision, title, description, captures, evidenc
 
 
 def completed_followups():
-    """Show completed alarm, routine and episode work alongside the original design."""
+    """Show completed app milestones alongside the original design."""
     alarm_captures = [
         ("docs/screenshots/alarm-web-changed.jpg", "alarm-web", "Web · one-time change", "The upcoming alarm shows its date, Pod timezone and Changed once state. Change time, Skip once and Use routine appear together."),
         ("docs/review/assets/native-alarm-changed.png", "alarm-native", "iPhone · matching actions", "SwiftUI exposes the same actions and state. Native text layout and system chrome remain platform-specific."),
@@ -151,17 +151,29 @@ def completed_followups():
         ("docs/review/assets/native-episodes-detail.jpg", "episode-native", "iPhone · the same source data", "SwiftUI renders the same presence break, 57.3 bpm sample average and chart gaps. The screenshot is scrolled farther down than the web capture."),
         ("docs/screenshots/episodes-web-vitals.jpg", "episode-vitals", "Web · vitals destination restored", "The previously empty vitals page now opens the shared browser, including shorter episodes. Both clients can switch metric and page through original readings.")
     ]
+    common_captures = [
+        ("docs/screenshots/journal-web-phone.jpg", "journal-web", "Web · morning check-in", "Outlined fields, habit choices, saved dates and explicit save/reset actions now follow the common form language."),
+        ("docs/review/assets/native-journal.jpg", "journal-native", "iPhone · matching journal", "The native form shares the same hierarchy. Drafts remain isolated by Pod, side and wake date."),
+        ("docs/review/assets/native-coach.jpg", "coach-native", "iPhone · evidence and sharing", "Coach shares the range, provider, question and per-request sharing flow, with a labelled sample result.")
+    ]
+    device_captures = [
+        ("docs/screenshots/preferences-web-saved.jpg", "preferences-web", "Web · saved device preferences", "Timezone, units, side names, Away mode and daily care are grouped together. The capture confirms a simulated Celsius save."),
+        ("docs/review/assets/native-preferences-saved.jpg", "preferences-native", "iPhone · the same save flow", "The native app displays the saved setting with the same fields and copy. System menu and navigation chrome remain native."),
+        ("docs/review/assets/native-health.jpg", "health-native", "iPhone · service health", "The shared fixture includes a retrying stream. Status, messages and refresh are visible; these reported states are not independent hardware tests.")
+    ]
     return "".join([
         followup_gallery("alarm-followup", "f5e2b51", "One alarm change. The same flow on both platforms.", "These captures show the implemented change, skip and restore flow in the web demo and isolated iPhone simulator.", alarm_captures, "Recorded validation: 41 server tests, 18 native tests and five gateway tests passed for this milestone, plus browser/simulator interactions. No live vibration or signed-device Siri run was performed. Changing an alarm does not move the routine’s power-off time."),
         followup_gallery("routines-followup", "6c37306", "A routine you can read, edit and reuse.", "The common editor is now implemented on web and iPhone. These captures replace the earlier claim that Routines was only a visual refresh.", routine_captures, "Recorded validation: 45 server tests, 22 native tests and five gateway tests passed for this milestone. Weekday saves, invalid duplicate adjustments and reload were exercised in the browser and simulator. Actual overnight execution and cross-day overlap detection remain open."),
-        followup_gallery("episodes-followup", "b7a56cb", "From a nightly summary to the original readings.", "Recorded nights and shorter episodes now have the same detail layout on both platforms. Gaps remain gaps; missing readings do not turn into zeroes, and excluded values remain inspectable in the original-reading table.", episode_captures, "Recorded validation: 49 server tests, 25 native tests and five gateway tests passed for this milestone. Both clients selected episodes, switched metrics and paged readings. All captures use shared synthetic data; these are presence and experimental vital estimates, not measured sleep stages or clinical results.")
+        followup_gallery("episodes-followup", "b7a56cb", "From a nightly summary to the original readings.", "Recorded nights and shorter episodes now have the same detail layout on both platforms. Gaps remain gaps; missing readings do not turn into zeroes, and excluded values remain inspectable in the original-reading table.", episode_captures, "Recorded validation: 49 server tests, 25 native tests and five gateway tests passed for this milestone. Both clients selected episodes, switched metrics and paged readings. All captures use shared synthetic data; these are presence and experimental vital estimates, not measured sleep stages or clinical results."),
+        followup_gallery("common-forms-followup", "4a16125", "One form language, from check-in to coaching.", "Journal and Coach now align across web and native iPhone. Later milestones also align connection setup (8fd99e0), add guarded record editing/deletion (1b4dec7) and verify Shortcuts request behavior (b941925).", common_captures, "Journal/Coach milestone: 51 server and 30 native tests passed with simulated saves and sample coaching. Connection and record-edit captures remain in docs/screenshots. The model response shown is deterministic sample data, not a live provider-quality result."),
+        followup_gallery("device-followup", "189d54e", "Everyday settings, in the same place.", "Both clients now expose the same everyday preferences and read-only service health. Preference saves preserve unrelated fields and reject conflicting edits; daily-care scheduling correctly wraps the preceding reboot across midnight.", device_captures, "Latest validation: 96 server, 50 native, six web and six gateway tests passed. Browser and simulator saved Celsius and rendered sample health. Advanced maintenance and logs remain web-only; actual priming/reboot, physical device behavior and signed integrations remain unverified.")
     ])
 
 
 def roadmap_overview():
     """Offer a compact index without changing proposal IDs used in dependencies."""
     rows = ''.join(f'<tr><td>{item["number"]:02d}</td><td>{escape(item["title"])}</td><td>{escape(item["phase"])}</td><td>{escape(item["effort"])}</td></tr>' for item in DATA['updates'])
-    return '<div class="table-scroll roadmap-overview" tabindex="0" role="region" aria-label="All twelve proposed updates at a glance"><table><caption>The twelve proposals at a glance</caption><thead><tr><th scope="col">ID</th><th scope="col">Proposed update</th><th scope="col">Phase</th><th scope="col">Effort</th></tr></thead><tbody>' + rows + '</tbody></table></div>'
+    return '<div class="table-scroll roadmap-overview" tabindex="0" role="region" aria-label="All twelve proposed updates at a glance"><table class="roadmap-table"><caption>The twelve proposals at a glance</caption><thead><tr><th scope="col">ID</th><th scope="col">Proposed update</th><th scope="col">Phase</th><th scope="col">Effort</th></tr></thead><tbody>' + rows + '</tbody></table></div>'
 
 
 def build_html():
@@ -226,7 +238,7 @@ def build_html():
 <p class="no-script">All comparison panels and proposal details remain available without JavaScript. Enable JavaScript for tabs, image enlargement and roadmap filters.</p>
 </noscript>
 <section class="hero">
-<p class="revision-note">Design foundation: e05cd99 · Completed work reviewed through b7a56cb · Research refreshed 14 October 2026</p>
+<p class="revision-note">Design foundation: e05cd99 · Completed work reviewed through 189d54e · Research refreshed 14 October 2026</p>
 <span class="eyebrow">Then, now, next · 14 October 2026</span>
 <div class="hero-grid">
 <div>
@@ -363,13 +375,13 @@ def build_html():
 <p>The shared design system is in place. The remaining product differences are concrete:</p>
 <ul>
 <li>Native alarm picker/sheet chrome and notification presentation; the change, skip and restore actions now match.</li>
-<li>Native editing/deletion of recorded episodes; browsing and original-reading inspection now match.</li>
-<li>Matching journal and Coach form controls.</li>
+<li>Native date/time picker and sheet chrome for recorded-episode editing; the guarded edit/delete actions now match.</li>
+<li>Native menu controls and accessibility text layout in the aligned journal and Coach forms.</li>
 <li>Native Routines time/menu pickers, confirmation sheets and accessibility reflow; the editor and copy-days actions now match.</li>
-<li>Consistent connection and advanced-settings layouts.</li>
+<li>Advanced maintenance, LED controls, service management and logs remain in the local web app. Connection setup, everyday device preferences and service-health cards now align.</li>
 <li>Platform-specific Health and Home permission flows.</li>
 </ul>
-<p>The completed Routines and episode milestones narrow the gap. Journal, Coach and common Settings layouts remain the main app-screen work. OS chrome and accessibility reflow should remain native even when the common app screens match.</p>
+<p>Routines, episode browsing and editing, journal, Coach, connections and everyday device settings now share their content hierarchy and common actions. OS chrome and accessibility reflow remain native. These are locally validated flows; physical hardware and signed integrations still need qualification.</p>
 </div>
 </section>
 <section class="section" id="added">
@@ -489,13 +501,13 @@ def build_html():
 <p>
 <strong>Before:</strong> repository archives <code>docs/on.PNG</code>, <code>metrics.PNG</code>, <code>schedules.PNG</code> and <code>settings.PNG</code>. Their original capture dates and exact build revisions are not recorded.</p>
 <p>
-<strong>Now:</strong> the original web design captures were taken on 14 October 2026 from <code>e05cd99</code>. The Routines comparison now uses <code>6c37306</code>. The iOS section adds alarm (<code>f5e2b51</code>), Routines (<code>6c37306</code>) and episode (<code>b7a56cb</code>) evidence. Each gallery identifies its milestone.</p>
+<strong>Now:</strong> the original web design captures were taken on 14 October 2026 from <code>e05cd99</code>. The Routines comparison now uses <code>6c37306</code>. The iOS section adds alarm (<code>f5e2b51</code>), Routines (<code>6c37306</code>) and episode (<code>b7a56cb</code>) evidence. Each gallery identifies its milestone. Later galleries cover the aligned everyday forms and device preferences.</p>
 <p>All new app images show simulated data. Different values, selected dates and banners are not evidence of a health improvement. Native captures are crops of simulator-mirror images; no UI has been redrawn. Current status was reconciled with <code>docs/DESIGN_PARITY.md</code>, <code>docs/VALIDATION.md</code> and the implemented contracts. The original screenshot files remain in the repository.</p>
 </article>
 <article>
 <h3>What should happen before release</h3>
 <p>
-<strong>Complete common screens:</strong> align journal, Coach and common Settings forms; add native record editing/deletion. Routines and episode browsing are locally validated. Compare remaining screens with the same data and state.</p>
+<strong>Finish platform qualification:</strong> compare the common screens with equal data, text size and appearance on a signed iPhone and supported iOS versions. Everyday forms and record editing now align; advanced maintenance and log pages remain web-only.</p>
 <p>
 <strong>Qualify the owner’s setup:</strong> verify stock-Pod access and recovery, base telemetry and Stop, actual temperature control and overnight behavior. No installation or bed movement was performed for this document.</p>
 <p>
@@ -536,10 +548,10 @@ def build_html():
 def build_markdown():
     """Reuse the proposal data so the text roadmap stays aligned with the review."""
     lines = [
-        "# Free Sleep — twelve next improvements", "", "Research snapshot: 14 October 2026. Design foundation: `e05cd99`; completed implementation reviewed through `b7a56cb`.", "",
+        "# Free Sleep — twelve next improvements", "", "Research snapshot: 14 October 2026. Design foundation: `e05cd99`; completed implementation reviewed through `189d54e`.", "",
         "These are proposals, not shipped features. Effort is relative engineering scope, not a deadline. Start with data-quality explanations (#9), model evaluation and budgeting (#3), then the evidence-linked morning brief (#1). Expand Health context (#2) after signed-device validation.", "",
         "## Current foundation", "",
-        "The repository already contains the shared web/SwiftUI design system, base preview/control adapter, presence analytics, journal, optional AI adapters, bounded feedback-based comfort, one-time alarm change/skip/restore, matching Routines editors, episode/vitals browsing, native Health workflows, Home bridge and App Intents. These have local/source/simulator evidence. Physical Pod/base operation, signed integrations, provider quality and Replit deployment remain unverified. Journal, Coach and common Settings layouts still need alignment.", "",
+        "The repository already contains the shared web/SwiftUI design system, base preview/control adapter, presence analytics, journal, optional AI adapters, bounded feedback-based comfort, one-time alarm change/skip/restore, matching Routines editors, episode/vitals browsing, native Health workflows, Home bridge and App Intents. These have local/source/simulator evidence. Physical Pod/base operation, signed integrations, provider quality and Replit deployment remain unverified. Common journal, Coach, connection, device-preference and health layouts now align, and native record editing/deletion is implemented. Advanced maintenance and logs remain web-only.", "",
         "## Model recommendation", "", "| Role | Candidate | Why |", "| --- | --- | --- |"
     ]
     for role, model, reason, refs in MODEL_ROWS:
@@ -554,7 +566,7 @@ def build_markdown():
         for label, key in [("New work", "delta"), ("AI approach", "approach"), ("Dependencies", "dependencies"), ("Acceptance", "acceptance")]:
             lines.extend([f'**{label}:** {update[key]}', ""])
         lines.extend(["Research: " + ", ".join(f'[{SOURCES[identifier]["title"]}]({SOURCES[identifier]["url"]})' for identifier in update["sources"]), ""])
-    lines.extend(["## What is new in the research", "", "Apple’s WWDC26 Foundation Models additions include on-device image understanding and local search, which could support the private coach and photo journal. Its Evaluations framework integrates with Swift Testing to measure regressions. [Foundation Models additions](https://developer.apple.com/videos/play/wwdc2026/241/), [Evaluations](https://developer.apple.com/videos/play/wwdc2026/298/). Gemini’s current catalog separates reasoning, responsive text and live voice models. OpenAI Sol and Anthropic Sonnet are additional candidates for the bounded cloud coach; no live comparison has been performed here. [Gemini catalog](https://ai.google.dev/gemini-api/docs/models), [Sol](https://developers.openai.com/api/docs/models/gpt-6.1-sol), [Claude catalog](https://platform.claude.com/docs/en/models/overview).", "", "SensorFM is a wearable-representation research direction, not a drop-in validated sleep-staging feature. [Google Research](https://research.google/blog/sensorfm-towards-a-general-intelligence-and-interface-for-wearable-health-data/). TimesFM 3 is newer, but its downloaded weights are restricted to non-commercial, non-production use; weights through 2.5 remain Apache-2.0. Evaluate the latter or a simple thermal baseline for a local production path. Authorized cloud use of 3 has different terms. [TimesFM license notice](https://github.com/google-research/timesfm). Apple Private Cloud Compute access also has eligibility conditions to check before relying on it. [Apple framework overview](https://developer.apple.com/foundation-models-framework/).", "", "Cost illustration: Sol’s listed standard $2 input / $10 output per million tokens makes 4,000 input + 800 total billed output tokens $0.016 per call, or $0.48 for 30. Extra reasoning beyond this allowance, retries, tools, voice, hosting and hardware are excluded. This is illustrative arithmetic, not a measured bill or equivalence to Eight Sleep’s subscription. [Listed Sol rates](https://developers.openai.com/api/docs/models/gpt-6.1-sol).", "", "## Release prerequisites", "", "- Align journal, Coach and common Settings forms and add native record editing/deletion. Routines and episode browsing are locally validated; compare equal data/state for the remaining screens.", "- Verify stock-Pod access/recovery, base telemetry/calibration/Stop, temperature control and overnight behavior.", "- Test a signed iPhone’s Health authorization/sync and Shortcuts; pair the real Home bridge.", "- Deploy and verify the authenticated Replit gateway, reconnect and offline behavior.", "- Establish evaluation fixtures and account/model access before recurring cloud features.", "", "## Primary sources", ""])
+    lines.extend(["## What is new in the research", "", "Apple’s WWDC26 Foundation Models additions include on-device image understanding and local search, which could support the private coach and photo journal. Its Evaluations framework integrates with Swift Testing to measure regressions. [Foundation Models additions](https://developer.apple.com/videos/play/wwdc2026/241/), [Evaluations](https://developer.apple.com/videos/play/wwdc2026/298/). Gemini’s current catalog separates reasoning, responsive text and live voice models. OpenAI Sol and Anthropic Sonnet are additional candidates for the bounded cloud coach; no live comparison has been performed here. [Gemini catalog](https://ai.google.dev/gemini-api/docs/models), [Sol](https://developers.openai.com/api/docs/models/gpt-6.1-sol), [Claude catalog](https://platform.claude.com/docs/en/models/overview).", "", "SensorFM is a wearable-representation research direction, not a drop-in validated sleep-staging feature. [Google Research](https://research.google/blog/sensorfm-towards-a-general-intelligence-and-interface-for-wearable-health-data/). TimesFM 3 is newer, but its downloaded weights are restricted to non-commercial, non-production use; weights through 2.5 remain Apache-2.0. Evaluate the latter or a simple thermal baseline for a local production path. Authorized cloud use of 3 has different terms. [TimesFM license notice](https://github.com/google-research/timesfm). Apple Private Cloud Compute access also has eligibility conditions to check before relying on it. [Apple framework overview](https://developer.apple.com/foundation-models-framework/).", "", "Cost illustration: Sol’s listed standard $2 input / $10 output per million tokens makes 4,000 input + 800 total billed output tokens $0.016 per call, or $0.48 for 30. Extra reasoning beyond this allowance, retries, tools, voice, hosting and hardware are excluded. This is illustrative arithmetic, not a measured bill or equivalence to Eight Sleep’s subscription. [Listed Sol rates](https://developers.openai.com/api/docs/models/gpt-6.1-sol).", "", "## Release prerequisites", "", "- Qualify common screen behavior on signed iPhones and supported iOS versions. Journal, Coach, settings and guarded record editing now align locally; advanced maintenance and logs remain web-only.", "- Verify stock-Pod access/recovery, base telemetry/calibration/Stop, temperature control and overnight behavior.", "- Test a signed iPhone’s Health authorization/sync and Shortcuts; pair the real Home bridge.", "- Deploy and verify the authenticated Replit gateway, reconnect and offline behavior.", "- Establish evaluation fixtures and account/model access before recurring cloud features.", "", "## Primary sources", ""])
     for source in DATA["sources"]:
         lines.extend([f'- [{source["title"]}]({source["url"]}) — {source["note"]}'])
     lines.extend(["", "The standalone visual review is [free-sleep-before-after.html](free-sleep-before-after.html). Regenerate both documents with `python3 docs/review/build_review.py` from the repository root.", ""])

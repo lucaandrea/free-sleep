@@ -1,12 +1,12 @@
 # Free Sleep — twelve next improvements
 
-Research snapshot: 14 October 2026. Design foundation: `e05cd99`; completed implementation reviewed through `b7a56cb`.
+Research snapshot: 14 October 2026. Design foundation: `e05cd99`; completed implementation reviewed through `189d54e`.
 
 These are proposals, not shipped features. Effort is relative engineering scope, not a deadline. Start with data-quality explanations (#9), model evaluation and budgeting (#3), then the evidence-linked morning brief (#1). Expand Health context (#2) after signed-device validation.
 
 ## Current foundation
 
-The repository already contains the shared web/SwiftUI design system, base preview/control adapter, presence analytics, journal, optional AI adapters, bounded feedback-based comfort, one-time alarm change/skip/restore, matching Routines editors, episode/vitals browsing, native Health workflows, Home bridge and App Intents. These have local/source/simulator evidence. Physical Pod/base operation, signed integrations, provider quality and Replit deployment remain unverified. Journal, Coach and common Settings layouts still need alignment.
+The repository already contains the shared web/SwiftUI design system, base preview/control adapter, presence analytics, journal, optional AI adapters, bounded feedback-based comfort, one-time alarm change/skip/restore, matching Routines editors, episode/vitals browsing, native Health workflows, Home bridge and App Intents. These have local/source/simulator evidence. Physical Pod/base operation, signed integrations, provider quality and Replit deployment remain unverified. Common journal, Coach, connection, device-preference and health layouts now align, and native record editing/deletion is implemented. Advanced maintenance and logs remain web-only.
 
 ## Model recommendation
 
@@ -266,7 +266,7 @@ Cost illustration: Sol’s listed standard $2 input / $10 output per million tok
 
 ## Release prerequisites
 
-- Align journal, Coach and common Settings forms and add native record editing/deletion. Routines and episode browsing are locally validated; compare equal data/state for the remaining screens.
+- Qualify common screen behavior on signed iPhones and supported iOS versions. Journal, Coach, settings and guarded record editing now align locally; advanced maintenance and logs remain web-only.
 - Verify stock-Pod access/recovery, base telemetry/calibration/Stop, temperature control and overnight behavior.
 - Test a signed iPhone’s Health authorization/sync and Shortcuts; pair the real Home bridge.
 - Deploy and verify the authenticated Replit gateway, reconnect and offline behavior.
