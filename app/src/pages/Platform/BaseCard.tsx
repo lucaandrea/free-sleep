@@ -1,3 +1,4 @@
+import { design } from '../../design/tokens';
 import { useState } from 'react';
 import { Alert, Box, Button, Chip, Slider, Stack, Typography } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
@@ -28,7 +29,11 @@ export default function BaseCard() {
   const feetRise = Math.sin((feet * Math.PI) / 180) * 70;
   return (
     <Surface title="Find your position" eyebrow="POD ULTRA BASE" action={ <Chip label="Experimental" /> }>
-      <Box sx={ { bgcolor: 'background.default', borderRadius: '12px', px: 2, py: 1, mb: 2 } }>
+      <Box
+        sx={ {
+          '--bed-line': (theme) => design.colors.bedLine[theme.palette.mode],
+          bgcolor: 'background.default', borderRadius: '12px', px: 2, py: 1, mb: 2,
+        } }>
         <svg
           viewBox="0 0 320 140"
           width="100%"
@@ -56,7 +61,7 @@ export default function BaseCard() {
           <path
             d={ `M40 ${91 - headRise} L130 91 H185 L245 ${91 - feetRise} L284 ${91 - feetRise * 0.5}` }
             fill="none"
-            stroke="#ed623a"
+            stroke="var(--bed-line)"
             strokeWidth="4"
             strokeLinecap="round"
             strokeLinejoin="round"

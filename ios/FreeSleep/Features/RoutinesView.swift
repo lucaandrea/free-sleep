@@ -19,7 +19,7 @@ struct RoutinesView: View {
                 timeField("Turn on", $schedule.power.on)
                 timeField("Turn off", $schedule.power.off)
                 Stepper("Starting temperature: \(schedule.power.onTemperature)°F", value: $schedule.power.onTemperature, in: 55...110)
-                Text("Times use your Pod timezone, including overnight routines.").font(.caption).foregroundStyle(.secondary)
+                Text("Times use your Pod timezone, including overnight routines.").sleepText(.caption).foregroundStyle(SleepTheme.secondary)
             }.disabled(!ready || busy)
             SleepCard(title: "Ease into the morning") {
                 Toggle("Vibration alarm", isOn: $schedule.alarm.enabled)
@@ -43,11 +43,11 @@ struct RoutinesView: View {
                 Button("Add adjustment") {
                     if Self.validTime(adjustmentTime) { schedule.temperatures[adjustmentTime] = adjustmentTemperature }
                     else { message = "Use a 24-hour time such as 01:30." }
-                }.buttonStyle(.bordered)
+                }.buttonStyle(SleepButtonStyle())
             }.disabled(!ready || busy)
-            Button(busy ? "Saving…" : "Save routine") { Task { await save() } }.buttonStyle(.borderedProminent)
+            Button(busy ? "Saving…" : "Save routine") { Task { await save() } }.buttonStyle(SleepButtonStyle(kind: .primary))
                 .controlSize(.large).disabled(!ready || busy)
-            if let message { Text(message).font(.callout) }
+            if let message { Text(message).sleepText(.body) }
         }.task(id: "\(day)-\(model.side.rawValue)") { await load() }
     }
     private func timeField(_ label: String, _ value: Binding<String>) -> some View {

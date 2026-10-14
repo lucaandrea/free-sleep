@@ -1,3 +1,4 @@
+import { design } from '../../design/tokens';
 import { useState } from 'react';
 import { Alert, Box, Button, Slider, Typography, Chip } from '@mui/material';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -36,9 +37,9 @@ export default function TemperatureCard({ side }: { side: 'left' | 'right' }) {
       }
     >
       <Box sx={ { py: 2, textAlign: 'center' } }>
-        <Typography sx={ { fontSize: 76, lineHeight: 1.1, letterSpacing: '-0.07em', fontWeight: 500 } }>
+        <Typography sx={ { fontSize: design.type.temperature, lineHeight: 1.1, letterSpacing: '-0.07em', fontWeight: 500 } }>
           { unavailable ? '—' : display(target) }
-          <Box component="span" sx={ { fontSize: 30, color: 'text.secondary' } }>
+          <Box component="span" sx={ { fontSize: design.type.temperatureUnit, color: 'text.secondary' } }>
             °{ celsius ? 'C' : 'F' }
           </Box>
         </Typography>

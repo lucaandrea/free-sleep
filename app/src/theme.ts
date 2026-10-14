@@ -1,19 +1,20 @@
+import { design } from './design/tokens';
 import { PaletteMode, alpha, createTheme, type Theme, type ThemeOptions } from '@mui/material/styles';
 
 const typography: ThemeOptions['typography'] = {
   fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
   fontSize: 14,
   h1: { fontSize: '2.25rem', fontWeight: 600, letterSpacing: '-0.045em' },
-  h2: { fontSize: '1.875rem', fontWeight: 600, letterSpacing: '-0.04em' },
+  h2: { fontSize: design.type.widePageTitle, fontWeight: 600, letterSpacing: '-0.04em' },
   h3: { fontSize: '1.5rem', fontWeight: 600, letterSpacing: '-0.035em' },
-  h4: { fontSize: '1.25rem', fontWeight: 600, letterSpacing: '-0.025em' },
+  h4: { fontSize: design.type.cardTitle, fontWeight: 600, letterSpacing: '-0.025em' },
   h5: { fontSize: '1.125rem', fontWeight: 600, letterSpacing: '-0.02em' },
   h6: { fontSize: '0.9375rem', fontWeight: 600, letterSpacing: '-0.015em' },
-  body1: { fontSize: '0.875rem', lineHeight: 1.65 },
-  body2: { fontSize: '0.8125rem', lineHeight: 1.6 },
-  button: { fontSize: '0.8125rem', fontWeight: 500, textTransform: 'none' },
-  caption: { fontSize: '0.75rem', lineHeight: 1.5 },
-  overline: { fontSize: '0.625rem', fontWeight: 600, letterSpacing: '0.12em', lineHeight: 2 },
+  body1: { fontSize: design.type.body, lineHeight: 1.65 },
+  body2: { fontSize: design.type.small, lineHeight: 1.6 },
+  button: { fontSize: design.type.button, fontWeight: 500, textTransform: 'none' },
+  caption: { fontSize: design.type.caption, lineHeight: 1.5 },
+  overline: { fontSize: design.type.eyebrow, fontWeight: 600, letterSpacing: '0.12em', lineHeight: 2 },
 };
 
 const getChipStyles = (theme: Theme, paletteKey: 'success' | 'info' | 'warning' | 'secondary') => ({
@@ -39,7 +40,8 @@ const buildComponents = (): ThemeOptions['components'] => ({
   MuiButton: {
     defaultProps: { disableElevation: true },
     styleOverrides: {
-      root: { borderRadius: 8, padding: '10px 16px', minHeight: 44, transition: 'all 150ms ease' },
+      root: { borderRadius: design.layout.controlRadius, padding: '10px 16px',
+        minHeight: design.layout.controlHeight, transition: 'all 150ms ease' },
       outlined: ({ theme }) => ({
         borderColor: theme.palette.divider,
         color: theme.palette.text.primary,
@@ -47,15 +49,15 @@ const buildComponents = (): ThemeOptions['components'] => ({
       }),
       contained: ({ theme }) => ({
         '&.MuiButton-colorPrimary': {
-          backgroundColor: theme.palette.mode === 'dark' ? '#f6f1eb' : '#c6411c',
-          color: theme.palette.mode === 'dark' ? '#202020' : '#ffffff',
+          backgroundColor: design.colors.primaryButton[theme.palette.mode],
+          color: design.colors.primaryButtonText[theme.palette.mode],
           '&:hover': { backgroundColor: theme.palette.mode === 'dark' ? '#ffffff' : '#a73315' },
           '&.Mui-disabled': { backgroundColor: theme.palette.action.disabledBackground, color: theme.palette.action.disabled },
         },
       }),
     },
   },
-  MuiIconButton: { styleOverrides: { root: { borderRadius: 8, minWidth: 44, minHeight: 44 } } },
+  MuiIconButton: { styleOverrides: { root: { borderRadius: 8, minWidth: 44, minHeight: design.layout.controlHeight } } },
   MuiPaper: {
     styleOverrides: {
       root: ({ theme }) => ({ backgroundImage: 'none', border: `1px solid ${theme.palette.divider}`, boxShadow: 'none' }),
@@ -71,7 +73,7 @@ const buildComponents = (): ThemeOptions['components'] => ({
   MuiToggleButton: {
     styleOverrides: {
       root: ({ theme }) => ({
-        textTransform: 'none', color: theme.palette.text.secondary, padding: '9px 16px', minHeight: 44, lineHeight: 1.5,
+        textTransform: 'none', color: theme.palette.text.secondary, padding: '9px 16px', minHeight: design.layout.controlHeight, lineHeight: 1.5,
         '&.Mui-selected': {
           backgroundColor: alpha(theme.palette.primary.main, 0.12), color: theme.palette.text.primary,
           '&:hover': { backgroundColor: alpha(theme.palette.primary.main, 0.18) },
@@ -121,7 +123,7 @@ const buildComponents = (): ThemeOptions['components'] => ({
   },
   MuiChip: {
     styleOverrides: {
-      root: { height: 26, borderRadius: 6, fontSize: 11, fontWeight: 500 },
+      root: { height: design.layout.badgeHeight, borderRadius: design.layout.badgeRadius, fontSize: design.type.badge, fontWeight: 500 },
       colorSuccess: ({ theme }) => getChipStyles(theme, 'success'),
       colorInfo: ({ theme }) => getChipStyles(theme, 'info'),
       colorWarning: ({ theme }) => getChipStyles(theme, 'warning'),
@@ -133,17 +135,18 @@ const buildComponents = (): ThemeOptions['components'] => ({
 
 export const buildTheme = (mode: PaletteMode = 'light') => createTheme({
   typography,
+  breakpoints: { values: { xs: 0, sm: 600, md: design.layout.desktopBreakpoint, lg: 1200, xl: 1536 } },
   palette: {
     mode,
-    primary: { main: mode === 'dark' ? '#ff926e' : '#c6411c', contrastText: '#111111' },
+    primary: { main: design.colors.accent[mode], contrastText: '#111111' },
     secondary: { main: '#aaaaaa' },
-    success: { main: mode === 'dark' ? '#77cba5' : '#27835e' },
-    info: { main: mode === 'dark' ? '#8baef4' : '#446dc2' },
-    warning: { main: mode === 'dark' ? '#d8b477' : '#997021' },
-    error: { main: '#dc7b85' },
-    divider: mode === 'dark' ? '#3c3834' : '#e8e2da',
-    background: { default: mode === 'dark' ? '#191817' : '#faf6f1', paper: mode === 'dark' ? '#252321' : '#ffffff' },
-    text: { primary: mode === 'dark' ? '#f6f1eb' : '#181818', secondary: mode === 'dark' ? '#b3aaa2' : '#736a62' },
+    success: { main: design.colors.success[mode] },
+    info: { main: design.colors.info[mode] },
+    warning: { main: design.colors.warning[mode] },
+    error: { main: design.colors.error[mode] },
+    divider: design.colors.border[mode],
+    background: { default: design.colors.canvas[mode], paper: design.colors.surface[mode] },
+    text: { primary: design.colors.text[mode], secondary: design.colors.secondary[mode] },
     action: { hover: mode === 'dark' ? '#ffffff06' : '#00000005', selected: mode === 'dark' ? '#ffffff0d' : '#00000008' },
   },
   shape: { borderRadius: 16 },

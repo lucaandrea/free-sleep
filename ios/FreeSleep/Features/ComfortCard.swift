@@ -13,9 +13,9 @@ struct ComfortCard: View {
     var body: some View {
         SleepCard(title: "Comfort that learns", eyebrow: "ADAPTIVE COMFORT") {
             HStack {
-                Text("Small temperature adjustments guided by your morning check-ins.").foregroundStyle(.secondary)
+                Text("Small temperature adjustments guided by your morning check-ins.").foregroundStyle(SleepTheme.secondary)
                 Spacer()
-                Text(status?.config.mode.capitalized ?? "Off").font(.caption).padding(.horizontal, 12).padding(.vertical, 6)
+                Text(status?.config.mode.capitalized ?? "Off").sleepText(.caption).padding(.horizontal, 12).padding(.vertical, 6)
                     .background(.primary.opacity(0.06), in: Capsule())
             }
             if let status {
@@ -24,10 +24,10 @@ struct ComfortCard: View {
                     metric("Learned adjustment", "\(offset > 0 ? "+" : "")\(offset.formatted(.number.precision(.fractionLength(0...1))))°\(celsius ? "C" : "F")")
                     metric("Proposed target", status.decision.proposedF.map { "\(model.temperatureLabel($0))°\(celsius ? "C" : "F")" } ?? "—")
                 }
-                Text(status.decision.reason).font(.callout).foregroundStyle(.secondary)
+                Text(status.decision.reason).sleepText(.body).foregroundStyle(SleepTheme.secondary)
                 if let until = status.pausedUntil, until > Date().timeIntervalSince1970 * 1000 {
                     Text("Paused until \(Date(timeIntervalSince1970: until / 1000).formatted(date: .omitted, time: .shortened)).")
-                        .font(.caption).foregroundStyle(.secondary)
+                        .sleepText(.caption).foregroundStyle(SleepTheme.secondary)
                 }
                 Picker("Comfort mode", selection: Binding(get: { config.mode }, set: { value in edit { $0.mode = value } })) {
                     Text("Off").tag("off")
@@ -37,23 +37,23 @@ struct ComfortCard: View {
                 Stepper("Minimum: \(config.minimumF)°F", value: Binding(get: { config.minimumF }, set: { value in edit { $0.minimumF = value } }), in: 55...110).disabled(busy)
                 Stepper("Maximum: \(config.maximumF)°F", value: Binding(get: { config.maximumF }, set: { value in edit { $0.maximumF = value } }), in: 55...110).disabled(busy)
                 Text("Learns at most 1°F from three new check-ins, up to ±3°F from your routine. Needs fresh presence. Manual controls pause it for six hours; your routine continues. Preview never changes the Pod.")
-                    .font(.caption).foregroundStyle(.secondary)
+                    .sleepText(.caption).foregroundStyle(SleepTheme.secondary)
                 ViewThatFits(in: .horizontal) {
                     HStack { actions }
                     VStack(alignment: .leading) { actions }
                 }
                 DisclosureGroup("Recent activity", isExpanded: $expanded) {
-                    if status.history.isEmpty { Text("No comfort activity yet.").font(.callout) }
+                    if status.history.isEmpty { Text("No comfort activity yet.").sleepText(.body) }
                     ForEach(Array(status.history.prefix(8).enumerated()), id: \.offset) { _, event in
                         VStack(alignment: .leading, spacing: 4) {
                             Text(Date(timeIntervalSince1970: event.at / 1000).formatted(date: .abbreviated, time: .shortened))
-                                .font(.caption).foregroundStyle(.secondary)
-                            Text(event.message).font(.callout)
+                                .sleepText(.caption).foregroundStyle(SleepTheme.secondary)
+                            Text(event.message).sleepText(.body)
                         }.frame(maxWidth: .infinity, alignment: .leading).padding(.vertical, 4)
                     }
                 }
             } else if message == nil { ProgressView("Loading comfort settings…") }
-            if let message { Text(message).font(.callout).foregroundStyle(.red) }
+            if let message { Text(message).sleepText(.body).foregroundStyle(SleepTheme.error) }
         }.task {
             while !Task.isCancelled {
                 await load()
@@ -63,14 +63,14 @@ struct ComfortCard: View {
     }
     @ViewBuilder private var actions: some View {
         Button(busy ? "Saving…" : "Save comfort settings") { Task { await save(reset: false) } }
-            .buttonStyle(.borderedProminent).disabled(busy || draft == nil || !config.valid)
+            .buttonStyle(SleepButtonStyle(kind: .primary)).disabled(busy || draft == nil || !config.valid)
         Button("Reset learning") { Task { await save(reset: true) } }
             .disabled(busy || status?.offsetF == 0 || draft != nil)
     }
     private func metric(_ title: String, _ value: String) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(title).font(.caption).foregroundStyle(.secondary)
-            Text(value).font(.title2.weight(.medium))
+            Text(title).sleepText(.caption).foregroundStyle(SleepTheme.secondary)
+            Text(value).sleepText(.smallMetric)
         }.frame(maxWidth: .infinity, alignment: .leading)
     }
     private func edit(_ change: (inout ComfortConfig) -> Void) {

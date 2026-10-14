@@ -1,2 +1,0 @@
-import{At as e,n as t,r as n}from"./ErrorBoundary-B3f6-SgI.js";var r=e();function i({title:e,children:i}){return(0,r.jsxs)(t,{sx:{width:`100%`,mb:.5,display:`flex`,alignItems:`center`,justifyContent:`space-between`,gap:2,flexWrap:`wrap`},children:[(0,r.jsx)(n,{variant:`h2`,component:`h1`,sx:{fontSize:{xs:27,md:30}},children:e}),i]})}export{i as t};
-//# sourceMappingURL=PageHeader-lXCgFkON.js.map

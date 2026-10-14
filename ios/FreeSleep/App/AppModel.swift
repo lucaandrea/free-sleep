@@ -3,6 +3,7 @@ import Observation
 
 @MainActor @Observable
 final class AppModel {
+    var tab = SleepTab.tonight
     var side = BedSide(rawValue: UserDefaults.standard.string(forKey: "bedSide") ?? "left") ?? .left {
         didSet { UserDefaults.standard.set(side.rawValue, forKey: "bedSide") }
     }

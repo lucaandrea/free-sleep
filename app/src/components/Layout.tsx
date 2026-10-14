@@ -1,3 +1,4 @@
+import { design } from '../design/tokens';
 import { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Box, LinearProgress } from '@mui/material';
@@ -10,7 +11,7 @@ export default function Layout() {
       <Box
         component="main"
         sx={ {
-          ml: { md: '224px' }, minWidth: 0, pt: 'env(safe-area-inset-top)',
+          ml: { md: `${design.layout.sidebarWidth}px` }, minWidth: 0, pt: 'env(safe-area-inset-top)',
           pb: { xs: 'calc(88px + env(safe-area-inset-bottom))', md: 5 },
         } }
       >

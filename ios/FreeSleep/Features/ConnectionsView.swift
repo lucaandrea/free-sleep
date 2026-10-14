@@ -16,30 +16,30 @@ struct ConnectionsView: View {
                     .textInputAutocapitalization(.never).autocorrectionDisabled().textFieldStyle(.roundedBorder)
                     .accessibilityLabel("Pod or secure gateway address")
                 SecureField("Connection token", text: $token).textFieldStyle(.roundedBorder)
-                Text("Your token stays in this iPhone's Keychain. Cloud model keys belong on your server.").font(.caption).foregroundStyle(.secondary)
-                Button("Save connection") { save() }.buttonStyle(.borderedProminent).controlSize(.large)
+                Text("Your token stays in this iPhone's Keychain. Cloud model keys belong on your server.").sleepText(.caption).foregroundStyle(SleepTheme.secondary)
+                Button("Save connection") { save() }.buttonStyle(SleepButtonStyle(kind: .primary)).controlSize(.large)
                 Picker("Appearance", selection: $appearance) { Text("Warm daylight").tag("light"); Text("Quiet night").tag("dark") }
-                if let message { Text(message).font(.callout) }
+                if let message { Text(message).sleepText(.body) }
             }
             HealthConnectionCard()
             SleepCard(title: "Apple Home", eyebrow: "CONNECTED HOME") {
-                Text("Enable the local bridge on your Pod, then add its pairing code in Apple Home.").foregroundStyle(.secondary)
+                Text("Enable the local bridge on your Pod, then add its pairing code in Apple Home.").foregroundStyle(SleepTheme.secondary)
                 if let code = bridge?.pairingCode { Text(code).font(.title.monospacedDigit()) }
-                if let error = bridge?.error { Text(error).foregroundStyle(.red) }
-                Button("Connect Apple Home") { home.connect() }.buttonStyle(.bordered).disabled(model.demo)
+                if let error = bridge?.error { Text(error).foregroundStyle(SleepTheme.error) }
+                Button("Connect Apple Home") { home.connect() }.buttonStyle(SleepButtonStyle()).disabled(model.demo)
                 ForEach(home.homes, id: \.uniqueIdentifier) { house in
                     Text(house.name).font(.headline)
                     ForEach(house.actionSets, id: \.uniqueIdentifier) { scene in
-                        Button("Run \(scene.name)") { Task { await home.run(scene, in: house) } }.buttonStyle(.bordered)
+                        Button("Run \(scene.name)") { Task { await home.run(scene, in: house) } }.buttonStyle(SleepButtonStyle())
                     }
                 }
-                if let message = home.message { Text(message).font(.callout) }
+                if let message = home.message { Text(message).sleepText(.body) }
             }
             SleepCard(title: "Shortcuts & Siri") {
                 Text("Find Free Sleep in Shortcuts to control temperature, power, bed position, adaptive comfort and Away mode; prime your Pod, dismiss an alarm, sync Health, or read your latest summary.")
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(SleepTheme.secondary)
                 Text("Bed movement affects both sides. Your iPhone must be able to reach the Pod or your secure gateway.")
-                    .font(.caption).foregroundStyle(.secondary)
+                    .sleepText(.caption).foregroundStyle(SleepTheme.secondary)
             }
         }
         .onAppear { address = savedAddress; token = TokenStore.read(for: savedAddress) }

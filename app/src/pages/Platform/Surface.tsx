@@ -1,3 +1,4 @@
+import { design } from '../../design/tokens';
 import { Box, Paper, Typography } from '@mui/material';
 import type { PropsWithChildren, ReactNode } from 'react';
 export default function Surface({
@@ -11,8 +12,8 @@ export default function Surface({
   action?: ReactNode;
 }>) {
   return (
-    <Paper sx={ { p: { xs: 2.5, md: 3 }, borderRadius: '20px', minWidth: 0 } }>
-      <Box sx={ { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, mb: 2.5 } }>
+    <Paper sx={ { p: `${design.layout.cardInset}px`, borderRadius: `${design.layout.cardRadius}px`, minWidth: 0 } }>
+      <Box sx={ { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, mb: 2.5, flexWrap: 'wrap' } }>
         <Box>
           { eyebrow && (
             <Typography variant="overline" color="text.secondary">

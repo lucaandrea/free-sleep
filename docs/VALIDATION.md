@@ -13,6 +13,7 @@ Validation date: 2026-10-13. Branch: `lucas-assistant/free-sleep-platform`.
 - Xcode generated App Intents/Shortcuts metadata. This proves build-time discovery, not actual Siri execution.
 - Python presence-heartbeat test: passed, including unchanged readings and failed-report retry limits. Python syntax checks passed for both touched stream files.
 - Web demo transport test: passed. A configured external Pod address and an unhandled route both stay inside the in-process mock adapter; authorization headers are not forwarded. Normal demo API calls no longer rely on a service worker staying active.
+- Shared design generation: all 15 generated TypeScript, Swift and adaptive-color outputs match `design/tokens.json`. Web build scripts now reject stale design outputs.
 
 ## Runtime checks
 
@@ -21,6 +22,8 @@ Browser demo and native simulator use labelled synthetic records. The compiled w
 The adaptive-comfort follow-up was checked in the built server using an isolated temporary data directory and local development mode: default Off, saved Preview, invalid-limit rejection, initially unknown presence, and empty-presence rejection all passed. No hardware connection was opened. Desktop and 393 px web previews saved Preview mode and displayed the activity entry; the native simulator saved Preview and rendered the same settings. The new captures are `comfort-web.png`, `comfort-web-phone.png`, `comfort-card.png` and `comfort-ios.png`. The web demo stayed functional after the service-worker-dependent transport was replaced for API requests.
 
 The Health follow-up rendered the independent personal side selector, heart-rate and automatic-sync switches, and permission/link/sync controls in the isolated iPhone simulator. Demo Health actions stayed disabled. `health-ios-mirror.png` captures the native card in the browser mirror. No Health permissions were granted and no real Health samples were read or written. Background scheduling and twelve App Intents compiled; only a signed-device run can establish actual background and Siri behavior.
+
+The shared-design follow-up passed web typecheck/lint, demo and hosted builds, the demo transport test, the native build and all fourteen native tests again. The 402 px web preview and iPhone simulator rendered the shared day/night palettes. Native temperature preview/apply, base preset preview/apply/Stop and navigation were exercised with simulated state. The custom native temperature slider exposed an adjustable Slider with its label, current value and 44-point interaction frame in the accessibility inspector. At the largest accessibility text size, navigation adapts to a readable menu; selecting Sleep from it worked. Text size and appearance were restored after the check. Captures: `parity-web-phone.png`, `parity-web-dark.png`, `parity-ios-tonight.png`, `parity-ios-dark.png`, `parity-ios-base.png` and `parity-ios-large-text.png`. These show the current builds, not complete visual parity; remaining screen differences are listed in [design alignment](DESIGN_PARITY.md).
 
 ## Not yet verified
 

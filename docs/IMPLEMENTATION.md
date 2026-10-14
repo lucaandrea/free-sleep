@@ -17,6 +17,8 @@ Requested 2026-10-13. The user's Pod 4 Ultra is still on stock software; subscri
 - [x] Document installation, validation boundaries and copyable commit title/description.
 - [x] Add opt-in feedback-based adaptive comfort, preview mode, persistent manual pauses, presence heartbeat and matching controls.
 - [x] Add independent personal Health-side binding, cancellable reconciliation, opt-in background refresh and twelve Shortcuts actions; see [Apple integrations](APPLE_INTEGRATIONS.md).
+- [x] Generate shared design tokens for web and SwiftUI, align core controls and charts, and verify dark appearance and large accessibility text.
+- [ ] Complete the remaining common screen layouts and native data/control surfaces listed in [design alignment](DESIGN_PARITY.md).
 
 These checked items describe source and local simulation. They do not mark the overall user goal complete. [Adaptive comfort](ADAPTIVE_COMFORT.md) learns a bounded routine offset from check-ins; it does not reproduce proprietary sleep-stage-driven Autopilot or medical features.
 

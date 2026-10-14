@@ -28,17 +28,17 @@ struct JournalCard: View {
             Toggle("Exercise", isOn: $draft.exercise)
             TextField("Notes for yourself", text: $draft.notes, axis: .vertical).lineLimit(2...5).textFieldStyle(.roundedBorder)
                 .onChange(of: draft.notes) { draft.notes = String(draft.notes.prefix(500)) }
-            Button("Save check-in") { Task { await save() } }.buttonStyle(.borderedProminent).controlSize(.large)
+            Button("Save check-in") { Task { await save() } }.buttonStyle(SleepButtonStyle(kind: .primary)).controlSize(.large)
                 .disabled(busy || (!model.demo && !model.connected))
-            if let message { Text(message).font(.caption) }
+            if let message { Text(message).sleepText(.caption) }
             Text("Your notes stay on your Pod. AI receives only numerical patterns when you choose to share a summary.")
-                .font(.caption).foregroundStyle(.secondary)
+                .sleepText(.caption).foregroundStyle(SleepTheme.secondary)
             if let patterns {
                 ForEach(patterns.associations, id: \.habit) { pattern in
                     Text("\(pattern.habit): \(pattern.presenceDifferenceMinutes > 0 ? "+" : "")\(pattern.presenceDifferenceMinutes) minutes of bed presence on recorded nights with this habit (\(pattern.withCount) with / \(pattern.withoutCount) without).")
-                        .font(.callout)
+                        .sleepText(.body)
                 }
-                Text(patterns.note).font(.caption).foregroundStyle(.secondary)
+                Text(patterns.note).sleepText(.caption).foregroundStyle(SleepTheme.secondary)
             }
         }.task(id: "\(model.side.rawValue):\(model.days)") { await load(); selectEntry() }
             .onChange(of: dateKey) { selectEntry() }
