@@ -5,6 +5,8 @@ import type { SleepAnalytics } from '../analytics/summary.js';
 import { coachingFacts, factsForModel, localFactSelection, type CoachGrounding } from './facts.js';
 import { MODEL_COACH_SCHEMA, resolveModelCoaching } from './modelContract.js';
 import { providerOutput } from './providerOutput.js';
+import { providerUsage } from './providerUsage.js';
+import type { TokenUsage } from './usageContract.js';
 
 export const providerSchema = z.enum(['rules', 'openai', 'gemini', 'anthropic', 'ollama']);
 export type CoachProvider = z.infer<typeof providerSchema>;
@@ -77,9 +79,10 @@ export function localInsights(analytics: SleepAnalytics, journal?: ReturnType<ty
   return { ...content, grounding: { version: 1, facts, suggestions: 'rules' } satisfies CoachGrounding };
 }
 
-// Providers receive only numerical summaries. No identifiers, raw HealthKit samples or device tools are exposed.
+// Providers receive aggregate facts and the submitted question; raw readings and device tools stay local.
 export async function generateCoaching(
   provider: CoachProvider, analytics: SleepAnalytics, question: string, journal?: ReturnType<typeof journalPatterns>,
+  reportUsage?: (usage: TokenUsage | null) => void,
 ) {
   if (provider === 'rules')
     return { ...localInsights(analytics, journal), provider, model: 'deterministic', generatedAt: new Date().toISOString() };
@@ -170,6 +173,7 @@ export async function generateCoaching(
   let payload: unknown;
   try { payload = JSON.parse(Buffer.concat(chunks).toString('utf8')); }
   catch { throw Object.assign(new Error(`${provider} returned an invalid response. Try local calculations or ask again.`), { status: 502 }); }
+  reportUsage?.(providerUsage(provider, payload));
   const output = providerOutput(provider, payload);
   let selected: ReturnType<typeof resolveModelCoaching>;
   try {

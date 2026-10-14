@@ -1,10 +1,11 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="d4d1a345-1d05-5d27-a2b7-2af0b500e164")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="e9808d58-678e-5c2d-8363-692027d6e9f6")}catch(e){}}();
 import { z } from 'zod';
 import { coverageForCoaching } from '../analytics/coverage.js';
 import { coachingFacts, factsForModel, localFactSelection } from './facts.js';
 import { MODEL_COACH_SCHEMA, resolveModelCoaching } from './modelContract.js';
 import { providerOutput } from './providerOutput.js';
+import { providerUsage } from './providerUsage.js';
 export const providerSchema = z.enum(['rules', 'openai', 'gemini', 'anthropic', 'ollama']);
 export const coachSchema = z
     .object({
@@ -69,8 +70,8 @@ export function localInsights(analytics, journal) {
     });
     return { ...content, grounding: { version: 1, facts, suggestions: 'rules' } };
 }
-// Providers receive only numerical summaries. No identifiers, raw HealthKit samples or device tools are exposed.
-export async function generateCoaching(provider, analytics, question, journal) {
+// Providers receive aggregate facts and the submitted question; raw readings and device tools stay local.
+export async function generateCoaching(provider, analytics, question, journal, reportUsage) {
     if (provider === 'rules')
         return { ...localInsights(analytics, journal), provider, model: 'deterministic', generatedAt: new Date().toISOString() };
     const key = keyFor(provider);
@@ -169,6 +170,7 @@ export async function generateCoaching(provider, analytics, question, journal) {
     catch {
         throw Object.assign(new Error(`${provider} returned an invalid response. Try local calculations or ask again.`), { status: 502 });
     }
+    reportUsage?.(providerUsage(provider, payload));
     const output = providerOutput(provider, payload);
     let selected;
     try {
@@ -185,4 +187,4 @@ export async function generateCoaching(provider, analytics, question, journal) {
         provider, model, generatedAt: new Date().toISOString() };
 }
 //# sourceMappingURL=coach.js.map
-//# debugId=d4d1a345-1d05-5d27-a2b7-2af0b500e164
+//# debugId=e9808d58-678e-5c2d-8363-692027d6e9f6

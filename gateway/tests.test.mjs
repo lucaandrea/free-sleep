@@ -62,6 +62,12 @@ test('allowlist excludes maintenance, encoded paths and origin escapes', () => {
   }
   assert.equal(allowedRequest('POST', '/api/analytics/episodes/42'), false);
   assert.equal(allowedRequest('POST', '/api/base/stop'), true);
+  assert.equal(allowedRequest('GET', '/api/ai/usage'), true);
+  assert.equal(allowedRequest('POST', '/api/ai/usage/limit'), true);
+  assert.equal(allowedRequest('POST', '/api/ai/usage'), false);
+  assert.equal(allowedRequest('GET', '/api/ai/usage/limit'), false);
+  assert.equal(allowedRequest('POST', '/api/ai/usage/limit/extra'), false);
+  assert.equal(allowedRequest('DELETE', '/api/ai/usage'), false);
   assert.equal(allowedRequest('GET', '/api/comfort?side=left'), true);
   assert.equal(allowedRequest('POST', '/api/comfort'), true);
   assert.equal(allowedRequest('POST', '/api/comfort/mode'), true);
@@ -114,6 +120,12 @@ test('outbound agent preserves queries, method, JSON and uses only the local tok
   assert.equal((await fetch(`${origin}/api/comfort/mode`, { method: 'POST', headers, body: JSON.stringify(mode) })).status, 200);
   assert.equal(received.at(-1).route, '/api/comfort/mode');
   assert.deepEqual(JSON.parse(received.at(-1).body), mode);
+  const modelLimit = { monthlyLimit: 25, originalRevision: 2 };
+  assert.equal((await fetch(`${origin}/api/ai/usage/limit`, { method: 'POST', headers, body: JSON.stringify(modelLimit) })).status, 200);
+  assert.equal(received.at(-1).route, '/api/ai/usage/limit');
+  assert.deepEqual(JSON.parse(received.at(-1).body), modelLimit);
+  assert.equal((await fetch(`${origin}/api/ai/usage`, { headers })).status, 200);
+  assert.equal(received.at(-1).route, '/api/ai/usage');
   const preferences = { podID: 'test', expected: { timeZone: 'UTC' }, preferences: { timeZone: 'Europe/London' } };
   assert.equal((await fetch(`${origin}/api/settings/preferences`, { method: 'POST', headers, body: JSON.stringify(preferences) })).status, 200);
   assert.equal(received.at(-1).route, '/api/settings/preferences');

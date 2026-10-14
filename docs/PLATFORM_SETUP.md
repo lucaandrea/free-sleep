@@ -52,6 +52,8 @@ The coach sends numerical analytics, numerical journal patterns, and the questio
 
 Configured models must support their provider's structured-output schema. The server now resolves displayed observations from calculated facts and keeps generated suggestions separate. Unsupported, truncated or invalid model responses fail without switching providers or retrying automatically. See [Coach evidence](COACH_EVIDENCE.md) for current API formats and qualification limits.
 
+Model usage starts with a persistent allowance of 100 attempts per UTC month, shared across both sides and all model adapters. Change it in Coach → Model usage; zero pauses model requests. Local calculations remain available. Install the new server/gateway routes with the clients. Reported tokens and request counts do not establish an exact dollar spending cap. See [model usage](MODEL_USAGE.md) for storage, failure accounting and reset behavior.
+
 ## Replit hosting
 
 Use a **Reserved VM**, one instance, for the persistent Pod WebSocket. `.replit` builds the web UI and starts `gateway/server.mjs`; do not run the embedded Pod server in Replit. This follows [Replit's deployment types](https://docs.replit.com/features/publishing/deployment-types).

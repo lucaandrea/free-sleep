@@ -5,6 +5,12 @@ import { DemoSleepHistory } from '../../../server/src/records/demo';
 import sleepDemo from '../../../shared/fixtures/sleep-demo.json';
 import { localInsights } from '../../../server/src/ai/coach';
 import { getSettings } from './mockData';
+import usageDemo from '../../../shared/fixtures/usage-demo.json';
+import { summarizeUsage, usageLimitChange, type UsageAttempt } from '../../../server/src/ai/usageContract';
+const demoAttempts = structuredClone(usageDemo.attempts) as UsageAttempt[];
+let demoLimit = usageDemo.snapshot.monthlyLimit;
+let demoLimitRevision = 0;
+const demoUsage = () => summarizeUsage(demoAttempts, demoLimit, demoLimitRevision, new Date(usageDemo.now));
 const journalEntries: import('../../../server/src/analytics/journal').JournalEntry[] = [];
 const sleepHistory = new DemoSleepHistory(sleepDemo);
 const isoIntervals = (raw: string) => (JSON.parse(raw) as number[][]).map(interval =>
@@ -85,12 +91,31 @@ export const platformHandlers = [
     return HttpResponse.json(status());
   }),
   http.post('/api/base/stop', () => HttpResponse.json(status())),
+  http.get('/api/ai/usage', () => HttpResponse.json(demoUsage())),
+  http.post('/api/ai/usage/limit', async ({ request }) => {
+    const parsed = usageLimitChange.safeParse(await request.json());
+    if (!parsed.success) return HttpResponse.json({ error: { message: 'Choose a whole-number limit from 0 to 1000.' } }, { status: 400 });
+    if (parsed.data.originalRevision !== demoLimitRevision)
+      return HttpResponse.json({ error: {
+        message: 'The model limit changed elsewhere. Refresh usage and reset your draft.',
+      } }, { status: 409 });
+    demoLimit = parsed.data.monthlyLimit; demoLimitRevision++;
+    return HttpResponse.json(demoUsage());
+  }),
   http.get('/api/ai/providers', () => HttpResponse.json([{ provider: 'rules', model: 'Deterministic insights', configured: true },
     { provider: 'openai', model: 'Demo model · no external calls', configured: true }])),
   http.post('/api/ai/coach', async ({ request }) => {
     const input = await request.json() as { side: string; days: number; provider: string; shareSummary: boolean };
     if (input.provider !== 'rules' && !input.shareSummary) {
       return HttpResponse.json({ error: { message: 'Allow sharing for this simulated request first.' } }, { status: 400 });
+    }
+    if (input.provider !== 'rules') {
+      if (demoUsage().remaining === 0)
+        return HttpResponse.json({ error: {
+          message: 'The monthly model request limit has been reached. Use local calculations or update the limit in Model usage.',
+        } }, { status: 429 });
+      demoAttempts.push({ id: crypto.randomUUID(), provider: 'openai', model: 'Demo model · no external calls',
+        startedAt: usageDemo.now, outcome: 'completed', tokens: null, elapsedMilliseconds: 1000 });
     }
     const result = { ...localInsights(sleepHistory.analytics(input.side, input.days, getSettings().timeZone)), model: 'Demo insights' };
     return HttpResponse.json({ ...result, provider: input.provider });

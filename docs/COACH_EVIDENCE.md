@@ -50,6 +50,8 @@ The parser also requires completion: OpenAI `completed`, Anthropic `end_turn`, G
 
 Configured overrides must support the adapter's structured-output format. Account/model compatibility and actual provider quality have not been proved by mock tests. [Setup](PLATFORM_SETUP.md) retains the default models and explicit choice of provider.
 
+The separate [model usage ledger](MODEL_USAGE.md) reserves attempts before dispatch and records any usable token counts before answer validation. Invalid answers may still consume provider usage and always retain their reserved attempt.
+
 ## Response compatibility
 
 The public coaching response retains `headline`, `observations`, `suggestions`, `limitations`, `provider`, `model` and `generatedAt`. It adds:

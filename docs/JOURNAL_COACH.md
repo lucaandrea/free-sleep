@@ -27,3 +27,5 @@ Demo mode labels its simulated provider **Demo model · no external calls**. Bot
 Results now show **Calculated observations** and an expandable calculation explanation with period and sample counts. Models select available fact IDs; the server supplies the displayed observations and limitations. Generated suggestions remain separately labelled proposals requiring review. Older servers show an update instruction when calculation receipts are absent. See [Coach evidence and provider contracts](COACH_EVIDENCE.md).
 
 See [validation evidence](VALIDATION.md) for executed checks. Real provider accounts, signed-device integrations and physical Pod behavior remain separate qualification work.
+
+**Model usage** shows a shared monthly request allowance, per-provider counts, reported tokens and response times. New ledgers default to 100 model attempts per UTC month; zero pauses new model requests while local calculations remain available. Failed/unresolved attempts count, and token totals can be incomplete. This is not a dollar spending cap. See [usage behavior and API](MODEL_USAGE.md).

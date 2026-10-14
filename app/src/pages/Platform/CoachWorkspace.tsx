@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import {
   Alert, Button, Checkbox, FormControlLabel, MenuItem, Stack, TextField, ToggleButton, ToggleButtonGroup, Typography,
 } from '@mui/material';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios, { baseURL } from '@api/api';
 import { Coach, errorMessage } from '@api/platform';
 import PageContainer from '../PageContainer';
@@ -11,9 +11,11 @@ import SideControl from '@components/SideControl';
 import FormField from '@components/FormField';
 import Surface from './Surface';
 import CoachEvidence from './CoachEvidence';
+import CoachUsagePanel from './CoachUsagePanel';
 
 type Provider = { provider: string; configured: boolean; model: string };
 export default function CoachWorkspace({ side }: { side: 'left' | 'right' }) {
+  const queryClient = useQueryClient();
   const [provider, setProvider] = useState('rules');
   const [days, setDays] = useState(30);
   const [share, setShare] = useState(false);
@@ -39,6 +41,7 @@ export default function CoachWorkspace({ side }: { side: 'left' | 'right' }) {
     } catch (error) {
       if (!controller.signal.aborted && request.current === controller) setFailure(errorMessage(error));
     } finally {
+      void queryClient.invalidateQueries({ queryKey: ['model-usage', baseURL] });
       if (!controller.signal.aborted && request.current === controller) setBusy(false);
     }
   };
@@ -120,5 +123,6 @@ export default function CoachWorkspace({ side }: { side: 'left' | 'right' }) {
         { result.limitations.map((text, index) => <Typography variant="caption" color="text.secondary" key={ index }>{ text }</Typography>) }
       </Stack>
     </Surface> }
+    <CoachUsagePanel />
   </PageContainer>;
 }

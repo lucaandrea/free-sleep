@@ -20,6 +20,7 @@ private struct CoachForm: View {
     @State private var question = "What patterns stand out in my recent nights?"
     @State private var session = CoachSession()
     @State private var request: Task<Void, Never>?
+    @State private var usageRevision = 0
     private var configured: Bool { provider == "rules" || providers.contains { $0.provider == provider && $0.configured } }
     var body: some View {
         SleepPage(title: "A little perspective.", subtitle: "Thoughtful insights, grounded in your own routine.", narrow: true) {
@@ -70,6 +71,7 @@ private struct CoachForm: View {
                     ForEach(Array(result.limitations.enumerated()), id: \.offset) { _, text in Text(text).sleepText(.caption).foregroundStyle(SleepTheme.secondary) }
                 }
             }
+            CoachUsageView(revision: usageRevision)
         }.onChange(of: provider) { reset() }.onChange(of: days) { reset() }.onChange(of: question) { reset() }
             .task { await loadProviders() }.onDisappear { request?.cancel(); session.invalidate() }
     }
@@ -92,9 +94,11 @@ private struct CoachForm: View {
         let provider = provider; let days = days; let sharing = share; let question = provider == "rules" ? "" : question
         share = false
         request = Task {
+            defer { usageRevision += 1 }
             await session.run {
                 if demo {
                     guard let analytics = model.demoHistory.analytics(side: side, days: days) else { throw PodError.message("The sample coaching could not be loaded.") }
+                    if provider != "rules" { try model.demoCoachUsage.record() }
                     return DemoSleepSummary.coaching(analytics, provider: provider)
                 }
                 return try await PodClient.configured().coach(side: side, provider: provider, share: sharing, question: question, days: days)

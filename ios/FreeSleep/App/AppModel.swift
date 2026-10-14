@@ -27,6 +27,7 @@ final class AppModel {
     let journalWorkspace = JournalWorkspace()
     let demoAlarms: DemoAlarms
     let demoHistory = DemoSleepHistory()
+    let demoCoachUsage = DemoCoachUsage()
     private(set) var demoPreferences = DeviceDemo.shared?.preferences
     private(set) var preferencesRevision = 0
     private(set) var recordRevision = 0
