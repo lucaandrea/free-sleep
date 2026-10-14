@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { BaseController } from '../src/base/controller.js';
 import { BaseDecoder, checksumPacket, movePacket, stopPacket } from '../src/base/protocol.js';
 import type { BaseTransport } from '../src/base/types.js';
+import { createDispatchGuard } from '../src/control/dispatchGuard.js';
 
 const telemetry = (headTicks = 763, feetTicks = 190) => {
   const payload = Buffer.alloc(18);
@@ -76,4 +77,29 @@ test('disconnect rejects further commands and unknown configuration stays unknow
   const missing = new BaseController(new TestTransport(), async () => { throw new Error('No configuration'); });
   await assert.rejects(missing.connect(), /No configuration/);
   assert.equal(missing.status().position, null);
+});
+
+test('publisher cancellation prevents delayed feet writes and cancelled Stop does not reach the transport', async () => {
+  const { controller, transport } = await createController();
+  transport.notify(telemetry());
+  const cancellation = new AbortController();
+  const guard = createDispatchGuard(cancellation.signal, Date.now() + 8000);
+  const movement = controller.move({ head: 1, feet: 5 }, guard);
+  const rejected = assert.rejects(movement, /cancelled/);
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(transport.packets.length, 1);
+  cancellation.abort();
+  await rejected;
+  await assert.rejects(controller.stop(guard), /cancelled/);
+  assert.equal(transport.packets.length, 1);
+  await controller.stop();
+  assert.equal(transport.packets[1], stopPacket().toString('hex'));
+});
+
+test('expired movement requests do not issue even the first base packet', async () => {
+  const { controller, transport } = await createController();
+  transport.notify(telemetry());
+  const guard = createDispatchGuard(new AbortController().signal, Date.now() - 1);
+  await assert.rejects(controller.move({ head: 1, feet: 5 }, guard), /expired/);
+  assert.equal(transport.packets.length, 0);
 });

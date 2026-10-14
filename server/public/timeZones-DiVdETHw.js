@@ -1,0 +1,2 @@
+var e=[`UTC`,`America/Anchorage`,`America/Los_Angeles`,`Pacific/Honolulu`,`America/Denver`,`America/Chicago`,`America/New_York`,`America/Sao_Paulo`,`Atlantic/Reykjavik`,`Europe/London`,`Europe/Berlin`,`Europe/Moscow`,`Africa/Lagos`,`Africa/Johannesburg`,`Asia/Dubai`,`Asia/Kolkata`,`Asia/Shanghai`,`Asia/Tokyo`,`Australia/Sydney`,`Australia/Brisbane`,`Pacific/Auckland`];export{e as t};
+//# sourceMappingURL=timeZones-DiVdETHw.js.map

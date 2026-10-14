@@ -22,22 +22,28 @@ The web theme and native design components consume these values. Both use system
 - Matching side-selector height, button shapes, status badges, heading sizes and secondary text colors.
 - Temperature card, selected base presets, head/feet sliders and the bed illustration's geometry.
 - Sleep metrics and the presence chart's twelve-hour scale, missing-value markers and horizontal overflow.
+- Analytics coverage: matching period counts, explicit known/unknown/not-returned dates, collapsible date lists and explanations for withheld weekly comparisons. The native demo is checked against server-generated calendar cases. See [data coverage](DATA_QUALITY.md).
 - Recorded-episode selection, short-episode browsing, presence intervals, heart-rate/HRV/breathing charts and paginated original readings. Both clients consume the same detail response and generated sleep-demo fixture. See [recorded episodes](EPISODES.md).
+- Record correction and deletion from the episode browser: side/timezone context, original-window conflict checks, validation, confirmation and refreshed charts. The legacy web editor uses the same controls.
 - Native navigation from “Explore sleep” and the same Coach result wording for sample data.
+- Coach calculation receipts: the same expandable period/count/method explanation and suggestion-source label. Live observations are resolved from server facts; native demo receipts are checked against shared fixtures. See [Coach evidence](COACH_EVIDENCE.md).
+- Model usage: the same allowance editor, UTC period, outcome counts, reported-token coverage and provider/time breakdown. Both demos start from `usage-demo.json`. See [usage limits](MODEL_USAGE.md).
 - Next-alarm card, timezone/date labels and one-time change, skip and restore actions. iOS uses a native time picker and sheet.
 - Routines: Monday–Sunday selector, overnight temperature timeline, power/adjustment/alarm groups, outlined fields, numeric alarm controls and weekday/weekend copying. Both use the same demo week in `shared/fixtures/routines-demo.json` and keep drafts per Pod, side and day. See [routine behavior](ROUTINES.md).
+- Journal: labelled outlined fields, habit checkboxes, notes, save/reset actions and dates in the Pod timezone. Drafts stay in memory by Pod, side and wake date. Coach uses the same 7/30/90-day choice, provider field, question, per-request sharing control and result provenance. Sample coaching is generated from the shared sleep fixture. See [journal and Coach behavior](JOURNAL_COACH.md).
+- Settings: connection fields, Test/Save actions, separate Appearance section, Home bridge status/refresh and consistent section order/copy. Device settings now shares the timezone, units, side names, Away mode and daily-care form, including save/reset/reload. System health shares service cards and manual/automatic refresh. Native Health permissions and Home scenes remain platform capabilities. See [connection setup](CONNECTIONS.md) and [device preferences](DEVICE_PREFERENCES.md).
 
 This is not a claim that every screen is visually identical. OS chrome, permission sheets and native accessibility text layout differ. The following product differences remain explicit work:
 
 | Screen | Remaining alignment |
 | --- | --- |
 | Tonight | Notification presentation; alarm editors retain native sheet/picker chrome |
-| Sleep | Matching journal form controls; native record editing/deletion; OS picker chrome |
-| Coach | Matching selector and outlined text-field presentation |
+| Sleep | Record editors retain OS date/time picker and sheet/dialog chrome |
+| Coach | OS menu picker chrome and accessibility text layout |
 | Routines | Native time/menu picker chrome and confirmation presentation; accessibility text sizes use an adaptive day picker |
-| Settings | Matching common connection/Home/settings layout, with native Health permissions and Shortcuts entry points |
+| Settings | Advanced maintenance, LEDs, services and logs remain web-only; Health permissions, Home scenes and system pickers remain native |
 
-Use the same side, data, appearance, viewport width and text-size setting when comparing. The existing demo states differ in priming and scheduled-alarm notifications; those banners must not be removed merely to make captures match.
+Use the same side, data, appearance, viewport width and text-size setting when comparing. Initial device preferences and service health come from the same fixture. Remaining demo device-status banners and scheduled-alarm notifications must not be removed merely to make captures match.
 
 ## Verification
 

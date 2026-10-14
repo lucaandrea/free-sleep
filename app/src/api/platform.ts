@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from './api';
 import type { SleepAnalytics } from '../../../server/src/analytics/summary';
+import type { CoachGrounding } from '../../../server/src/ai/facts';
 export type { SleepAnalytics };
 export type BaseStatus = {
   state: string;
@@ -19,6 +20,7 @@ export type Coach = {
   limitations: string[];
   provider: string;
   model: string;
+  grounding?: CoachGrounding;
 };
 export const useBase = () =>
   useQuery({

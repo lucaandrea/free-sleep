@@ -4,6 +4,24 @@ on:
   pull_request:
 
 jobs:
+  hosted:
+    name: Replit build and gateway transport
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+          cache-dependency-path: |
+            app/package-lock.json
+            server/package-lock.json
+            gateway/package-lock.json
+      - name: Build and test using the deployment command
+        run: node scripts/build-hosted.mjs
+      - name: Test web contracts
+        run: npm --prefix app test
+
   biometrics:
     name: Biometrics (Python ${{ matrix.python-version }}, cbor2 ${{ matrix.cbor-version }})
     runs-on: ubuntu-latest
@@ -56,6 +74,10 @@ jobs:
       - name: Generate Prisma client
         working-directory: server
         run: npm run generate
+
+      - name: Test server contracts
+        working-directory: server
+        run: npm test
 
       - name: Build (server)
         working-directory: server

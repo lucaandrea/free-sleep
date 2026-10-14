@@ -10,6 +10,7 @@ import settingsDB from '../db/settings.js';
 import serverStatus from '../serverStatus.js';
 import servicesDB from '../db/services.js';
 import reboot from './reboot.js';
+import { primingClock } from './primingClock.js';
 
 
 const scheduleRebootJob = (onHour: number, onMinute: number, timeZone: TimeZone) => {
@@ -67,12 +68,12 @@ export const schedulePrimingRebootAndCalibration = (settingsData: Settings) => {
   if (!primePodDaily.enabled) return;
   const dailyRule = new schedule.RecurrenceRule();
   const { time } = primePodDaily;
-  const [onHour, onMinute] = time.split(':').map(Number);
+  const { hour: onHour, minute: onMinute, rebootHour } = primingClock(time);
   dailyRule.hour = onHour;
   dailyRule.minute = onMinute;
   dailyRule.tz = timeZone;
 
-  scheduleRebootJob(onHour - 1, onMinute, timeZone);
+  scheduleRebootJob(rebootHour, onMinute, timeZone);
   scheduleCalibrationJob(onHour, 0, timeZone, 'left');
   scheduleCalibrationJob(onHour, 30, timeZone, 'right');
 

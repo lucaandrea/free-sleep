@@ -11,6 +11,7 @@ import { INVERTED_SETTINGS_KEY_MAPPING } from '../../8sleep/loadDeviceStatus.js'
 import { coordinateTemperature } from '../../thermal/coordinator.js';
 import type { ControlSource } from '../../thermal/types.js';
 import { connectedFranken } from '../../8sleep/frankenServer.js';
+import type { DispatchGuard } from '../../control/dispatchGuard.js';
 
 const calculateLevelFromF = (temperatureF: number) => {
   const level = (temperatureF - 82.5) / 27.5 * 100;
@@ -64,7 +65,7 @@ const updateSide = async (side: 'left' | 'right', sideStatus: DeepPartial<SideSt
 
   if (isAlarmVibrating !== undefined) {
     logger.debug('Can only set isAlarmVibrating to false for now...');
-    if (!isAlarmVibrating) await executeFunction('ALARM_CLEAR', 'empty');
+    if (!isAlarmVibrating) await execute('ALARM_CLEAR', 'empty');
     await memoryDB.read();
     memoryDB.data[side].isAlarmVibrating = false;
     await memoryDB.write();
@@ -72,25 +73,28 @@ const updateSide = async (side: 'left' | 'right', sideStatus: DeepPartial<SideSt
 };
 
 
-const updateSettings = async (settings: Partial<DeviceStatus['settings']>) => {
+const updateSettings = async (settings: Partial<DeviceStatus['settings']>, execute = executeFunction) => {
   const renamedSettings = _.mapKeys(settings, (value, key) => INVERTED_SETTINGS_KEY_MAPPING[key] || key);
   const encodedBuffer = cbor.encode(renamedSettings);
   const hexString = encodedBuffer.toString('hex');
-  await executeFunction('SET_SETTINGS', hexString);
+  await execute('SET_SETTINGS', hexString);
 };
 
-export const updateDeviceStatus = async (deviceStatus: DeepPartial<DeviceStatus>, source: ControlSource = 'manual') =>
+export const updateDeviceStatus = async (
+  deviceStatus: DeepPartial<DeviceStatus>, source: ControlSource = 'manual', assertCurrent?: DispatchGuard,
+) =>
   coordinateTemperature(deviceStatus, source, async (update, notAfter) => {
+    assertCurrent?.();
     const connection = notAfter !== undefined ? connectedFranken() : undefined;
     if (notAfter !== undefined && !connection) throw new Error('Adaptive comfort requires an existing Pod connection');
     const execute: typeof executeFunction = connection
-      ? (command, argument = 'empty') => connection.callFunction(command, argument, notAfter)
-      : executeFunction;
+      ? (command, argument = 'empty') => connection.callFunction(command, argument, notAfter, assertCurrent)
+      : (command, argument = 'empty') => executeFunction(command, argument, assertCurrent);
     logger.info(`Updating device status..`);
 
     if (update.isPriming) await execute('PRIME');
     if (update?.left) await updateSide('left', update.left, execute, notAfter !== undefined);
     if (update?.right) await updateSide('right', update.right, execute, notAfter !== undefined);
-    if (update?.settings) await updateSettings(update.settings);
+    if (update?.settings) await updateSettings(update.settings, execute);
     logger.info('Finished updating device status');
-  });
+  }, assertCurrent);

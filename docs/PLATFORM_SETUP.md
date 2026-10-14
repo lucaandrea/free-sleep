@@ -44,13 +44,21 @@ Use `server/.env.features.example` as a template for **additional environment va
 - `FREE_SLEEP_API_TOKEN`: a random secret required by web/iOS requests. Legacy LAN installs without this variable retain their existing API behavior; never expose that API directly to the Internet. Narrow loopback endpoints remain available to existing biometric/root helpers.
 - `BASE_CONFIG_PATH`: defaults to `/persistent/AdjustableBaseConfiguration.json`. The file must contain the stock `Address` and `SplitBase` fields. Click **Connect base** after starting the server. Movement requires recent real telemetry; previews do not move the bed. Both sides move together.
 - `HOMEKIT_ENABLED=true`: opt in to the local bridge. TCP port defaults to `51826`; mDNS must work on the home network. The bridge identity and pairing survive in `DATA_FOLDER/homekit`. Back up that directory and never reset it as part of an upgrade. A corrupt identity produces an error rather than silently forcing re-pairing.
+- `HOMEKIT_PORT`: optional dedicated TCP port, an integer from 1 to 65535. The pairing code is shown only after publication and mDNS advertisement complete. The publisher runs in a separate process; a fatal socket error is shown in Settings while the main server keeps running. Correct the configuration and restart the server to retry. See [bridge reliability](HOMEKIT_BRIDGE.md) for lifecycle status, process containment and cancellation.
+- `HOMEKIT_BIND`: optional IP address for HAP advertisement selection. This does **not** restrict the TCP listener to that address: installed HAP uses a wildcard IPv4/IPv6 listener. Leave it unset for normal discovery; use network/firewall configuration for TCP isolation.
 - Provider keys and model IDs: configure only the providers you want. OpenAI is the initial cloud recommendation; deterministic insights remain the default until you explicitly choose and authorize a model. Ollama belongs on a capable computer, not the embedded Pod. Set `OLLAMA_BASE_URL` to its reachable endpoint and install the selected model separately.
 
 The coach sends numerical analytics, numerical journal patterns, and the question you type only after consent for that request. Journal notes and HealthKit samples are excluded. Models have no hardware tools. Cloud providers have not been called with the owner's credentials during this implementation.
 
+Configured models must support their provider's structured-output schema. The server now resolves displayed observations from calculated facts and keeps generated suggestions separate. Unsupported, truncated or invalid model responses fail without switching providers or retrying automatically. See [Coach evidence](COACH_EVIDENCE.md) for current API formats and qualification limits.
+
+Model usage starts with a persistent allowance of 100 attempts per UTC month, shared across both sides and all model adapters. Change it in Coach → Model usage; zero pauses model requests. Local calculations remain available. Install the new server/gateway routes with the clients. Reported tokens and request counts do not establish an exact dollar spending cap. See [model usage](MODEL_USAGE.md) for storage, failure accounting and reset behavior.
+
 ## Replit hosting
 
 Use a **Reserved VM**, one instance, for the persistent Pod WebSocket. `.replit` builds the web UI and starts `gateway/server.mjs`; do not run the embedded Pod server in Replit. This follows [Replit's deployment types](https://docs.replit.com/features/publishing/deployment-types).
+
+Reproduce the deployment build from a clean checkout with `node scripts/build-hosted.mjs`. Replit and the hosted CI job use this same command. It installs locked web and shared server-schema dependencies, builds `server/public`, then installs and tests the gateway. Server dependencies are needed only because the browser imports those TypeScript contracts; their install hooks are skipped, and no Pod service or database is started. No environment file, provider key or deployment token is needed for this build, and it does not upload source maps. Build tools are installed explicitly even when the hosting environment sets `NODE_ENV=production`.
 
 ```mermaid
 flowchart LR
@@ -71,7 +79,7 @@ flowchart LR
 
 The gateway forwards app operations through a fixed allowlist and bounded requests. Raw command execution, root maintenance jobs and log streaming stay LAN-only. It holds no sleep database, but authorized API data transits Replit. The hosted UI cannot call a private HTTP Pod directly from HTTPS; use the gateway or the local app.
 
-No Replit project has been created, published, or connected to the owner's Pod. The Git remote currently points at upstream `throwaway31265/free-sleep`; choose the user's destination before pushing or publishing.
+No Replit project has been created, published, or connected to the owner's Pod. The Git remote is `lucaandrea/free-sleep`; the intended Replit project and published domain still need to be selected.
 
 ## Native iOS
 

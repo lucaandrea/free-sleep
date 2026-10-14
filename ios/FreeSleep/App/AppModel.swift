@@ -7,7 +7,7 @@ final class AppModel {
     var side = BedSide(rawValue: UserDefaults.standard.string(forKey: "bedSide") ?? "left") ?? .left {
         didSet {
             UserDefaults.standard.set(side.rawValue, forKey: "bedSide")
-            if side != oldValue { analytics = nil; analyticsError = nil }
+            if side != oldValue { analytics = nil; analyticsError = nil; recordMessage = nil }
         }
     }
     var device: DeviceStatus?
@@ -24,8 +24,42 @@ final class AppModel {
     private var analyticsRefreshedAt = Date.distantPast
     let demo: Bool
     let routineWorkspace: RoutineWorkspace
+    let journalWorkspace = JournalWorkspace()
     let demoAlarms: DemoAlarms
+    let demoHistory = DemoSleepHistory()
+    let demoCoachUsage = DemoCoachUsage()
+    private(set) var demoPreferences = DeviceDemo.shared?.preferences
+    private(set) var preferencesRevision = 0
+    private(set) var recordRevision = 0
+    private(set) var recordMessage: String?
     var connected: Bool { device != nil }
+    private(set) var connectionRevision = 0
+
+    func connectionChanged() {
+        connectionRevision += 1
+        device = nil; settings = nil; base = nil; analytics = nil; analyticsError = nil
+        analyticsKey = ""; analyticsRefreshedAt = .distantPast
+        recordMessage = nil
+    }
+
+    func recordsChanged(message: String) {
+        recordRevision += 1; recordMessage = message
+        analytics = nil; analyticsRefreshedAt = .distantPast
+        journalWorkspace.saved()
+    }
+    func preferencesChanged(_ snapshot: PreferencesSnapshot) {
+        preferencesRevision += 1
+        settings = snapshot.preferences.settings(podID: snapshot.podID)
+        analytics = nil; analyticsRefreshedAt = .distantPast; recordRevision += 1
+        journalWorkspace.saved()
+        if demo {
+            demoPreferences = snapshot
+            demoHistory.timeZone = snapshot.preferences.timeZone
+            demoAlarms.timeZone = TimeZone(identifier: snapshot.preferences.timeZone) ?? .gmt
+            demoAlarms.away = [.left: snapshot.preferences.left.awayMode, .right: snapshot.preferences.right.awayMode]
+            loadDemo()
+        }
+    }
 
     init() {
         demo = AppMode.isDemo
@@ -38,6 +72,9 @@ final class AppModel {
         if demo { loadDemo(); return }
         do {
             let client = try PodClient.configured()
+            let requestedConnection = connectionRevision
+            let requestedRecords = recordRevision
+            let requestedPreferences = preferencesRevision
             let requestedSide = side; let requestedDays = days
             let key = "\(client.baseURL.absoluteString)|\(side.rawValue):\(days)"
             if key != analyticsKey { analytics = nil }
@@ -51,6 +88,9 @@ final class AppModel {
                 URLQueryItem(name: "side", value: requestedSide.rawValue), URLQueryItem(name: "days", value: String(requestedDays))])) : previousAnalytics
             let results = await (status, position, nights, preferences)
             guard !Task.isCancelled, requestedSide == side, requestedDays == days,
+                  requestedConnection == connectionRevision,
+                  requestedRecords == recordRevision,
+                  requestedPreferences == preferencesRevision,
                   (try? PodClient.configured().baseURL) == client.baseURL else { return }
             device = results.0; base = results.1; analytics = results.2; settings = results.3
             if refreshNights {
@@ -108,10 +148,11 @@ final class AppModel {
         catch { actionMessage = error.localizedDescription }
     }
     private func loadDemo() {
+        if settings == nil, let snapshot = demoPreferences { settings = snapshot.preferences.settings(podID: snapshot.podID) }
         if device == nil { device = .init(left: .init(currentTemperatureF: 82, targetTemperatureF: 84, isOn: true),
             right: .init(currentTemperatureF: 80, targetTemperatureF: 80, isOn: false), isPriming: false, waterLevel: "full") }
         if base == nil { base = .init(state: "connected", position: .init(left: .init(head: 0, feet: 0), right: .init(head: 0, feet: 0)),
             updatedAt: Date().timeIntervalSince1970 * 1000, stale: false, busy: false, error: nil) }
-        if analytics == nil { analytics = SleepDemo.shared?.ranges[String(days)] ?? SleepDemo.shared?.analytics }
+        if analytics == nil { analytics = demoHistory.analytics(side: side, days: days) }
     }
 }

@@ -41,7 +41,7 @@ export default function SleepPage() {
   const [selectedSleepRecord, setSelectedSleepRecord] = useState<SleepRecord | undefined>(undefined);
 
   // Fetch sleep records for the selected week
-  const { data: sleepRecords, refetch } = useSleepRecords({
+  const { data: sleepRecords } = useSleepRecords({
     side,
     startTime: startTime.toISOString(),
     endTime: endTime.toISOString()
@@ -65,10 +65,9 @@ export default function SleepPage() {
 
 
   useEffect(() => {
-    // Default to last record selected
-    if (sleepRecords?.length) {
-      setSelectedSleepRecord(sleepRecords[sleepRecords.length - 1]);
-    }
+    // Preserve the selected record after edits; deletion and side/range changes clear stale details.
+    setSelectedSleepRecord(previous => sleepRecords?.find(record => record.id === previous?.id)
+      ?? sleepRecords?.[sleepRecords.length - 1]);
   }, [sleepRecords]);
 
   // Function to move to the previous week
@@ -131,7 +130,7 @@ export default function SleepPage() {
             selectedSleepRecord &&
             (
               <>
-                <SleepRecordCard sleepRecord={ selectedSleepRecord } refetch={ refetch }/>
+                <SleepRecordCard sleepRecord={ selectedSleepRecord }/>
                 <VitalsSummaryCard
                   startTime={ selectedSleepRecord.entered_bed_at }
                   endTime={ selectedSleepRecord.left_bed_at }

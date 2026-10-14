@@ -1,3 +1,4 @@
+import { sleepMutations } from '../records/router.js';
 import express from 'express';
 import { z } from 'zod';
 import { prisma } from '../db/prisma.js';
@@ -5,12 +6,8 @@ import settingsDB from '../db/settings.js';
 import { summarizeSleep } from './summary.js';
 import { episodeRoutes } from './episodeRoutes.js';
 import { MAX_EPISODE_SAMPLES } from './episode.js';
-
-export const analyticsQuery = z.object({
-  side: z.enum(['left', 'right']).default('left'),
-  days: z.coerce.number().int().min(7).max(365).default(30),
-  goalMinutes: z.coerce.number().int().min(240).max(720).default(480),
-});
+import { analyticsQuery } from './query.js';
+export { analyticsQuery } from './query.js';
 export async function loadAnalytics(query: z.infer<typeof analyticsQuery>) {
   const since = Math.floor(Date.now() / 1000) - query.days * 86400;
   const [records, vitals] = await Promise.all([
@@ -24,6 +21,7 @@ export async function loadAnalytics(query: z.infer<typeof analyticsQuery>) {
   return summarizeSleep(records, vitals, settingsDB.data.timeZone || 'UTC', query.goalMinutes);
 }
 const router = express.Router();
+router.use('/episodes', sleepMutations(prisma));
 router.use(episodeRoutes({
   record: (id, side) => prisma.sleep_records.findFirst({ where: { id, side } }),
   vitals: record => prisma.vitals.findMany({

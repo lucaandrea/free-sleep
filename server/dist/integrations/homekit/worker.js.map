@@ -1,0 +1,1 @@
+{"version":3,"file":"worker.js","sources":["integrations/homekit/worker.ts"],"sourceRoot":"/","sourcesContent":["import { runHomeKitWorker } from './workerRuntime.js';\n\nrunHomeKitWorker();\n"],"names":[],"mappings":";;AAAA,OAAO,EAAE,gBAAgB,EAAE,MAAM,oBAAoB,CAAC;AAEtD,gBAAgB,EAAE,CAAC","debugId":"8aa919da-6072-5dbe-91da-2940a06f3df3"}

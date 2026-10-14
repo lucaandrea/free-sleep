@@ -2,6 +2,9 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { once } from 'node:events';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { WebSocket } from 'ws';
 import { createGateway } from './server.mjs';
 import { connectPod } from './agent.mjs';
@@ -10,19 +13,66 @@ const accessToken = 'a'.repeat(40), tunnelToken = 'b'.repeat(40);
 const listen = async server => { server.listen(0, '127.0.0.1'); await once(server, 'listening'); return `http://127.0.0.1:${server.address().port}`; };
 const headers = { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' };
 
+test('hosted pages and health stay available offline without swallowing API errors', async context => {
+  const publicPath = await mkdtemp(join(tmpdir(), 'free-sleep-hosted-'));
+  context.after(() => rm(publicPath, { recursive: true, force: true }));
+  const html = '<!doctype html><html><body><div id="root"></div></body></html>';
+  await writeFile(join(publicPath, 'index.html'), html);
+  await writeFile(join(publicPath, 'index.js'), 'window.hostedBuild = true;');
+  const gateway = createGateway({ accessToken, tunnelToken, publicPath });
+  context.after(() => gateway.close());
+  const origin = await listen(gateway.server);
+
+  for (const route of ['/', '/sleep', '/settings']) {
+    const response = await fetch(`${origin}${route}`);
+    assert.equal(response.status, 200);
+    assert.match(response.headers.get('content-type'), /text\/html/);
+    assert.equal(await response.text(), html);
+  }
+  const asset = await fetch(`${origin}/index.js`);
+  assert.equal(asset.status, 200);
+  assert.equal(asset.headers.get('x-content-type-options'), 'nosniff');
+  assert.equal(asset.headers.get('referrer-policy'), 'no-referrer');
+  assert.equal(await asset.text(), 'window.hostedBuild = true;');
+  assert.deepEqual(await (await fetch(`${origin}/healthz`)).json(), { status: 'ok' });
+
+  for (const [route, requestHeaders, expectedStatus] of [
+    ['/api/settings', {}, 401], ['/api/settings', headers, 503], ['/api/jobs', headers, 403],
+  ]) {
+    const response = await fetch(`${origin}${route}`, { headers: requestHeaders });
+    assert.equal(response.status, expectedStatus);
+    assert.equal(response.headers.get('cache-control'), 'no-store');
+    assert.match(response.headers.get('content-type'), /application\/json/);
+    assert.equal(typeof (await response.json()).error.message, 'string');
+  }
+});
+
 test('allowlist excludes maintenance, encoded paths and origin escapes', () => {
   for (const route of ['/api/jobs', '/api/logs/x', '/api/base/%73top', '//example.com/api/base', '/api/../jobs']) {
     assert.equal(allowedRequest('POST', route), false, route);
   }
   assert.equal(allowedRequest('GET', '/api/analytics?side=left&days=30'), true);
+  assert.equal(allowedRequest('GET', '/api/settings/preferences'), true);
+  assert.equal(allowedRequest('POST', '/api/settings/preferences'), true);
+  assert.equal(allowedRequest('DELETE', '/api/settings/preferences'), false);
+  assert.equal(allowedRequest('POST', '/api/settings/preferences/extra'), false);
   assert.equal(allowedRequest('GET', '/api/analytics/episodes/42?side=right'), true);
   for (const route of ['/api/analytics/episodes/0', '/api/analytics/episodes/42x', '/api/analytics/episodes/42/extra']) {
     assert.equal(allowedRequest('GET', route), false);
   }
   assert.equal(allowedRequest('POST', '/api/analytics/episodes/42'), false);
   assert.equal(allowedRequest('POST', '/api/base/stop'), true);
+  assert.equal(allowedRequest('GET', '/api/ai/usage'), true);
+  assert.equal(allowedRequest('POST', '/api/ai/usage/limit'), true);
+  assert.equal(allowedRequest('POST', '/api/ai/usage'), false);
+  assert.equal(allowedRequest('GET', '/api/ai/usage/limit'), false);
+  assert.equal(allowedRequest('POST', '/api/ai/usage/limit/extra'), false);
+  assert.equal(allowedRequest('DELETE', '/api/ai/usage'), false);
   assert.equal(allowedRequest('GET', '/api/comfort?side=left'), true);
   assert.equal(allowedRequest('POST', '/api/comfort'), true);
+  assert.equal(allowedRequest('POST', '/api/comfort/mode'), true);
+  assert.equal(allowedRequest('GET', '/api/comfort/mode'), false);
+  assert.equal(allowedRequest('POST', '/api/comfort/mode/other'), false);
   assert.equal(allowedRequest('POST', '/api/schedules/routine'), true);
   assert.equal(allowedRequest('GET', '/api/schedules/routine'), false);
   assert.equal(allowedRequest('POST', '/api/schedules/routine/other'), false);
@@ -66,6 +116,20 @@ test('outbound agent preserves queries, method, JSON and uses only the local tok
   assert.equal(changed.status, 200);
   assert.equal(received.at(-1).route, '/api/alarm/override');
   assert.deepEqual(JSON.parse(received.at(-1).body), alarm);
+  const mode = { side: 'right', mode: 'preview' };
+  assert.equal((await fetch(`${origin}/api/comfort/mode`, { method: 'POST', headers, body: JSON.stringify(mode) })).status, 200);
+  assert.equal(received.at(-1).route, '/api/comfort/mode');
+  assert.deepEqual(JSON.parse(received.at(-1).body), mode);
+  const modelLimit = { monthlyLimit: 25, originalRevision: 2 };
+  assert.equal((await fetch(`${origin}/api/ai/usage/limit`, { method: 'POST', headers, body: JSON.stringify(modelLimit) })).status, 200);
+  assert.equal(received.at(-1).route, '/api/ai/usage/limit');
+  assert.deepEqual(JSON.parse(received.at(-1).body), modelLimit);
+  assert.equal((await fetch(`${origin}/api/ai/usage`, { headers })).status, 200);
+  assert.equal(received.at(-1).route, '/api/ai/usage');
+  const preferences = { podID: 'test', expected: { timeZone: 'UTC' }, preferences: { timeZone: 'Europe/London' } };
+  assert.equal((await fetch(`${origin}/api/settings/preferences`, { method: 'POST', headers, body: JSON.stringify(preferences) })).status, 200);
+  assert.equal(received.at(-1).route, '/api/settings/preferences');
+  assert.deepEqual(JSON.parse(received.at(-1).body), preferences);
   const routine = { side: 'left', days: ['monday', 'friday'], schedule: { temperatures: {} }, expected: { monday: {}, friday: {} } };
   const saved = await fetch(`${origin}/api/schedules/routine`, { method: 'POST', headers, body: JSON.stringify(routine) });
   assert.equal(saved.status, 200);
@@ -73,6 +137,14 @@ test('outbound agent preserves queries, method, JSON and uses only the local tok
   assert.deepEqual(JSON.parse(received.at(-1).body), routine);
   assert.equal((await fetch(`${origin}/api/analytics/episodes/42?side=right`, { headers })).status, 200);
   assert.equal(received.at(-1).route, '/api/analytics/episodes/42?side=right');
+  const recordIdentity = { side: 'right', expected: { entered_bed_at: '2026-10-13T23:00:00Z', left_bed_at: '2026-10-14T07:00:00Z' } };
+  for (const method of ['PUT', 'DELETE']) {
+    const response = await fetch(`${origin}/api/analytics/episodes/42`, { method, headers, body: JSON.stringify(recordIdentity) });
+    assert.equal(response.status, 200);
+    assert.equal(received.at(-1).method, method);
+    assert.equal(received.at(-1).route, '/api/analytics/episodes/42');
+    assert.deepEqual(JSON.parse(received.at(-1).body), recordIdentity);
+  }
 });
 
 test('disconnected commands fail promptly and are never replayed to a new agent', async context => {

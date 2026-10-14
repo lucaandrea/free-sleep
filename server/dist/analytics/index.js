@@ -1,17 +1,14 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="ebfb6775-0f32-51c3-822b-005f21a65c14")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="96752d50-c77f-5697-9cf9-0a31905561fb")}catch(e){}}();
+import { sleepMutations } from '../records/router.js';
 import express from 'express';
-import { z } from 'zod';
 import { prisma } from '../db/prisma.js';
 import settingsDB from '../db/settings.js';
 import { summarizeSleep } from './summary.js';
 import { episodeRoutes } from './episodeRoutes.js';
 import { MAX_EPISODE_SAMPLES } from './episode.js';
-export const analyticsQuery = z.object({
-    side: z.enum(['left', 'right']).default('left'),
-    days: z.coerce.number().int().min(7).max(365).default(30),
-    goalMinutes: z.coerce.number().int().min(240).max(720).default(480),
-});
+import { analyticsQuery } from './query.js';
+export { analyticsQuery } from './query.js';
 export async function loadAnalytics(query) {
     const since = Math.floor(Date.now() / 1000) - query.days * 86400;
     const [records, vitals] = await Promise.all([
@@ -25,6 +22,7 @@ export async function loadAnalytics(query) {
     return summarizeSleep(records, vitals, settingsDB.data.timeZone || 'UTC', query.goalMinutes);
 }
 const router = express.Router();
+router.use('/episodes', sleepMutations(prisma));
 router.use(episodeRoutes({
     record: (id, side) => prisma.sleep_records.findFirst({ where: { id, side } }),
     vitals: record => prisma.vitals.findMany({
@@ -41,4 +39,4 @@ router.get('/', async (request, response) => {
 });
 export default router;
 //# sourceMappingURL=index.js.map
-//# debugId=ebfb6775-0f32-51c3-822b-005f21a65c14
+//# debugId=96752d50-c77f-5697-9cf9-0a31905561fb

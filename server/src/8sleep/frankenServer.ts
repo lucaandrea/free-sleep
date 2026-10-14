@@ -10,6 +10,7 @@ import { DeviceStatus } from '../routes/deviceStatus/deviceStatusSchema.js';
 import { loadDeviceStatus } from './loadDeviceStatus.js';
 import config from '../config.js';
 import { toPromise, wait } from './promises.js';
+import type { DispatchGuard } from '../control/dispatchGuard.js';
 
 const FRANKEN_CONNECTION_TIMEOUT_MS = 25_000;
 const FRANKEN_CONNECTION_MAX_ATTEMPTS = 10;
@@ -44,11 +45,12 @@ export class Franken {
 
   static readonly separator = Buffer.from('\n\n');
 
-  public async sendMessage(message: string, notAfter?: number) {
+  public async sendMessage(message: string, notAfter?: number, assertCurrent?: DispatchGuard) {
     logger.debug(`Sending message to sock | message: ${message}`);
     let responseBytes: Buffer;
     try {
       responseBytes = await this.sequentialQueue.exec(async () => {
+        assertCurrent?.();
         if (notAfter !== undefined && Date.now() > notAfter) throw new Error('Temperature decision expired before dispatch');
         const requestBytes = Buffer.concat([Buffer.from(message), Franken.separator]);
         await this.write(requestBytes);
@@ -78,19 +80,19 @@ export class Franken {
     return arg.replace(/\n/gm, '');
   }
 
-  public async callFunction(command: FrankenCommand, arg: string, notAfter?: number) {
+  public async callFunction(command: FrankenCommand, arg: string, notAfter?: number, assertCurrent?: DispatchGuard) {
     logger.debug(`Calling function | command: ${command} | arg: ${arg}`);
     const commandNumber = frankenCommands[command];
     const cleanedArg = this.tryStripNewlines(arg);
     logger.debug(`commandNumber: ${commandNumber}`);
     logger.debug(`cleanedArg: ${cleanedArg}`);
-    await this.sendMessage(`${commandNumber}\n${cleanedArg}`, notAfter);
+    await this.sendMessage(`${commandNumber}\n${cleanedArg}`, notAfter, assertCurrent);
   }
 
-  public async getDeviceStatus(getGestures=false): Promise<DeviceStatus> {
+  public async getDeviceStatus(getGestures=false, assertCurrent?: DispatchGuard): Promise<DeviceStatus> {
     const command: FrankenCommand = 'DEVICE_STATUS';
     const commandNumber = frankenCommands[command];
-    const response = await this.sendMessage(commandNumber);
+    const response = await this.sendMessage(commandNumber, undefined, assertCurrent);
     return await loadDeviceStatus(response, getGestures);
   }
 

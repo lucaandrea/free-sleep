@@ -19,6 +19,9 @@ struct InsightsView: View {
                 metric("Heart rate", summary?.averageHeartRate.map { "\($0.formatted(.number.precision(.fractionLength(0...1)))) bpm" } ?? "—", "During detected presence")
                 metric("Recorded nights", summary.map { String($0.recordedNights) } ?? "—", "Missing nights are not zero")
             }
+            if let analytics = model.analytics {
+                DataCoverageCard(report: analytics.quality?.coverage, timeZone: analytics.timeZone).id("\(model.side.rawValue):\(model.days):coverage")
+            }
             SleepCard(title: "Time made for rest", eyebrow: "BED PRESENCE") {
                 if let nights = model.analytics?.nights, !nights.isEmpty {
                     PresenceChart(nights: nights)

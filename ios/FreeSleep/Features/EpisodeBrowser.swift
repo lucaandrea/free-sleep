@@ -11,12 +11,14 @@ struct EpisodeBrowser: View {
     @State private var detail: EpisodeDetail?
     @State private var error: String?
     @State private var loading = false
+    @State private var edit: SleepRecordEdit?
     private var ordered: [SleepAnalytics.Night] { episodes.sorted { $0.endedAt > $1.endedAt } }
     private var selected: SleepAnalytics.Night? { ordered.first { $0.id == selectedID } ?? ordered.first }
-    private var scope: String { "\(address)|\(model.side.rawValue)|\(selected?.id ?? 0)|\(expanded)" }
+    private var scope: String { "\(address)|\(model.side.rawValue)|\(selected?.id ?? 0)|\(expanded)|\(model.recordRevision)" }
     var body: some View {
         SleepCard(title: "Your recorded episodes", eyebrow: "NIGHT BY NIGHT", actionTitle: expanded ? "Hide details" : "Browse episodes", action: { expanded.toggle() }) {
             Text("Includes shorter episodes. Times in \(timeZone).").foregroundStyle(SleepTheme.secondary)
+            if let message = model.recordMessage { Text(message).sleepText(.caption).foregroundStyle(SleepTheme.success) }
             if expanded {
                 if let selected {
                     VStack(alignment: .leading, spacing: 8) {
@@ -32,10 +34,21 @@ struct EpisodeBrowser: View {
                         Text(error).foregroundStyle(SleepTheme.error)
                         Button("Retry") { Task { await load() } }.buttonStyle(SleepButtonStyle())
                     }
-                    if let detail, !loading, error == nil { EpisodeDetailContent(detail: detail).id("\(model.side.rawValue):\(selected.id)") }
+                    if let detail, !loading, error == nil {
+                        HStack {
+                            Button("Edit record") { openEditor(detail, action: .edit) }.buttonStyle(SleepButtonStyle())
+                            Button("Delete record", role: .destructive) { openEditor(detail, action: .delete) }.buttonStyle(SleepButtonStyle(kind: .text))
+                        }
+                        EpisodeDetailContent(detail: detail).id("\(model.side.rawValue):\(selected.id)")
+                    }
                 } else { Text("No episodes in this range.") }
             }
         }.task(id: scope) { await load() }
+            .sheet(item: $edit) { SleepRecordEditor(edit: $0) }
+    }
+    private func openEditor(_ detail: EpisodeDetail, action: SleepRecordEdit.Action) {
+        edit = .init(episode: detail.episode, side: model.side, timeZone: timeZone, action: action,
+                     address: address, connectionRevision: model.connectionRevision)
     }
     private func label(_ episode: SleepAnalytics.Night) -> String {
         guard let start = EpisodeDetail.date(episode.startedAt), let end = EpisodeDetail.date(episode.endedAt) else { return episode.date }
@@ -50,8 +63,7 @@ struct EpisodeBrowser: View {
         do {
             let result: EpisodeDetail
             if model.demo {
-                guard var sample = SleepDemo.shared?.details[String(selected.id)] else { throw PodError.message("The sample episode is unavailable.") }
-                sample.side = side; result = sample
+                result = try model.demoHistory.detail(id: selected.id, side: model.side)
             } else {
                 result = try await PodClient.configured().get("analytics/episodes/\(selected.id)", query: [URLQueryItem(name: "side", value: side)])
             }

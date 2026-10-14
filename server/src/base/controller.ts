@@ -1,5 +1,6 @@
 import { BaseDecoder, movePacket, stopPacket } from './protocol.js';
 import { BaseError, BaseTelemetry, BaseTransport, baseConfigurationSchema, basePositionSchema } from './types.js';
+import type { DispatchGuard } from '../control/dispatchGuard.js';
 
 export class BaseController {
   private state = 'unconfigured';
@@ -74,8 +75,9 @@ export class BaseController {
     if (this.state !== 'connected' || this.status().stale) throw new BaseError('Waiting for a current base position');
   }
 
-  private write(packet: Uint8Array, revision?: number) {
+  private write(packet: Uint8Array, revision?: number, assertCurrent?: DispatchGuard) {
     const operation = this.writes.then(async () => {
+      assertCurrent?.();
       if (revision !== undefined && revision !== this.revision) throw new BaseError('Movement cancelled', 409);
       if (this.state !== 'connected') throw new BaseError('Base disconnected');
       await this.transport.write(packet);
@@ -85,30 +87,32 @@ export class BaseController {
   }
 
   // Stop invalidates the delayed feet command and never waits behind an entire movement.
-  async move(input: unknown) {
+  async move(input: unknown, assertCurrent?: DispatchGuard) {
+    assertCurrent?.();
     const position = basePositionSchema.parse(input);
     this.assertReady();
     if (this.busy || this.stopping) throw new BaseError('Another base command is in progress', 409);
     this.busy = true;
     const revision = this.revision;
     try {
-      await this.write(movePacket('head', position.head, position.speed), revision);
+      await this.write(movePacket('head', position.head, position.speed), revision, assertCurrent);
       await new Promise((resolve) => setTimeout(resolve, 500));
       this.assertReady();
-      await this.write(movePacket('feet', position.feet, position.speed), revision);
+      await this.write(movePacket('feet', position.feet, position.speed), revision, assertCurrent);
     } finally {
       this.busy = false;
     }
     return this.status();
   }
 
-  async stop() {
+  async stop(assertCurrent?: DispatchGuard) {
+    assertCurrent?.();
     this.revision++;
     // Keep the notification generation active: stopping cancels writes, not telemetry.
     if (this.stopping) throw new BaseError('Stop already in progress', 409);
     this.stopping = true;
     try {
-      await this.write(stopPacket());
+      await this.write(stopPacket(), undefined, assertCurrent);
     } finally {
       this.stopping = false;
     }

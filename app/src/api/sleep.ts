@@ -1,6 +1,7 @@
 import axios from './api';
 import { useQuery } from '@tanstack/react-query';
 import { SleepRecord } from '../../../server/src/db/sleepRecordsSchema.ts';
+import type { SleepRecordChange, SleepRecordIdentity } from '../../../server/src/records/sleepMutation';
 
 interface SleepRecordQueryParams {
   startTime?: string; // ISO 8601 format (e.g., 2025-01-01T00:00:00Z)
@@ -26,11 +27,11 @@ export const useSleepRecords = (params?: SleepRecordQueryParams) => {
 };
 
 
-export const deleteSleepRecord = async (id: number): Promise<void> => {
-  await axios.delete(`/metrics/sleep/${id}`);
+export const deleteSleepRecord = async (id: number, identity: SleepRecordIdentity): Promise<void> => {
+  await axios.delete(`/analytics/episodes/${id}`, { data: identity });
 };
 
 
-export const updateSleepRecord = async (id: number, updates: Partial<SleepRecord>) => {
-  return axios.put<SleepRecord>(`/metrics/sleep/${id}`, updates);
+export const updateSleepRecord = async (id: number, updates: SleepRecordChange): Promise<void> => {
+  await axios.put(`/analytics/episodes/${id}`, updates);
 };

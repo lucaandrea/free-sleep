@@ -12,7 +12,7 @@
   color:var(--ink);
   background:var(--paper);
   font-synthesis:none;
-  scroll-behavior:smooth;
+  scroll-behavior:auto;
   scroll-padding-top:90px
 }
 * {
@@ -514,7 +514,7 @@ small {
   overflow-x:auto;
   scrollbar-width:thin
 }
-.comparison-table,.model-table {
+.comparison-table,.model-table,.roadmap-table {
   border-collapse:collapse;
   width:100%;
   font-size:13px;
@@ -524,7 +524,7 @@ small {
 .comparison-table {
   margin-top:32px
 }
-.comparison-table th,.model-table th {
+.comparison-table th,.model-table th,.roadmap-table th {
   text-align:left;
   font-size:10px;
   letter-spacing:1px;
@@ -533,7 +533,7 @@ small {
   padding:14px;
   border-bottom:1px solid var(--ink)
 }
-.comparison-table td,.model-table td {
+.comparison-table td,.model-table td,.roadmap-table td {
   padding:16px 14px;
   border-bottom:1px solid var(--line);
   vertical-align:top
@@ -1226,6 +1226,22 @@ dialog::backdrop {
   font-weight:600;
   padding:0 0 14px
 }
+.roadmap-table {
+  min-width:520px
+}
+.roadmap-table td:first-child {
+  width:7%;
+  color:var(--orange);
+  font-variant-numeric:tabular-nums
+}
+.roadmap-table td:nth-child(2) {
+  width:61%;
+  font-weight:600
+}
+.roadmap-table td:nth-child(n+3) {
+  width:16%;
+  color:var(--muted)
+}
 @media(max-width:760px) {
   .completed-followup {
     padding:20px
@@ -1340,7 +1356,7 @@ dialog::backdrop {
   .token-box,.gap-box,.research-note {
     break-inside:avoid
   }
-  .model-table {
+  .model-table,.roadmap-table {
     min-width:0
   }
   .comparison-table {

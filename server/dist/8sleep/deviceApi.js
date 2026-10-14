@@ -1,5 +1,5 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="76488c38-e4a2-508b-93c3-6f918049d257")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="f7ca5f33-3de5-54d0-bbc3-c6f9e441ab8b")}catch(e){}}();
 import _ from 'lodash';
 import { connectFranken } from './frankenServer.js';
 import logger from '../logger.js';
@@ -24,7 +24,8 @@ export const frankenCommands = {
     // STOP_PRIME: "18",
 };
 export const invertedFrankenCommands = _.invert(frankenCommands);
-export async function executeFunction(command, arg = 'empty') {
+export async function executeFunction(command, arg = 'empty', assertCurrent) {
+    assertCurrent?.();
     logger.debug(`Executing command | command: ${command} | arg: ${arg}`);
     const franken = await connectFranken();
     // const frankenCommand = funcNameToFrankenCommand[name];
@@ -32,9 +33,9 @@ export async function executeFunction(command, arg = 'empty') {
     // the error will bubble up to the main loop of the device-api-client (protocol handling)
     // and the client will crash disconnecting from device-api - this is safe, it's correctly cleaned-up,
     // deviceApiLoop will take care of reconnecting to device-api
-    const response = await franken.callFunction(command, arg);
+    const response = await franken.callFunction(command, arg, undefined, assertCurrent);
     logger.debug(response);
     return response;
 }
 //# sourceMappingURL=deviceApi.js.map
-//# debugId=76488c38-e4a2-508b-93c3-6f918049d257
+//# debugId=f7ca5f33-3de5-54d0-bbc3-c6f9e441ab8b

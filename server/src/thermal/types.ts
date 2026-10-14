@@ -2,8 +2,9 @@ import { z } from 'zod';
 import type { DeepPartial } from 'ts-essentials';
 import type { DeviceStatus } from '../routes/deviceStatus/deviceStatusSchema.js';
 
+export const comfortModeSchema = z.enum(['off', 'preview', 'active']);
 export const comfortConfigSchema = z.object({
-  mode: z.enum(['off', 'preview', 'active']),
+  mode: comfortModeSchema,
   minimumF: z.number().int().min(55).max(110),
   maximumF: z.number().int().min(55).max(110),
 }).strict().refine(value => value.minimumF <= value.maximumF, 'Minimum must not exceed maximum');

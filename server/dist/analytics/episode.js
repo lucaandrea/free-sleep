@@ -1,7 +1,8 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="d198dc9a-1478-5398-b4bc-2c4f3da688b8")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="65e0e1ba-7086-5554-82fa-9fae5f40ec0e")}catch(e){}}();
 import { presenceIntervals, summarizeSleep } from './summary.js';
-export const MAX_EPISODE_SECONDS = 72 * 60 * 60;
+import { validRecordWindow } from './coverage.js';
+export { MAX_EPISODE_SECONDS } from './coverage.js';
 export const MAX_EPISODE_SAMPLES = 2880;
 export const VITAL_GAP_SECONDS = 15 * 60;
 export const vitalMetrics = [
@@ -12,10 +13,7 @@ export const vitalMetrics = [
 export class EpisodeRangeError extends Error {
 }
 export function validateEpisode(record) {
-    const duration = record.left_bed_at - record.entered_bed_at;
-    if (!Number.isFinite(new Date(record.entered_bed_at * 1000).getTime())
-        || !Number.isFinite(new Date(record.left_bed_at * 1000).getTime())
-        || !(duration > 0 && duration <= MAX_EPISODE_SECONDS)) {
+    if (!validRecordWindow(record.entered_bed_at, record.left_bed_at)) {
         throw new EpisodeRangeError('This episode has invalid times or exceeds the 72-hour detail limit.');
     }
 }
@@ -82,4 +80,4 @@ export function episodeDetail(record, observations, timeZone) {
     };
 }
 //# sourceMappingURL=episode.js.map
-//# debugId=d198dc9a-1478-5398-b4bc-2c4f3da688b8
+//# debugId=65e0e1ba-7086-5554-82fa-9fae5f40ec0e

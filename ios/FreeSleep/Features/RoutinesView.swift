@@ -57,7 +57,7 @@ struct RoutinesView: View {
     }
     @ViewBuilder private func editor(_ selected: DailySchedule) -> some View {
         let problems = RoutinePlan.problems(selected)
-        SleepCard(title: "\(workspace.day.capitalized) night", eyebrow: "POD LOCAL TIME · \(model.demo ? "America/Los_Angeles" : model.settings?.timeZone ?? "Unknown")",
+        SleepCard(title: "\(workspace.day.capitalized) night", eyebrow: "POD LOCAL TIME · \(model.settings?.timeZone ?? "Unknown")",
                   badge: draft != nil ? "Unsaved" : selected.power.enabled ? "Enabled" : "Off") {
             RoutineTimeline(schedule: selected)
         }

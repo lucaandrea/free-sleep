@@ -1,6 +1,6 @@
 # Apple integrations
 
-Implemented and checked locally on 2026-10-13. The native app targets iOS 18 and newer. Signed-device Health permissions, real Home pairing and Siri execution remain acceptance checks on the owner's iPhone. The browser uses the same Pod API, but cannot directly access HealthKit, HomeKit permissions or App Intents.
+Implemented and checked locally through 2026-10-14. The native app targets iOS 18 and newer. Signed-device Health permissions, real Home pairing and Siri execution remain acceptance checks on the owner's iPhone. The browser uses the same Pod API, but cannot directly access HealthKit, HomeKit permissions or App Intents.
 
 ## Personal Health setup
 
@@ -45,11 +45,19 @@ The comparison card reads the past twenty-four hours from other Health sources, 
 
 Ten actions have discoverable App Shortcut phrases. All sixteen App Intents are available to compose in Shortcuts; the four next-alarm actions were added on 2026-10-14. Health sync and the personal routine summary require local device authentication. Network errors are returned to Shortcuts, not reported as completed actions. A successful control response acknowledges the command, not physical movement or temperature convergence. Debug demo mode blocks system actions and Health access. Release builds ignore the demo launch argument. See [alarm behavior](ALARMS.md) for one-time changes, stale edits and DST handling.
 
+Every action supplies an interactive parameter summary for the Shortcuts editor, including the selected side, temperature, whole-bed angles or time where applicable. The compiled App Intents metadata contains all sixteen actions, their parameter summaries and ten App Shortcut entries. These summaries follow [Apple's parameter guidance](https://developer.apple.com/documentation/appintents/adding-parameters-to-an-app-intent).
+
+The adaptive-comfort action uses `POST /api/comfort/mode` with only the side and mode. The server resolves the latest saved limits within its control queue; it retains learned offsets, manual pauses and the partner's settings. Update the Pod server and gateway with the iPhone app. Older versions reject this new route; the client does not fall back to overwriting the full configuration. Alarm actions reject a response for a different side before submitting a change.
+
+Seven native request tests call the fifteen API-backed intents' `perform()` methods through `PodClient` and isolated ephemeral URLSession transports. They check exact routes, methods, JSON, side selection, composable results, target validation, alarm identity, error propagation, absence of retries and concurrent credential isolation. The fixture intercepts all requests and never reads saved credentials or contacts a Pod. Health sync retains its separate engine/store tests. These are in-process integration checks, not Siri, Shortcuts-app or locked-device execution proof.
+
 ## Apple Home
 
-The Pod's optional local HAP bridge exposes two thermostats and named switches for base presets, Stop and priming. Pair it in Apple Home using the code shown in Settings after enabling the bridge; its identity and pairing data persist locally. The native app can list and run existing Home scenes after permission. Base movement needs an explicitly connected, hardware-qualified base. Replit is not a replacement for the local bridge or Apple's home hub. See [platform setup](PLATFORM_SETUP.md) for bridge environment variables, pairing and device acceptance.
+The Pod's optional local HAP bridge exposes two thermostats and named switches for base presets, Stop and priming. Pair it in Apple Home using the code shown in Settings after enabling the bridge; its identity and pairing data persist locally. Settings distinguishes bridge status from iPhone Home permission and real pairing. The native app lists and runs existing Home scenes after explicit access, reports denied/restricted/empty states, and prevents duplicate scene execution. Base movement needs an explicitly connected, hardware-qualified base. Replit is not a replacement for the local bridge or Apple's home hub. See [connection setup](CONNECTIONS.md) and [platform setup](PLATFORM_SETUP.md) for bridge configuration, pairing and device acceptance.
 
 ## Sources and validation boundary
+
+Bridge discovery, identity persistence, command handling and shutdown have dedicated local coverage. The HAP publisher runs in a separate process; a real port-conflict test verifies that its crash leaves the parent HTTP endpoint responsive. See [HomeKit bridge reliability](HOMEKIT_BRIDGE.md) for lifecycle status, IPC cancellation, the 84-test server validation and remaining network/device qualification.
 
 - [Apple background refresh requests](https://developer.apple.com/documentation/backgroundtasks/bgapprefreshtaskrequest) and [SwiftUI app refresh](https://developer.apple.com/documentation/swiftui/backgroundtask/apprefresh(_:)) define opportunistic scheduling and cancellation handling.
 - [HealthKit sync identifiers](https://developer.apple.com/documentation/healthkit/hkmetadatakeysyncidentifier) and [sync versions](https://developer.apple.com/documentation/healthkit/hkmetadatakeysyncversion) support updating an app's earlier samples.

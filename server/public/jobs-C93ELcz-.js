@@ -1,0 +1,2 @@
+import{t as e}from"./api-BDjUZcBs.js";import{i as t,t as n}from"./types-MEnNT4AF.js";var r=t([`analyzeSleepLeft`,`analyzeSleepRight`,`biometricsCalibrationLeft`,`biometricsCalibrationRight`,`reboot`,`update`]);n(r);var i=t=>e.post(`/jobs`,t);export{r as n,i as t};
+//# sourceMappingURL=jobs-C93ELcz-.js.map

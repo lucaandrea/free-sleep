@@ -1,5 +1,5 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="e934aabd-5e48-582d-bd34-d34520c766e0")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="85371c8c-5b4a-53ff-bc65-b170a6a940b8")}catch(e){}}();
 import { comfortConfigSchema } from './types.js';
 import { decideComfort, learnComfort, MANUAL_PAUSE_MS, routineAt } from './policy.js';
 const sides = ['left', 'right'];
@@ -54,32 +54,43 @@ export class ComfortController {
         });
     }
     configure(side, config, reset = false) {
+        return this.serial(() => this.configureLocked(side, config, reset));
+    }
+    setMode(side, mode) {
+        // Resolve limits inside the shared queue so a Shortcut never restores an older client's settings.
         return this.serial(async () => {
             const state = (await this.load())[side];
-            if (this.fault && config.mode === 'active') {
-                throw new Error('Adaptive comfort is suspended after an error. Check the Pod and restart its server first.');
-            }
-            state.config = comfortConfigSchema.parse(config);
-            if (reset) {
-                state.offsetF = 0;
-                // Previously consumed reports stay consumed, so reset cannot immediately relearn from the same data.
-                this.event(side, 'Learned adjustment reset to 0°F. Previously reviewed check-ins stay consumed.');
-            }
-            this.event(side, `Adaptive comfort set to ${config.mode}. Limits ${config.minimumF}–${config.maximumF}°F.`);
-            this.decisions[side] = waiting();
-            try {
-                await this.save();
-            }
-            catch (error) {
-                await this.suspend('Adaptive comfort is suspended because its settings could not be saved.');
-                throw error;
-            }
+            await this.configureLocked(side, { ...state.config, mode });
         });
     }
-    execute(command, source, apply) {
-        return this.serial(() => this.executeLocked(command, source, apply));
+    async configureLocked(side, config, reset = false) {
+        const state = (await this.load())[side];
+        if (this.fault && config.mode === 'active') {
+            throw new Error('Adaptive comfort is suspended after an error. Check the Pod and restart its server first.');
+        }
+        state.config = comfortConfigSchema.parse(config);
+        if (reset) {
+            state.offsetF = 0;
+            // Previously consumed reports stay consumed, so reset cannot immediately relearn from the same data.
+            this.event(side, 'Learned adjustment reset to 0°F. Previously reviewed check-ins stay consumed.');
+        }
+        this.event(side, `Adaptive comfort set to ${config.mode}. Limits ${config.minimumF}–${config.maximumF}°F.`);
+        this.decisions[side] = waiting();
+        try {
+            await this.save();
+        }
+        catch (error) {
+            await this.suspend('Adaptive comfort is suspended because its settings could not be saved.');
+            throw error;
+        }
     }
-    async executeLocked(command, source, apply) {
+    execute(command, source, apply, assertCurrent) {
+        return this.serial(() => {
+            assertCurrent?.();
+            return this.executeLocked(command, source, apply, assertCurrent);
+        });
+    }
+    async executeLocked(command, source, apply, assertCurrent) {
         if (this.stopped && source === 'adaptive')
             return;
         let document;
@@ -87,11 +98,13 @@ export class ComfortController {
             document = await this.load();
         }
         catch (error) {
+            assertCurrent?.();
             await this.suspend('Adaptive comfort is suspended because its saved data could not be read.');
             if (source === 'adaptive')
                 throw error;
             return apply(command);
         }
+        assertCurrent?.();
         if (source === 'manual') {
             let changed = false;
             for (const side of sides) {
@@ -209,4 +222,4 @@ export class ComfortController {
     }
 }
 //# sourceMappingURL=controller.js.map
-//# debugId=e934aabd-5e48-582d-bd34-d34520c766e0
+//# debugId=85371c8c-5b4a-53ff-bc65-b170a6a940b8

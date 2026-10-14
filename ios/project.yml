@@ -19,6 +19,10 @@ targets:
         buildPhase: resources
       - path: ../shared/fixtures/sleep-demo.json
         buildPhase: resources
+      - path: ../shared/fixtures/device-demo.json
+        buildPhase: resources
+      - path: ../shared/fixtures/usage-demo.json
+        buildPhase: resources
     settings:
       base:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
@@ -48,7 +52,10 @@ targets:
   FreeSleepTests:
     type: bundle.unit-test
     platform: iOS
-    sources: [FreeSleepTests]
+    sources:
+      - FreeSleepTests
+      - path: ../shared/fixtures/coverage-cases.json
+        buildPhase: resources
     dependencies:
       - target: FreeSleep
     settings:

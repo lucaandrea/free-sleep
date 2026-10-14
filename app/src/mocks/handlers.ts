@@ -1,4 +1,6 @@
 import { applyRoutine, RoutineConflict, RoutineSaveSchema } from '../../../server/src/routines/contract';
+import { applyPreferences, preferenceSnapshot, PreferenceChangeSchema } from '../../../server/src/preferences/contract';
+import deviceDemo from '../../../shared/fixtures/device-demo.json';
 import { http, HttpResponse } from 'msw/http';
 import { delay } from 'msw/utils/delay';
 import { sse } from 'msw/sse';
@@ -14,7 +16,6 @@ import {
   updateSettings,
   getDeviceStatus,
   updateDeviceStatus,
-  getServerStatus,
   listSleepRecords,
   setSleepRecords,
   listMovementRecords,
@@ -48,6 +49,19 @@ const notFound = (message: string) => HttpResponse.json({ message }, { status: 4
 
 export const handlers = [
   ...alarmHandlers,
+  http.get('/api/settings/preferences', () => HttpResponse.json(preferenceSnapshot(getSettings()))),
+  http.post('/api/settings/preferences', async ({ request }) => {
+    const parsed = PreferenceChangeSchema.safeParse(await request.json());
+    if (!parsed.success) return HttpResponse.json({ error: { message: 'Check the timezone, side names and daily time.' } }, { status: 400 });
+    try {
+      const next = applyPreferences(getSettings(), parsed.data);
+      return HttpResponse.json(preferenceSnapshot(updateSettings(next)));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Reload settings before saving.';
+      return HttpResponse.json({ error: { message } }, { status: 409 });
+    }
+  }),
+  http.get('/api/serverStatus', () => HttpResponse.json(deviceDemo.health)),
   http.get('/api/services', async () => {
     await delay(120);
     return HttpResponse.json(deepClone(getServices()));
@@ -98,10 +112,6 @@ export const handlers = [
     updateDeviceStatus(body);
     await delay(120);
     return new HttpResponse(null, { status: 204 });
-  }),
-  http.get('/api/serverStatus', async () => {
-    await delay(150);
-    return HttpResponse.json(deepClone(getServerStatus()));
   }),
   http.get('/api/metrics/sleep', async ({ request }) => {
     const filters = toFilters(request);

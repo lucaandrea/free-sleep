@@ -1,6 +1,6 @@
 import Foundation
 
-struct JournalEntry: Codable, Sendable {
+struct JournalEntry: Codable, Sendable, Equatable {
     var date: String
     var side: String
     var restfulness = 3
@@ -22,5 +22,9 @@ struct Journal: Decodable, Sendable {
         var note: String
     }
     var entries: [JournalEntry]
+    var selectedDate: String?
+    var selected: JournalEntry?
+    var timeZone: String?
     var patterns: Patterns
+    static let patternNote = "Self-reported habits are associations, not causes. Each comparison needs at least five recorded nights in both groups."
 }

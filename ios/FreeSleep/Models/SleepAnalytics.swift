@@ -22,6 +22,8 @@ struct SleepAnalytics: Codable, Sendable, Equatable {
         var bedtimeVariationMinutes: Double?
         var weeklyChangeMinutes: Double?
     }
+    struct Quality: Codable, Sendable, Equatable { var coverage: DataCoverage? }
+    var quality: Quality? = nil
     var timeZone: String
     var nights: [Night]
     var episodes: [Night]? = nil

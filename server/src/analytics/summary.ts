@@ -1,4 +1,5 @@
 import moment from 'moment-timezone';
+import { dataCoverage, validRecordWindow } from './coverage.js';
 
 export interface SleepObservation {
   id: number;
@@ -61,7 +62,7 @@ export function summarizeSleep(records: SleepObservation[], vitals: VitalObserva
     return lower;
   };
   const nights = records
-    .filter((record) => record.left_bed_at > record.entered_bed_at)
+    .filter((record) => validRecordWindow(record.entered_bed_at, record.left_bed_at))
     .map((record) => {
       const intervals = presenceIntervals(record);
       const occupiedMinutes = intervals.length
@@ -99,7 +100,8 @@ export function summarizeSleep(records: SleepObservation[], vitals: VitalObserva
   for (const night of nights) {
     if (!daily.has(night.date) || daily.get(night.date)!.windowMinutes < night.windowMinutes) daily.set(night.date, night);
   }
-  const mainNights = [...daily.values()];
+  const mainNights = [...daily.values()].sort((first, second) => first.date.localeCompare(second.date));
+  const coverage = dataCoverage(mainNights, timeZone, records.length - nights.length);
   // Compare calendar weeks anchored to the latest recorded wake date, without filling gaps with zeroes.
   const latestDate = mainNights[mainNights.length - 1]?.date;
   const recentStart = moment.tz(latestDate, timeZone).subtract(6, 'days').format('YYYY-MM-DD');
@@ -132,12 +134,14 @@ export function summarizeSleep(records: SleepObservation[], vitals: VitalObserva
         recent.map((night) => night.respiratoryRate).filter((value): value is number => value !== null),
       ),
       bedtimeVariationMinutes: variation,
-      weeklyChangeMinutes: average === null || previousAverage === null ? null : round(average - previousAverage),
+      weeklyChangeMinutes: !coverage.comparisonAvailable || average === null || previousAverage === null
+        ? null : round(average - previousAverage),
       opportunityGapMinutes: average === null ? null : Math.max(0, round(goalMinutes - average)),
       averageExits: mean(recent.map((night) => night.exits)),
     },
     quality: {
       source: 'pod-presence-and-vitals',
+      coverage,
       stageClassification: false,
       hrvValidated: false,
       respiratoryRateValidated: false,

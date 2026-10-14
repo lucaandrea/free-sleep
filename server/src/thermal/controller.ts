@@ -53,36 +53,49 @@ export class ComfortController {
     });
   }
   configure(side: Side, config: ComfortConfig, reset = false) {
+    return this.serial(() => this.configureLocked(side, config, reset));
+  }
+  setMode(side: Side, mode: ComfortConfig['mode']) {
+    // Resolve limits inside the shared queue so a Shortcut never restores an older client's settings.
     return this.serial(async () => {
       const state = (await this.load())[side];
-      if (this.fault && config.mode === 'active') {
-        throw new Error('Adaptive comfort is suspended after an error. Check the Pod and restart its server first.');
-      }
-      state.config = comfortConfigSchema.parse(config);
-      if (reset) {
-        state.offsetF = 0;
-        // Previously consumed reports stay consumed, so reset cannot immediately relearn from the same data.
-        this.event(side, 'Learned adjustment reset to 0°F. Previously reviewed check-ins stay consumed.');
-      }
-      this.event(side, `Adaptive comfort set to ${config.mode}. Limits ${config.minimumF}–${config.maximumF}°F.`);
-      this.decisions[side] = waiting();
-      try { await this.save(); }
-      catch (error) { await this.suspend('Adaptive comfort is suspended because its settings could not be saved.'); throw error; }
+      await this.configureLocked(side, { ...state.config, mode });
     });
   }
-  execute(command: DeviceUpdate, source: ControlSource, apply: Apply): Promise<void> {
-    return this.serial(() => this.executeLocked(command, source, apply));
+  private async configureLocked(side: Side, config: ComfortConfig, reset = false) {
+    const state = (await this.load())[side];
+    if (this.fault && config.mode === 'active') {
+      throw new Error('Adaptive comfort is suspended after an error. Check the Pod and restart its server first.');
+    }
+    state.config = comfortConfigSchema.parse(config);
+    if (reset) {
+      state.offsetF = 0;
+      // Previously consumed reports stay consumed, so reset cannot immediately relearn from the same data.
+      this.event(side, 'Learned adjustment reset to 0°F. Previously reviewed check-ins stay consumed.');
+    }
+    this.event(side, `Adaptive comfort set to ${config.mode}. Limits ${config.minimumF}–${config.maximumF}°F.`);
+    this.decisions[side] = waiting();
+    try { await this.save(); }
+    catch (error) { await this.suspend('Adaptive comfort is suspended because its settings could not be saved.'); throw error; }
+  }
+  execute(command: DeviceUpdate, source: ControlSource, apply: Apply, assertCurrent?: () => void): Promise<void> {
+    return this.serial(() => {
+      assertCurrent?.();
+      return this.executeLocked(command, source, apply, assertCurrent);
+    });
   }
 
-  private async executeLocked(command: DeviceUpdate, source: ControlSource, apply: Apply) {
+  private async executeLocked(command: DeviceUpdate, source: ControlSource, apply: Apply, assertCurrent?: () => void) {
     if (this.stopped && source === 'adaptive') return;
     let document: ComfortDocument;
     try { document = await this.load(); }
     catch (error) {
+      assertCurrent?.();
       await this.suspend('Adaptive comfort is suspended because its saved data could not be read.');
       if (source === 'adaptive') throw error;
       return apply(command);
     }
+    assertCurrent?.();
     if (source === 'manual') {
       let changed = false;
       for (const side of sides) {

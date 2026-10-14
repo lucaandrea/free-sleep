@@ -1,8 +1,10 @@
 # Recorded episodes and vitals
 
-Open **Sleep → Browse episodes** on web or iPhone. The same card lists every recorded episode in the selected history range, including shorter episodes that do not contribute another night to the overview. The web's **Data → Vitals** page now opens this browser directly. The existing web record-management screen remains available for editing or deleting records.
+Open **Sleep → Browse episodes** on web or iPhone. The same card lists every recorded episode in the selected history range, including shorter episodes that do not contribute another night to the overview. The web's **Data → Vitals** page now opens this browser directly. Choose **Edit record** or **Delete record** below the episode selector on either platform. The older web record-management page uses the same editor.
 
 The selector uses the episode's wake date. The presence bar and charts label both the start and end dates in the Pod timezone. Recorded-reading rows include the timezone abbreviation, so repeated daylight-saving hours remain distinguishable. A selected episode shows its window, detected presence duration, recorded exits and number of original vital records. Changing side or range resets the detail selection; native analytics are also cleared before loading a different side or range.
+
+The overview now explains returned-record coverage and withholds sparse weekly comparisons. Invalid timestamps, nonpositive windows and windows over 72 hours are excluded from the overview with a count. See [analytics coverage](DATA_QUALITY.md) for missing-data states and calendar rules.
 
 ## What the charts mean
 
@@ -22,7 +24,7 @@ Intervals are clipped to the episode, sorted and merged before calculating prese
 
 ## API and limits
 
-`GET /api/analytics/episodes/:id?side=left|right` is a read-only endpoint. A positive integer ID and explicit bed side are required. The lookup and subsequent vital query both use that side and the selected record's time boundaries. The gateway permits only GET for this exact route shape.
+`GET /api/analytics/episodes/:id?side=left|right` reads the episode. A positive integer ID and explicit bed side are required. The lookup and subsequent vital query both use that side and the selected record's time boundaries. The gateway permits GET, PUT and DELETE for this exact route shape; other methods remain excluded.
 
 - 400: missing/invalid side or ID.
 - 404: no matching record for that side, including a removed record.
@@ -41,9 +43,27 @@ flowchart LR
   Raw --> Table[Paginated reading table]
 ```
 
+## Correct or remove a record
+
+Both clients show the selected side, Pod timezone and full start/end dates. Date summaries include the UTC offset to distinguish repeated daylight-saving hours. The web uses outlined date/time fields; iOS uses native date/time pickers in a sheet. Changes are drafts until **Save changes**. Invalid or unchanged windows cannot be saved, and controls/dismissal are disabled while the request is pending. Deletion has a separate confirmation and preserves the original vital readings.
+
+Edits must end after their start and span no more than 72 elapsed hours. They update only the record window, its duration and the count of complete recorded exits inside it. Original presence/absence intervals and vital readings remain intact, so extending a window does not fabricate presence or measurements. Charts clip those original intervals to the corrected window. Nightly trends remain ordered by wake date, including corrections that span multiple dates. A later full biometric reanalysis may recreate records; deletion is not a permanent exclusion rule for future analysis.
+
+The current clients use these guarded operations:
+
+- `PUT /api/analytics/episodes/:id`: JSON contains `side`, `expected: { entered_bed_at, left_bed_at }` and the two new ISO timestamps.
+- `DELETE /api/analytics/episodes/:id`: JSON contains `side` and the same `expected` original window.
+- Success returns 204. Invalid input returns 400; a missing or wrong-side edit returns 404; stale/removed records or a conflicting start time return 409. Corrupt recorded-exit intervals prevent an edit with 422. Deletion is deliberately not silently idempotent: an absent record requires a refresh.
+
+The database compares the original side/window when writing, so simultaneous edits cannot silently overwrite one another. Exit calculations also compare the original absence data. Client dialogs retain the exact selected snapshot; native edits additionally check that the connection has not changed. Neither client retries writes automatically. After a success, clients refresh history and episode details; cancelled or superseded native reads cannot restore pre-edit data.
+
+**Update the server, gateway, web app and iPhone app together.** Using the analytics route ensures an older server or gateway rejects an unsupported mutation instead of invoking its old, unguarded record editor. The legacy `/api/metrics/sleep/:id` PUT/DELETE paths remain guarded aliases on the updated server and now require the same identity body; older callers receive a validation error. They also return 204 rather than an updated record.
+
+Apple Health exports are separate from the Pod database. A subsequent Health sync reconciles exports only within its requested window and linked personal side. This edit does not write to HealthKit immediately. Older exports outside that window need an appropriate sync or management in Apple Health; deletion here is not a promise that all historical Health samples have been removed.
+
 ## Demo and verification
 
-Both clients read `shared/fixtures/sleep-demo.json`. It contains 14 synthetic main nights, one short episode, missing readings, an outlier, a presence gap and a reporting gap. The 7-day sample view contains seven main nights plus the short episode; 30/90-day views show all available sample records. Dates are fixed for reproducible screenshots and are explicitly demo data.
+Both clients read `shared/fixtures/sleep-demo.json`. It contains 14 synthetic main nights, one short episode, missing readings, an outlier, a presence gap and a reporting gap. The 7-day sample view contains seven main nights plus the short episode; 30/90-day views show all available sample records. Dates are fixed for reproducible screenshots and are explicitly demo data. The fixture includes original synthetic records and readings. Both previews hold edits in memory, isolate the two sides, and recompute charts, summaries and sample coaching; reload/relaunch restores the fixture.
 
 Regenerate or check the fixture from `server/`:
 
