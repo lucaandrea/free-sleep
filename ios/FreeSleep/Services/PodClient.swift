@@ -10,18 +10,7 @@ struct PodClient: Sendable {
         return try PodClient(address: address, token: TokenStore.read(for: address))
     }
     init(address: String, token: String) throws {
-        guard let url = URL(string: address), let scheme = url.scheme, let host = url.host,
-              ["http", "https"].contains(scheme), url.user == nil, url.password == nil,
-              (url.path.isEmpty || url.path == "/"), url.query == nil, url.fragment == nil else {
-            throw PodError.message("Enter your Pod address in Settings, such as http://free-sleep.local:3000.")
-        }
-        let parts = host.split(separator: ".").compactMap { Int($0) }
-        let privateIP = parts.count == 4 && parts.allSatisfy { (0...255).contains($0) } && (parts[0] == 10 || (parts[0] == 192 && parts[1] == 168)
-            || (parts[0] == 172 && (16...31).contains(parts[1])))
-        guard scheme == "https" || host == "localhost" || host == "127.0.0.1" || host.hasSuffix(".local") || privateIP else {
-            throw PodError.message("Use HTTPS for a remote connection, or an address on your home network.")
-        }
-        baseURL = url; self.token = token
+        baseURL = try ConnectionEndpoint.url(address); self.token = token
     }
 
     private func request(_ route: String, method: String, query: [URLQueryItem] = [], body: Data? = nil) async throws -> Data {
@@ -34,7 +23,8 @@ struct PodClient: Sendable {
         let (data, response) = try await Self.session.data(for: request)
         guard let response = response as? HTTPURLResponse else { throw PodError.message("No response from the Pod.") }
         guard (200..<300).contains(response.statusCode) else {
-            if response.statusCode == 401 { throw PodError.message("Check your connection token in Settings.") }
+            if response.statusCode == 401 || response.statusCode == 403 { throw PodError.message("The connection token was not accepted.") }
+            if response.statusCode == 503 { throw PodError.message("The server is reachable, but the Pod is unavailable.") }
             let failure = try? JSONDecoder().decode(APIError.self, from: data)
             throw PodError.message(failure?.error.message ?? "The Pod returned an error (\(response.statusCode)).")
         }

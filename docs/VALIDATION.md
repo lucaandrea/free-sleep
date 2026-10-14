@@ -73,6 +73,15 @@ Captures in [screenshots](screenshots): `journal-web-phone.jpg`, `journal-ios.jp
 
 See [journal and Coach behavior](JOURNAL_COACH.md) for the additive selected-date API contract and client/server update requirement. No owner data, real model calls, Health database, physical controls or deployment were involved.
 
+## Connection and Apple Home setup follow-up — 2026-10-14
+
+- Native build and all 35 Swift Testing tests passed on the isolated iOS 27 simulator. Five new tests cover canonical origins and malformed/private-IP lookalikes, demo credential/storage/network isolation, invalidation of connection results, save failures, distinct Home authorization states and duplicate scene execution/failure feedback. No Home manager is created by these tests. A subsequent permission-help presentation change also passed a native build.
+- All six web tests passed. Four new tests cover address policy/mixed content, demo isolation, restoring the prior connection after a storage failure, and GET-only credentialed probes with redirect rejection, invalid settings, authentication/offline responses, cancellation and bounded bodies. Web typecheck, demo/hosted builds and lint passed; the same eight legacy lint warnings and large shared-bundle warning remain. All 15 shared design outputs match their source. Server and gateway code were unchanged in this follow-up.
+- Browser desktop and 402 px demos completed Test connection and Save connection, rejected an address containing `/api`, cleared the token field when the address changed, and refreshed Home bridge status. The final browser error log was empty.
+- The native demo rendered the same connection form, verified the simulated connection, displayed its save confirmation and refreshed the Home bridge card. Apple Home permission/scene actions remained disabled in demo. No real credentials, pairing codes, Home inventory or owner records were used in captures.
+
+Captures in [screenshots](screenshots): `connections-web-saved.jpg`, `connections-web-home.jpg`, `connections-ios-saved.jpg` and `connections-ios-home.jpg`. The native images include the simulator mirror. The implementation is described in [connection setup](CONNECTIONS.md). Real server reachability, signed iPhone Home permission, actual pairing and physical scene execution remain unverified.
+
 ## Remaining device and service checks
 
 - Stock Pod access, firmware compatibility, installation/recovery, D-Bus permissions, BLE service discovery and real motion/Stop/calibration.

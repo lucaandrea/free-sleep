@@ -47,7 +47,7 @@ Ten actions have discoverable App Shortcut phrases. All sixteen App Intents are 
 
 ## Apple Home
 
-The Pod's optional local HAP bridge exposes two thermostats and named switches for base presets, Stop and priming. Pair it in Apple Home using the code shown in Settings after enabling the bridge; its identity and pairing data persist locally. The native app can list and run existing Home scenes after permission. Base movement needs an explicitly connected, hardware-qualified base. Replit is not a replacement for the local bridge or Apple's home hub. See [platform setup](PLATFORM_SETUP.md) for bridge environment variables, pairing and device acceptance.
+The Pod's optional local HAP bridge exposes two thermostats and named switches for base presets, Stop and priming. Pair it in Apple Home using the code shown in Settings after enabling the bridge; its identity and pairing data persist locally. Settings distinguishes bridge status from iPhone Home permission and real pairing. The native app lists and runs existing Home scenes after explicit access, reports denied/restricted/empty states, and prevents duplicate scene execution. Base movement needs an explicitly connected, hardware-qualified base. Replit is not a replacement for the local bridge or Apple's home hub. See [connection setup](CONNECTIONS.md) and [platform setup](PLATFORM_SETUP.md) for bridge configuration, pairing and device acceptance.
 
 ## Sources and validation boundary
 

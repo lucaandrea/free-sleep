@@ -27,6 +27,13 @@ final class AppModel {
     let journalWorkspace = JournalWorkspace()
     let demoAlarms: DemoAlarms
     var connected: Bool { device != nil }
+    private(set) var connectionRevision = 0
+
+    func connectionChanged() {
+        connectionRevision += 1
+        device = nil; settings = nil; base = nil; analytics = nil; analyticsError = nil
+        analyticsKey = ""; analyticsRefreshedAt = .distantPast
+    }
 
     init() {
         demo = AppMode.isDemo
@@ -39,6 +46,7 @@ final class AppModel {
         if demo { loadDemo(); return }
         do {
             let client = try PodClient.configured()
+            let requestedConnection = connectionRevision
             let requestedSide = side; let requestedDays = days
             let key = "\(client.baseURL.absoluteString)|\(side.rawValue):\(days)"
             if key != analyticsKey { analytics = nil }
@@ -52,6 +60,7 @@ final class AppModel {
                 URLQueryItem(name: "side", value: requestedSide.rawValue), URLQueryItem(name: "days", value: String(requestedDays))])) : previousAnalytics
             let results = await (status, position, nights, preferences)
             guard !Task.isCancelled, requestedSide == side, requestedDays == days,
+                  requestedConnection == connectionRevision,
                   (try? PodClient.configured().baseURL) == client.baseURL else { return }
             device = results.0; base = results.1; analytics = results.2; settings = results.3
             if refreshNights {
