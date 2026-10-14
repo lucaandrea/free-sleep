@@ -10,4 +10,6 @@ Tonight includes the same next-alarm card and one-time change, skip and restore 
 
 Routines shares its layout and sample week with the web app. Drafts survive screen/day/side changes within the running app and retain their original server values for conflict checks. Saving copies complete routines to selected days; an existing draft on a destination must be saved or reset first. Update the server and gateway with the client: saving uses the new `POST /api/schedules/routine` contract. See [routine editing and API](../docs/ROUTINES.md).
 
+Sleep includes the same episode browser and vital charts as the web app, with the shared `sleep-demo.json` fixture. Short episodes, gaps and original readings are preserved. Detail requests are cancelled when their view context changes, and responses must match the selected side and episode. See [recorded episodes](../docs/EPISODES.md) for filtering and API limits.
+
 Tests cover connection validation, analytics decoding, Health sample provenance, cancellation and partial failure, Pod/side isolation, reconciliation versions, automatic sync windows, preservation of schedule fields and alarm date/time contracts. HealthKit permissions, actual background refresh, Apple Home pairing and Siri behavior still need a signed iPhone.

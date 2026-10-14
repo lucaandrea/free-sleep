@@ -5,17 +5,21 @@ import Observation
 final class AppModel {
     var tab = SleepTab.tonight
     var side = BedSide(rawValue: UserDefaults.standard.string(forKey: "bedSide") ?? "left") ?? .left {
-        didSet { UserDefaults.standard.set(side.rawValue, forKey: "bedSide") }
+        didSet {
+            UserDefaults.standard.set(side.rawValue, forKey: "bedSide")
+            if side != oldValue { analytics = nil; analyticsError = nil }
+        }
     }
     var device: DeviceStatus?
     var settings: PodSettings?
     var base: BaseStatus?
     var analytics: SleepAnalytics?
+    var analyticsError: String?
     var message: String?
     var actionMessage: String?
     var acting = false
     var stopping = false
-    var days = 30
+    var days = 30 { didSet { if days != oldValue { analytics = nil; analyticsError = nil } } }
     private var analyticsKey = ""
     private var analyticsRefreshedAt = Date.distantPast
     let demo: Bool
@@ -34,20 +38,27 @@ final class AppModel {
         if demo { loadDemo(); return }
         do {
             let client = try PodClient.configured()
-            let key = "\(side.rawValue):\(days)"
-            let refreshNights = includeAnalytics || key != analyticsKey || Date().timeIntervalSince(analyticsRefreshedAt) >= 60
+            let requestedSide = side; let requestedDays = days
+            let key = "\(client.baseURL.absoluteString)|\(side.rawValue):\(days)"
+            if key != analyticsKey { analytics = nil }
+            let refreshNights = includeAnalytics || analytics == nil || key != analyticsKey
+                || Date().timeIntervalSince(analyticsRefreshedAt) >= 60
             let previousAnalytics = analytics
             async let preferences: PodSettings? = try? client.get("settings")
             async let status: DeviceStatus? = try? client.get("deviceStatus")
             async let position: BaseStatus? = try? client.get("base")
             async let nights: SleepAnalytics? = refreshNights ? (try? client.get("analytics", query: [
-                URLQueryItem(name: "side", value: side.rawValue), URLQueryItem(name: "days", value: String(days))])) : previousAnalytics
+                URLQueryItem(name: "side", value: requestedSide.rawValue), URLQueryItem(name: "days", value: String(requestedDays))])) : previousAnalytics
             let results = await (status, position, nights, preferences)
-            guard !Task.isCancelled else { return }
+            guard !Task.isCancelled, requestedSide == side, requestedDays == days,
+                  (try? PodClient.configured().baseURL) == client.baseURL else { return }
             device = results.0; base = results.1; analytics = results.2; settings = results.3
-            if refreshNights { analyticsKey = key; analyticsRefreshedAt = Date() }
+            if refreshNights {
+                analyticsKey = key; analyticsRefreshedAt = Date()
+                analyticsError = analytics == nil ? "Sleep analytics are unavailable. Check the Pod connection." : nil
+            }
             message = device == nil ? "Your Pod is unavailable. Check its address and token in Settings." : nil
-        } catch { device = nil; base = nil; analytics = nil; message = error.localizedDescription }
+        } catch { device = nil; base = nil; analytics = nil; analyticsError = error.localizedDescription; message = error.localizedDescription }
     }
 
     func perform(_ operation: @MainActor () async throws -> Void) async {
@@ -101,7 +112,6 @@ final class AppModel {
             right: .init(currentTemperatureF: 80, targetTemperatureF: 80, isOn: false), isPriming: false, waterLevel: "full") }
         if base == nil { base = .init(state: "connected", position: .init(left: .init(head: 0, feet: 0), right: .init(head: 0, feet: 0)),
             updatedAt: Date().timeIntervalSince1970 * 1000, stale: false, busy: false, error: nil) }
-        if analytics == nil, let url = Bundle.main.url(forResource: "analytics-demo", withExtension: "json"),
-           let data = try? Data(contentsOf: url) { analytics = try? JSONDecoder().decode(SleepAnalytics.self, from: data) }
+        if analytics == nil { analytics = SleepDemo.shared?.ranges[String(days)] ?? SleepDemo.shared?.analytics }
     }
 }

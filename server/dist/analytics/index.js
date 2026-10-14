@@ -1,10 +1,12 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="5fe9ff73-e88e-55be-bb9d-6f9699f58ab4")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="ebfb6775-0f32-51c3-822b-005f21a65c14")}catch(e){}}();
 import express from 'express';
 import { z } from 'zod';
 import { prisma } from '../db/prisma.js';
 import settingsDB from '../db/settings.js';
 import { summarizeSleep } from './summary.js';
+import { episodeRoutes } from './episodeRoutes.js';
+import { MAX_EPISODE_SAMPLES } from './episode.js';
 export const analyticsQuery = z.object({
     side: z.enum(['left', 'right']).default('left'),
     days: z.coerce.number().int().min(7).max(365).default(30),
@@ -23,6 +25,14 @@ export async function loadAnalytics(query) {
     return summarizeSleep(records, vitals, settingsDB.data.timeZone || 'UTC', query.goalMinutes);
 }
 const router = express.Router();
+router.use(episodeRoutes({
+    record: (id, side) => prisma.sleep_records.findFirst({ where: { id, side } }),
+    vitals: record => prisma.vitals.findMany({
+        where: { side: record.side, timestamp: { gte: record.entered_bed_at, lte: record.left_bed_at } },
+        orderBy: { timestamp: 'asc' }, take: MAX_EPISODE_SAMPLES + 1,
+    }),
+    timeZone: async () => { await settingsDB.read(); return settingsDB.data.timeZone || 'UTC'; },
+}));
 router.get('/', async (request, response) => {
     const query = analyticsQuery.safeParse(request.query);
     if (!query.success)
@@ -31,4 +41,4 @@ router.get('/', async (request, response) => {
 });
 export default router;
 //# sourceMappingURL=index.js.map
-//# debugId=5fe9ff73-e88e-55be-bb9d-6f9699f58ab4
+//# debugId=ebfb6775-0f32-51c3-822b-005f21a65c14

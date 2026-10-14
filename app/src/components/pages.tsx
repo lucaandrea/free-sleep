@@ -17,5 +17,6 @@ export const PAGES: Page[] = [
 
 export const getPageForPath = (pathname: string) => {
   if (['/', '/left', '/right'].includes(pathname)) return PAGES[0];
+  if (['/data/sleep', '/data/vitals'].some(route => pathname === route || pathname.startsWith(`${route}/`))) return PAGES[1];
   return PAGES.find(page => pathname === page.route || pathname.startsWith(`${page.route}/`)) ?? PAGES[0];
 };

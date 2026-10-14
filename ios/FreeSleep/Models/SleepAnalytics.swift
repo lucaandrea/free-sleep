@@ -11,6 +11,7 @@ struct SleepAnalytics: Codable, Sendable, Equatable {
         var hrv: Double?
         var respiratoryRate: Double?
         var exits: Int
+        var windowMinutes: Double? = nil
     }
     struct Summary: Codable, Sendable, Equatable {
         var recordedNights: Int
@@ -23,6 +24,7 @@ struct SleepAnalytics: Codable, Sendable, Equatable {
     }
     var timeZone: String
     var nights: [Night]
+    var episodes: [Night]? = nil
     var summary: Summary
     static func duration(_ minutes: Double?) -> String {
         guard let minutes else { return "—" }

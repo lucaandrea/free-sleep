@@ -15,6 +15,11 @@ test('allowlist excludes maintenance, encoded paths and origin escapes', () => {
     assert.equal(allowedRequest('POST', route), false, route);
   }
   assert.equal(allowedRequest('GET', '/api/analytics?side=left&days=30'), true);
+  assert.equal(allowedRequest('GET', '/api/analytics/episodes/42?side=right'), true);
+  for (const route of ['/api/analytics/episodes/0', '/api/analytics/episodes/42x', '/api/analytics/episodes/42/extra']) {
+    assert.equal(allowedRequest('GET', route), false);
+  }
+  assert.equal(allowedRequest('POST', '/api/analytics/episodes/42'), false);
   assert.equal(allowedRequest('POST', '/api/base/stop'), true);
   assert.equal(allowedRequest('GET', '/api/comfort?side=left'), true);
   assert.equal(allowedRequest('POST', '/api/comfort'), true);
@@ -66,6 +71,8 @@ test('outbound agent preserves queries, method, JSON and uses only the local tok
   assert.equal(saved.status, 200);
   assert.equal(received.at(-1).route, '/api/schedules/routine');
   assert.deepEqual(JSON.parse(received.at(-1).body), routine);
+  assert.equal((await fetch(`${origin}/api/analytics/episodes/42?side=right`, { headers })).status, 200);
+  assert.equal(received.at(-1).route, '/api/analytics/episodes/42?side=right');
 });
 
 test('disconnected commands fail promptly and are never replayed to a new agent', async context => {

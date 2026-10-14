@@ -50,6 +50,17 @@ Captures in [screenshots](screenshots): `routines-web-phone.jpg`, `routines-web-
 
 No owner Pod, live vibration, Health database, cloud model or Replit deployment was used in this follow-up. Cross-day overlap detection, iOS 18 runtime testing and physical overnight qualification remain open.
 
+## Episode-detail follow-up — 2026-10-14
+
+- Server compilation and all 49 tests passed. Four new episode tests cover separate presence intervals, outliers, missing readings, reporting gaps, preservation of raw values, unknown presence, invalid/oversized records, the maximum tested response size, explicit side validation, wrong-side lookup rejection and HTTP errors. Tests use an injected data source; they do not query an owner's database.
+- All five gateway tests passed, including GET-only route matching and side-query forwarding for episode details.
+- Native build and all 25 Swift Testing tests passed on the isolated iOS 27 simulator. Three new tests decode the shared 14-night/15-episode fixture and seven-day subset, retain excluded readings, distinguish the repeated DST hour, and clear old analytics on side/range changes.
+- Web typecheck, lint, demo/hosted builds and demo transport isolation passed. Server lint passed. Existing warnings remain: eight web, 21 server and Vite's large shared chunks. The 15-output design check and generated sleep-fixture check passed. Generated server files have locally injected Sentry IDs; no source maps were uploaded.
+- The 402 px browser demo selected a short episode and an overnight episode, switched metrics, paged raw records, retained a synthetic 999 bpm outlier in the original-reading table, changed sides, and reduced the history to seven nights. The previously empty Data/Vitals page now rendered the same detail browser. The final browser error log was empty.
+- The iPhone simulator selected the same short and overnight episodes, showed matching summary values and chart gaps, switched to HRV, opened original readings and moved to page two. These are synthetic sample records, not readings from an owner Pod.
+
+Captures: `episodes-web-phone.jpg`, `episodes-web-vitals.jpg` and `episodes-ios-detail.jpg` in [screenshots](screenshots). The shared detailed contract is documented in [recorded episodes](EPISODES.md). Real sensor accuracy, continuous overnight data, signed iPhone integrations, iOS 18 runtime behavior and deployment remain unverified.
+
 ## Remaining device and service checks
 
 - Stock Pod access, firmware compatibility, installation/recovery, D-Bus permissions, BLE service discovery and real motion/Stop/calibration.

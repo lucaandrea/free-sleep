@@ -14,6 +14,7 @@ export function allowedRequest(method, route) {
   const url = new URL(route, 'http://pod.invalid');
   if (url.origin !== 'http://pod.invalid' || url.pathname.includes('%')) return false;
   const path = url.pathname;
+  if (method === 'GET' && /^\/api\/analytics\/episodes\/[1-9]\d*$/.test(path)) return true;
   if (method === 'GET') return /^\/api\/(deviceStatus|settings|schedules|alarm\/next|comfort|services|serverStatus|analytics|journal|base|ai\/providers|integrations\/homekit|health\/export|metrics\/(sleep|vitals|movement|presence))$/.test(path);
   if (method === 'POST') return /^\/api\/(deviceStatus|settings|schedules(?:\/routine)?|alarm\/override|comfort|journal|ai\/coach|base\/(connect|position|preset|stop))$/.test(path);
   if (method === 'DELETE' && path === '/api/journal') return true;

@@ -17,6 +17,8 @@ targets:
       - FreeSleep
       - path: ../shared/fixtures/routines-demo.json
         buildPhase: resources
+      - path: ../shared/fixtures/sleep-demo.json
+        buildPhase: resources
     settings:
       base:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon

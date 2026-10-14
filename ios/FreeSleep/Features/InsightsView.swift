@@ -8,6 +8,10 @@ struct InsightsView: View {
         SleepPage(title: "Understand your nights.", subtitle: "Notice your patterns. Find a rhythm that feels like you.", badge: "Local analytics", badgeTone: .success) {
             SidePicker()
             SleepSegmentedPicker(title: "History range", options: [7, 30, 90], selection: $model.days) { "\($0) days" }
+            if let error = model.analyticsError {
+                Text(error).foregroundStyle(SleepTheme.error)
+                Button("Retry") { Task { await model.refresh() } }.buttonStyle(SleepButtonStyle())
+            }
             let summary = model.analytics?.summary
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 16, alignment: .top), count: typeSize.isAccessibilitySize ? 1 : 2), spacing: 16) {
                 metric("Bed presence", SleepAnalytics.duration(summary?.averageOccupiedMinutes), "Recent recorded nights")
@@ -24,6 +28,8 @@ struct InsightsView: View {
                         .foregroundStyle(SleepTheme.secondary)
                 }
             }
+            EpisodeBrowser(episodes: model.analytics?.episodes ?? model.analytics?.nights ?? [], timeZone: model.analytics?.timeZone ?? "UTC")
+                .id("\(model.side.rawValue):\(model.days)")
             JournalCard().id(model.side)
             SleepCard(title: "Beyond the headline") {
                 Text("HRV estimate: \(summary?.averageHrv.map { String(Int($0)) } ?? "—") ms")

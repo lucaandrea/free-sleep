@@ -8,6 +8,7 @@ import PageHeader from '@components/PageHeader';
 import SideControl from '@components/SideControl';
 import Surface from './Surface';
 import JournalCard from './JournalCard';
+import EpisodeBrowser from './EpisodeBrowser';
 
 export default function InsightsPage() {
   const { side } = useAppStore();
@@ -101,14 +102,14 @@ export default function InsightsPage() {
           Longest episode per wake date · { analytics.data?.timeZone || 'Pod timezone' }
         </Typography>
       </Surface>
+      <EpisodeBrowser
+        key={ `${side}:${days}` }
+        side={ side }
+        episodes={ analytics.data?.episodes ?? [] }
+        timeZone={ analytics.data?.timeZone ?? 'UTC' } />
       <JournalCard key={ side } side={ side } days={ days } />
       <Surface
         title="Beyond the headline"
-        action={
-          <Button component={ Link } to="/data/vitals">
-            Raw vitals →
-          </Button>
-        }
       >
         <Stack spacing={ 1.5 }>
           <Typography>
@@ -118,7 +119,7 @@ export default function InsightsPage() {
             These estimates are experimental. Bed presence does not establish sleep stages or sleep quality.
           </Typography>
           <Button component={ Link } to="/data/sleep" variant="outlined" sx={ { alignSelf: 'flex-start' } }>
-            Browse recorded episodes
+            Manage recorded episodes
           </Button>
         </Stack>
       </Surface>

@@ -6,6 +6,7 @@ struct RootView: View {
     @Environment(\.colorScheme) private var scheme
     @Environment(\.dynamicTypeSize) private var typeSize
     @AppStorage("appearance") private var appearance = "light"
+    @AppStorage("podURL") private var address = ""
     @ScaledMetric(relativeTo: .caption) private var navigationLabelSize = 10
     @ScaledMetric(relativeTo: .body) private var brandSize = 17
     var body: some View {
@@ -43,7 +44,7 @@ struct RootView: View {
         }.sleepText(.body).foregroundStyle(SleepTheme.text)
             .buttonStyle(SleepButtonStyle(kind: .text)).background(SleepTheme.canvas(scheme))
             .preferredColorScheme(appearance == "dark" ? .dark : .light)
-            .task(id: "\(model.side.rawValue)-\(model.days)-\(phase)") {
+            .task(id: "\(address)|\(model.side.rawValue)-\(model.days)-\(phase)") {
                 guard phase == .active else { return }
                 while !Task.isCancelled {
                     await model.refresh(includeAnalytics: false)

@@ -22,6 +22,7 @@ The web theme and native design components consume these values. Both use system
 - Matching side-selector height, button shapes, status badges, heading sizes and secondary text colors.
 - Temperature card, selected base presets, head/feet sliders and the bed illustration's geometry.
 - Sleep metrics and the presence chart's twelve-hour scale, missing-value markers and horizontal overflow.
+- Recorded-episode selection, short-episode browsing, presence intervals, heart-rate/HRV/breathing charts and paginated original readings. Both clients consume the same detail response and generated sleep-demo fixture. See [recorded episodes](EPISODES.md).
 - Native navigation from “Explore sleep” and the same Coach result wording for sample data.
 - Next-alarm card, timezone/date labels and one-time change, skip and restore actions. iOS uses a native time picker and sheet.
 - Routines: Monday–Sunday selector, overnight temperature timeline, power/adjustment/alarm groups, outlined fields, numeric alarm controls and weekday/weekend copying. Both use the same demo week in `shared/fixtures/routines-demo.json` and keep drafts per Pod, side and day. See [routine behavior](ROUTINES.md).
@@ -31,7 +32,7 @@ This is not a claim that every screen is visually identical. OS chrome, permissi
 | Screen | Remaining alignment |
 | --- | --- |
 | Tonight | Notification presentation; alarm editors retain native sheet/picker chrome |
-| Sleep | Native recorded-episode and raw-vital browsing; matching journal form controls |
+| Sleep | Matching journal form controls; native record editing/deletion; OS picker chrome |
 | Coach | Matching selector and outlined text-field presentation |
 | Routines | Native time/menu picker chrome and confirmation presentation; accessibility text sizes use an adaptive day picker |
 | Settings | Matching common connection/Home/settings layout, with native Health permissions and Shortcuts entry points |
