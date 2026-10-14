@@ -75,7 +75,8 @@ struct JournalCard: View {
         loadedScope = nil; journal = nil; loadError = nil
         do {
             let response: Journal
-            if model.demo { response = workspace.demoJournal(key: requestedKey, date: date, side: side.rawValue, days: days) }
+            if model.demo { response = workspace.demoJournal(key: requestedKey, date: date, side: side.rawValue, days: days,
+                                                           nights: model.demoHistory.analytics(side: side, days: days)?.nights) }
             else { response = try await PodClient.configured().get("journal", query: [URLQueryItem(name: "side", value: side.rawValue),
                 URLQueryItem(name: "date", value: date), URLQueryItem(name: "days", value: String(days))]) }
             guard !Task.isCancelled, requested == scope else { return }

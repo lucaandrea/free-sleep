@@ -110,6 +110,14 @@ test('outbound agent preserves queries, method, JSON and uses only the local tok
   assert.deepEqual(JSON.parse(received.at(-1).body), routine);
   assert.equal((await fetch(`${origin}/api/analytics/episodes/42?side=right`, { headers })).status, 200);
   assert.equal(received.at(-1).route, '/api/analytics/episodes/42?side=right');
+  const recordIdentity = { side: 'right', expected: { entered_bed_at: '2026-10-13T23:00:00Z', left_bed_at: '2026-10-14T07:00:00Z' } };
+  for (const method of ['PUT', 'DELETE']) {
+    const response = await fetch(`${origin}/api/analytics/episodes/42`, { method, headers, body: JSON.stringify(recordIdentity) });
+    assert.equal(response.status, 200);
+    assert.equal(received.at(-1).method, method);
+    assert.equal(received.at(-1).route, '/api/analytics/episodes/42');
+    assert.deepEqual(JSON.parse(received.at(-1).body), recordIdentity);
+  }
 });
 
 test('disconnected commands fail promptly and are never replayed to a new agent', async context => {

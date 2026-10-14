@@ -99,7 +99,7 @@ export function summarizeSleep(records: SleepObservation[], vitals: VitalObserva
   for (const night of nights) {
     if (!daily.has(night.date) || daily.get(night.date)!.windowMinutes < night.windowMinutes) daily.set(night.date, night);
   }
-  const mainNights = [...daily.values()];
+  const mainNights = [...daily.values()].sort((first, second) => first.date.localeCompare(second.date));
   // Compare calendar weeks anchored to the latest recorded wake date, without filling gaps with zeroes.
   const latestDate = mainNights[mainNights.length - 1]?.date;
   const recentStart = moment.tz(latestDate, timeZone).subtract(6, 'days').format('YYYY-MM-DD');

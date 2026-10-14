@@ -1,11 +1,13 @@
 import { http, HttpResponse } from 'msw/http';
 import { defaultComfortState } from '../../../server/src/thermal/types';
 import type { ComfortStatus, ComfortConfig } from '../../../server/src/thermal/types';
+import { DemoSleepHistory } from '../../../server/src/records/demo';
 import sleepDemo from '../../../shared/fixtures/sleep-demo.json';
-import type { EpisodeDetail } from '../../../server/src/analytics/episode';
-import type { SleepAnalytics } from '../../../server/src/analytics/summary';
+import { localInsights } from '../../../server/src/ai/coach';
 const journalEntries: import('../../../server/src/analytics/journal').JournalEntry[] = [];
-const analytics: SleepAnalytics = sleepDemo.analytics;
+const sleepHistory = new DemoSleepHistory(sleepDemo);
+const isoIntervals = (raw: string) => (JSON.parse(raw) as number[][]).map(interval =>
+  interval.map(seconds => new Date(seconds * 1000).toISOString()));
 let position = { head: 0, feet: 0 };
 const status = () => ({ state: 'connected', position: { left: position, right: position }, updatedAt: Date.now(),
   stale: false, busy: false, independentControl: false, experimental: true, error: null });
@@ -43,16 +45,35 @@ export const platformHandlers = [
     return HttpResponse.json(entry);
   }),
   http.get('/api/analytics', ({ request }) => {
-    const days = new URL(request.url).searchParams.get('days') ?? '30';
-    return HttpResponse.json((sleepDemo.ranges as Record<string, typeof analytics>)[days] ?? analytics);
+    const parameters = new URL(request.url).searchParams;
+    return HttpResponse.json(sleepHistory.analytics(parameters.get('side') ?? 'left', Number(parameters.get('days') ?? 30)));
   }),
   http.get('/api/analytics/episodes/:id', ({ params, request }) => {
-    const detail = (sleepDemo.details as Record<string, EpisodeDetail>)[String(params.id)];
-    const side = new URL(request.url).searchParams.get('side');
-    if (!detail || !['left', 'right'].includes(side ?? '')) {
-      return HttpResponse.json({ error: { message: 'This sample episode is unavailable.' } }, { status: 404 });
-    }
-    return HttpResponse.json({ ...detail, side });
+    const detail = sleepHistory.detail(new URL(request.url).searchParams.get('side') ?? '', Number(params.id));
+    return detail ? HttpResponse.json(detail)
+      : HttpResponse.json({ error: { message: 'This sample episode is unavailable.' } }, { status: 404 });
+  }),
+  http.get('/api/metrics/sleep', ({ request }) => {
+    const parameters = new URL(request.url).searchParams;
+    const start = Date.parse(parameters.get('startTime') ?? '') / 1000;
+    const end = Date.parse(parameters.get('endTime') ?? '') / 1000;
+    return HttpResponse.json(sleepHistory.list(parameters.get('side') ?? 'left')
+      .filter(record => (!Number.isFinite(start) || record.left_bed_at >= start) && (!Number.isFinite(end) || record.entered_bed_at <= end))
+      .map(record => ({ ...record, entered_bed_at: new Date(record.entered_bed_at * 1000).toISOString(),
+        left_bed_at: new Date(record.left_bed_at * 1000).toISOString(),
+        present_intervals: isoIntervals(record.present_intervals),
+        not_present_intervals: isoIntervals(record.not_present_intervals),
+      })));
+  }),
+  http.put('/api/analytics/episodes/:id', async ({ params, request }) => {
+    const result = sleepHistory.mutate(Number(params.id), await request.json());
+    return result.status === 204 ? new HttpResponse(null, { status: 204 })
+      : HttpResponse.json({ error: { message: result.message } }, { status: result.status });
+  }),
+  http.delete('/api/analytics/episodes/:id', async ({ params, request }) => {
+    const result = sleepHistory.mutate(Number(params.id), await request.json(), true);
+    return result.status === 204 ? new HttpResponse(null, { status: 204 })
+      : HttpResponse.json({ error: { message: result.message } }, { status: result.status });
   }),
   http.get('/api/base', () => HttpResponse.json(status())),
   http.post('/api/base/connect', () => HttpResponse.json(status())),
@@ -65,11 +86,11 @@ export const platformHandlers = [
   http.get('/api/ai/providers', () => HttpResponse.json([{ provider: 'rules', model: 'Deterministic insights', configured: true },
     { provider: 'openai', model: 'Demo model · no external calls', configured: true }])),
   http.post('/api/ai/coach', async ({ request }) => {
-    const input = await request.json() as { days: number; provider: string; shareSummary: boolean };
+    const input = await request.json() as { side: string; days: number; provider: string; shareSummary: boolean };
     if (input.provider !== 'rules' && !input.shareSummary) {
       return HttpResponse.json({ error: { message: 'Allow sharing for this simulated request first.' } }, { status: 400 });
     }
-    const result = (sleepDemo.coaching as Record<string, typeof sleepDemo.coaching['30']>)[String(input.days)] ?? sleepDemo.coaching['30'];
+    const result = { ...localInsights(sleepHistory.analytics(input.side, input.days)), model: 'Demo insights' };
     return HttpResponse.json({ ...result, provider: input.provider });
   }),
   http.get('/api/integrations/homekit', () => HttpResponse.json({ enabled: false, running: false, pairingCode: null, error: null })),

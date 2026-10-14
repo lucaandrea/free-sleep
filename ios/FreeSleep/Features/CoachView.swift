@@ -4,10 +4,11 @@ struct CoachView: View {
     @Environment(AppModel.self) private var model
     @AppStorage("podURL") private var address = ""
     var body: some View {
-        CoachForm(side: model.side, demo: model.demo).id("\(address)|\(model.settings?.id ?? "")|\(model.side.rawValue)")
+        CoachForm(side: model.side, demo: model.demo).id("\(address)|\(model.settings?.id ?? "")|\(model.side.rawValue)|\(model.recordRevision)")
     }
 }
 private struct CoachForm: View {
+    @Environment(AppModel.self) private var model
     let side: BedSide
     let demo: Bool
     @State private var providers: [CoachProvider] = []
@@ -87,8 +88,8 @@ private struct CoachForm: View {
         request = Task {
             await session.run {
                 if demo {
-                    guard var result = SleepDemo.shared?.coaching[String(days)] else { throw PodError.message("The sample coaching could not be loaded.") }
-                    result.provider = provider; return result
+                    guard let analytics = model.demoHistory.analytics(side: side, days: days) else { throw PodError.message("The sample coaching could not be loaded.") }
+                    return DemoSleepSummary.coaching(analytics, provider: provider)
                 }
                 return try await PodClient.configured().coach(side: side, provider: provider, share: sharing, question: question, days: days)
             }

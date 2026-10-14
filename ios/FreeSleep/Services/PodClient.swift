@@ -40,6 +40,12 @@ struct PodClient: Sendable {
         try JSONDecoder().decode(Result.self, from: await request(route, method: "POST", body: JSONEncoder().encode(body)))
     }
     func action(_ route: String) async throws { _ = try await request(route, method: "POST", body: Data("{}".utf8)) }
+    func editRecord(_ id: Int, change: SleepRecordChange) async throws {
+        _ = try await request("analytics/episodes/\(id)", method: "PUT", body: JSONEncoder().encode(change))
+    }
+    func deleteRecord(_ id: Int, identity: SleepRecordIdentity) async throws {
+        _ = try await request("analytics/episodes/\(id)", method: "DELETE", body: JSONEncoder().encode(identity))
+    }
     func coach(side: BedSide, provider: String, share: Bool, question: String, days: Int = 30) async throws -> Coaching {
         struct Body: Encodable { var side: String; var provider: String; var shareSummary: Bool; var question: String; var days: Int }
         let body = Body(side: side.rawValue, provider: provider, shareSummary: share, question: question, days: days)

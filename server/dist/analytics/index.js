@@ -1,5 +1,6 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="8abee63e-6d27-5ec5-9b7a-b9648aa13794")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="96752d50-c77f-5697-9cf9-0a31905561fb")}catch(e){}}();
+import { sleepMutations } from '../records/router.js';
 import express from 'express';
 import { prisma } from '../db/prisma.js';
 import settingsDB from '../db/settings.js';
@@ -21,6 +22,7 @@ export async function loadAnalytics(query) {
     return summarizeSleep(records, vitals, settingsDB.data.timeZone || 'UTC', query.goalMinutes);
 }
 const router = express.Router();
+router.use('/episodes', sleepMutations(prisma));
 router.use(episodeRoutes({
     record: (id, side) => prisma.sleep_records.findFirst({ where: { id, side } }),
     vitals: record => prisma.vitals.findMany({
@@ -37,4 +39,4 @@ router.get('/', async (request, response) => {
 });
 export default router;
 //# sourceMappingURL=index.js.map
-//# debugId=8abee63e-6d27-5ec5-9b7a-b9648aa13794
+//# debugId=96752d50-c77f-5697-9cf9-0a31905561fb

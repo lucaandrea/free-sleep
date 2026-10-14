@@ -19,9 +19,9 @@ final class JournalWorkspace {
         var saved = value; saved.notes = saved.notes.trimmingCharacters(in: .whitespacesAndNewlines)
         demoEntries[key] = saved; return saved
     }
-    func demoJournal(key: String, date: String, side: String, days: Int) -> Journal {
+    func demoJournal(key: String, date: String, side: String, days: Int, nights: [SleepAnalytics.Night]? = nil) -> Journal {
         let entries = demoEntries.values.filter { $0.side == side }
-        let nights = SleepDemo.shared?.ranges[String(days)]?.nights ?? []
+        let nights = nights ?? SleepDemo.shared?.ranges[String(days)]?.nights ?? []
         let matches = entries.compactMap { entry -> (JournalEntry, Double)? in
             guard let presence = nights.first(where: { $0.date == entry.date })?.occupiedMinutes else { return nil }
             return (entry, presence)

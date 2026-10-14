@@ -1,3 +1,4 @@
+import { sleepMutations } from '../records/router.js';
 import express from 'express';
 import { z } from 'zod';
 import { prisma } from '../db/prisma.js';
@@ -20,6 +21,7 @@ export async function loadAnalytics(query: z.infer<typeof analyticsQuery>) {
   return summarizeSleep(records, vitals, settingsDB.data.timeZone || 'UTC', query.goalMinutes);
 }
 const router = express.Router();
+router.use('/episodes', sleepMutations(prisma));
 router.use(episodeRoutes({
   record: (id, side) => prisma.sleep_records.findFirst({ where: { id, side } }),
   vitals: record => prisma.vitals.findMany({

@@ -1,5 +1,5 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="71975fbe-b3ea-5877-8141-df9d5b0aeef4")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="2fbc69ed-ada3-53a8-943b-3a1f45906e88")}catch(e){}}();
 import moment from 'moment-timezone';
 const round = (value) => Math.round(value * 10) / 10;
 const mean = (values) => values.length ? round(values.reduce((total, value) => total + value, 0) / values.length) : null;
@@ -83,7 +83,7 @@ export function summarizeSleep(records, vitals, timeZone, goalMinutes = 480) {
         if (!daily.has(night.date) || daily.get(night.date).windowMinutes < night.windowMinutes)
             daily.set(night.date, night);
     }
-    const mainNights = [...daily.values()];
+    const mainNights = [...daily.values()].sort((first, second) => first.date.localeCompare(second.date));
     // Compare calendar weeks anchored to the latest recorded wake date, without filling gaps with zeroes.
     const latestDate = mainNights[mainNights.length - 1]?.date;
     const recentStart = moment.tz(latestDate, timeZone).subtract(6, 'days').format('YYYY-MM-DD');
@@ -132,4 +132,4 @@ export function summarizeSleep(records, vitals, timeZone, goalMinutes = 480) {
     };
 }
 //# sourceMappingURL=summary.js.map
-//# debugId=71975fbe-b3ea-5877-8141-df9d5b0aeef4
+//# debugId=2fbc69ed-ada3-53a8-943b-3a1f45906e88

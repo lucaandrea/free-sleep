@@ -7,12 +7,14 @@ import { errorMessage, type SleepAnalytics } from '@api/platform';
 import type { EpisodeDetail } from '../../../../server/src/analytics/episode';
 import Surface from './Surface';
 import EpisodeDetailPanel from './EpisodeDetailPanel';
+import SleepRecordActions from '@components/SleepRecordActions';
 
 export default function EpisodeBrowser({ episodes, side, timeZone, initiallyExpanded = false }: {
   episodes: SleepAnalytics['episodes']; side: 'left' | 'right'; timeZone: string; initiallyExpanded?: boolean;
 }) {
   const [expanded, setExpanded] = useState(initiallyExpanded);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const episodeLabel = useId();
   const ordered = [...episodes].sort((first, second) => second.endedAt.localeCompare(first.endedAt));
   const selected = ordered.find(episode => episode.id === selectedId) ?? ordered[0];
@@ -32,6 +34,7 @@ export default function EpisodeBrowser({ episodes, side, timeZone, initiallyExpa
     }>
     <Stack spacing={ 2.5 }>
       <Typography color="text.secondary">Includes shorter episodes. Times in { timeZone }.</Typography>
+      { notice && <Typography role="status" color="success.main">{ notice }</Typography> }
       { expanded && (!selected ? <Typography>No episodes in this range.</Typography> : <>
         <Stack spacing={ 1 }>
           <Typography id={ episodeLabel } variant="body2" color="text.secondary">Recorded episode</Typography>
@@ -51,7 +54,16 @@ export default function EpisodeBrowser({ episodes, side, timeZone, initiallyExpa
         { query.isError && <Alert severity="error" action={ <Button onClick={ () => query.refetch() }>Retry</Button> }>
           { errorMessage(query.error) }
         </Alert> }
-        { query.data && !query.isError && <EpisodeDetailPanel key={ `${side}:${selected.id}` } detail={ query.data } /> }
+        { query.data && !query.isError && <>
+          <SleepRecordActions
+            key={ `${side}:${selected.id}` }
+            timeZone={ timeZone }
+            onSaved={ setNotice }
+            record={ {
+              id: query.data.episode.id, side, entered_bed_at: query.data.episode.startedAt, left_bed_at: query.data.episode.endedAt,
+            } } />
+          <EpisodeDetailPanel key={ `${side}:${selected.id}` } detail={ query.data } />
+        </> }
       </>) }
     </Stack>
   </Surface>;
