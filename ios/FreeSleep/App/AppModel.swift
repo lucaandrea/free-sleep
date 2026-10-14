@@ -21,11 +21,7 @@ final class AppModel {
     var connected: Bool { device != nil }
 
     init() {
-        #if DEBUG
-        demo = ProcessInfo.processInfo.arguments.contains("--demo")
-        #else
-        demo = false
-        #endif
+        demo = AppMode.isDemo
     }
 
     func refresh(includeAnalytics: Bool = true) async {

@@ -7,9 +7,7 @@ struct ConnectionsView: View {
     @State private var address = ""
     @State private var token = ""
     @State private var message: String?
-    @State private var health = HealthSyncService()
     @State private var home = AppleHomeService()
-    @State private var exportHeartRate = false
     @State private var bridge: HomeBridgeStatus?
     var body: some View {
         SleepPage(title: "Make it yours.") {
@@ -23,25 +21,7 @@ struct ConnectionsView: View {
                 Picker("Appearance", selection: $appearance) { Text("Warm daylight").tag("light"); Text("Quiet night").tag("dark") }
                 if let message { Text(message).font(.callout) }
             }
-            SleepCard(title: "Apple Health", eyebrow: "YOUR HEALTH, YOUR CHOICE") {
-                SidePicker()
-                Text("Choose your own side before syncing. Pod presence is exported as time in bed, never as sleep stages. HRV and breathing estimates are not exported.")
-                    .font(.callout).foregroundStyle(.secondary)
-                Button("Choose Health permissions") { Task { await health.authorize() } }.buttonStyle(.bordered)
-                    .disabled(health.busy || model.demo)
-                Toggle("Also export Pod heart rate", isOn: $exportHeartRate)
-                Button("Sync the last 30 days") { Task { await health.sync(side: model.side, exportHeartRate: exportHeartRate) } }
-                    .buttonStyle(.borderedProminent).disabled(health.busy || model.demo || !model.connected)
-                if health.busy { ProgressView("Syncing with Apple Health") }
-                if let message = health.message { Text(message).font(.callout) }
-                if let minutes = health.healthSleepMinutes {
-                    Text("Apple Health sleep, past 24 hours: \(SleepAnalytics.duration(minutes))").font(.callout)
-                }
-                if let hrv = health.healthHRV { Text("Latest Apple Health HRV (SDNN): \(Int(hrv)) ms").font(.callout) }
-                if let heartRate = health.healthHeartRate { Text("Latest Apple Health heart rate: \(Int(heartRate)) bpm").font(.callout) }
-                if let breathing = health.healthRespiratoryRate { Text("Latest Apple Health breathing: \(breathing.formatted(.number.precision(.fractionLength(1)))) / min").font(.callout) }
-                Text("Apple Health comparisons stay on this iPhone and are not sent to AI providers.").font(.caption).foregroundStyle(.secondary)
-            }
+            HealthConnectionCard()
             SleepCard(title: "Apple Home", eyebrow: "CONNECTED HOME") {
                 Text("Enable the local bridge on your Pod, then add its pairing code in Apple Home.").foregroundStyle(.secondary)
                 if let code = bridge?.pairingCode { Text(code).font(.title.monospacedDigit()) }
@@ -56,14 +36,14 @@ struct ConnectionsView: View {
                 if let message = home.message { Text(message).font(.callout) }
             }
             SleepCard(title: "Shortcuts & Siri") {
-                Text("Find Free Sleep in Shortcuts to set temperature, power, head and feet angles, choose a position, stop movement, or read your latest summary.")
+                Text("Find Free Sleep in Shortcuts to control temperature, power, bed position, adaptive comfort and Away mode; prime your Pod, dismiss an alarm, sync Health, or read your latest summary.")
                     .foregroundStyle(.secondary)
                 Text("Bed movement affects both sides. Your iPhone must be able to reach the Pod or your secure gateway.")
                     .font(.caption).foregroundStyle(.secondary)
             }
         }
         .onAppear { address = savedAddress; token = TokenStore.read(for: savedAddress) }
-        .task { bridge = try? await PodClient.configured().get("integrations/homekit") }
+        .task { if !model.demo { bridge = try? await PodClient.configured().get("integrations/homekit") } }
     }
     private func save() {
         do {

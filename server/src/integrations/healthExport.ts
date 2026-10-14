@@ -1,7 +1,7 @@
 import express from 'express';
 import { z } from 'zod';
 import { prisma } from '../db/prisma.js';
-import { presenceIntervals } from '../analytics/summary.js';
+import { healthPresenceRecord } from './healthPresenceRecord.js';
 
 export const healthExportQuery = z.object({
   side: z.enum(['left', 'right']),
@@ -36,9 +36,6 @@ router.get('/export', async (request, response) => {
     where: { side: query.side, id: { gt: query.afterId }, left_bed_at: { gte: start }, entered_bed_at: { lte: end } },
     orderBy: { id: 'asc' }, take: limit,
   });
-  response.json({ records: records.map(record => ({ id: record.id,
-    present_intervals: presenceIntervals(record).map(([begin, finish]) =>
-      [new Date(begin * 1000).toISOString(), new Date(finish * 1000).toISOString()]),
-  })), nextCursor: records.length === limit ? records.at(-1)!.id : null });
+  response.json({ records: records.map(healthPresenceRecord), nextCursor: records.length === limit ? records.at(-1)!.id : null });
 });
 export default router;

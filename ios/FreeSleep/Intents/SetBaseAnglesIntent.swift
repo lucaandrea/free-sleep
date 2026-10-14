@@ -7,7 +7,7 @@ struct SetBaseAnglesIntent: AppIntent {
     @Parameter(title: "Feet degrees", default: 0) var feet: Int
     func perform() async throws -> some IntentResult & ProvidesDialog {
         guard (0...60).contains(head), (0...45).contains(feet) else { throw PodError.message("Head must be 0–60° and feet 0–45°.") }
-        try await PodClient.configured().post("base/position", body: ["head": head, "feet": feet, "speed": 50])
+        try await PodActions.client().post("base/position", body: ["head": head, "feet": feet, "speed": 50])
         return .result(dialog: "The position command was sent to your base.")
     }
 }

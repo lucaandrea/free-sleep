@@ -52,15 +52,21 @@ struct PodClient: Sendable {
         let body = Body(side: side.rawValue, provider: provider, shareSummary: share, question: question)
         return try JSONDecoder().decode(Coaching.self, from: await request("ai/coach", method: "POST", body: JSONEncoder().encode(body)))
     }
-    func healthExport<Record: Decodable & Sendable>(kind: String, query: [URLQueryItem]) async throws -> [Record] {
+    func healthExport<Record: Decodable & Sendable & Identifiable>(kind: String, query: [URLQueryItem]) async throws -> [Record] where Record.ID == Int {
         var records: [Record] = []
         var cursor = 0
         while true {
+            try Task.checkCancellation()
             let page: HealthExportPage<Record> = try await get("health/export", query: query + [
                 URLQueryItem(name: "kind", value: kind), URLQueryItem(name: "afterId", value: String(cursor))])
+            let identifiers = page.records.map(\.id)
+            guard identifiers == identifiers.sorted(), Set(identifiers).count == identifiers.count,
+                  identifiers.allSatisfy({ $0 > cursor }), records.count + page.records.count <= 200_000 else {
+                throw PodError.message("Health export returned inconsistent or excessive records. Retry with a shorter period.")
+            }
             records.append(contentsOf: page.records)
             guard let next = page.nextCursor else { return records }
-            guard next > cursor, records.count <= 200_000 else { throw PodError.message("Health export exceeded its limit. Try a shorter period.") }
+            guard next > cursor, next == identifiers.last else { throw PodError.message("Health export returned an inconsistent cursor. Retry the sync.") }
             cursor = next
         }
     }

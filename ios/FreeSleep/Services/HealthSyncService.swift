@@ -4,105 +4,120 @@ import Observation
 
 @MainActor @Observable
 final class HealthSyncService {
-    var available = HKHealthStore.isHealthDataAvailable()
-    var busy = false
-    var message: String?
-    var healthSleepMinutes: Double?
-    var healthHRV: Double?
-    var healthHeartRate: Double?
-    var healthRespiratoryRate: Double?
+    static let shared = HealthSyncService()
+    let available = HKHealthStore.isHealthDataAvailable()
+    private(set) var busy = false
+    private(set) var settings: HealthSyncSettings?
+    private(set) var comparison: HealthComparison?
+    private(set) var message: String?
+    private(set) var backgroundMessage: String?
     private let store = HKHealthStore()
+    private let defaults = UserDefaults.standard
+    private let settingsKey = "healthSyncSettings.v1"
+    private var operation: Task<Int, Error>?
+    var canCancel: Bool { operation != nil }
+    private var comparisonRefreshedAt = Date.distantPast
+    @ObservationIgnored private lazy var engine = HealthSyncEngine(store: HealthKitSampleStore(store: store))
     private let sleepType = HKCategoryType(.sleepAnalysis)
     private let heartType = HKQuantityType(.heartRate)
-    private let hrvType = HKQuantityType(.heartRateVariabilitySDNN)
 
+    private init() {
+        if let data = defaults.data(forKey: settingsKey) {
+            settings = try? JSONDecoder().decode(HealthSyncSettings.self, from: data)
+            if settings == nil { message = "Your Health setup could not be read. Review and save it again before syncing." }
+        }
+    }
     func authorize() async {
-        guard available else { message = "Apple Health is not available on this device."; return }
+        guard available, !busy, !AppMode.isDemo else { return }
         busy = true; defer { busy = false }
         do {
-            try await store.requestAuthorization(toShare: [sleepType, heartType], read: [sleepType, heartType, hrvType, HKQuantityType(.respiratoryRate)])
-            message = "Permission choices saved. Health keeps read permissions private; an empty result may mean no data or no access."
+            try await store.requestAuthorization(toShare: [sleepType, heartType],
+                read: [sleepType, heartType, HKQuantityType(.heartRateVariabilitySDNN), HKQuantityType(.respiratoryRate)])
+            defaults.set(true, forKey: "healthAuthorizationRequested")
+            message = "Permission choices saved. Health keeps read access private; empty results may mean no data or no access."
             try await refreshComparison()
         } catch { message = error.localizedDescription }
     }
-
-    // Apple-derived sleep stays on this iPhone; merge overlaps from multiple sources.
-    func refreshComparison() async throws {
-        let start = Date().addingTimeInterval(-24 * 3600)
-        let predicate = HKQuery.predicateForSamples(withStart: start, end: Date(), options: [])
-        let sleepQuery = HKSampleQueryDescriptor(predicates: [.categorySample(type: sleepType, predicate: predicate)],
-            sortDescriptors: [SortDescriptor(\.startDate)], limit: HKObjectQueryNoLimit)
-        let sleep = try await sleepQuery.result(for: store).filter {
-            $0.sourceRevision.source.bundleIdentifier != Bundle.main.bundleIdentifier
-                && [HKCategoryValueSleepAnalysis.asleepUnspecified.rawValue, HKCategoryValueSleepAnalysis.asleepCore.rawValue,
-                    HKCategoryValueSleepAnalysis.asleepDeep.rawValue, HKCategoryValueSleepAnalysis.asleepREM.rawValue].contains($0.value)
-        }
-        var merged: [DateInterval] = []
-        for sample in sleep {
-            let interval = DateInterval(start: max(start, sample.startDate), end: min(Date(), sample.endDate))
-            if let previous = merged.last, previous.end >= interval.start {
-                merged[merged.count - 1] = DateInterval(start: previous.start, end: max(previous.end, interval.end))
-            } else { merged.append(interval) }
-        }
-        healthSleepMinutes = merged.isEmpty ? nil : merged.reduce(0) { $0 + $1.duration } / 60
-        let hrvQuery = HKSampleQueryDescriptor(predicates: [.quantitySample(type: hrvType, predicate: predicate)],
-            sortDescriptors: [SortDescriptor(\.startDate, order: .reverse)], limit: 1)
-        for identifier in [HKQuantityTypeIdentifier.heartRate, .respiratoryRate] {
-            let query = HKSampleQueryDescriptor(predicates: [.quantitySample(type: HKQuantityType(identifier), predicate: predicate)],
-                sortDescriptors: [SortDescriptor(\.startDate, order: .reverse)], limit: 1)
-            let sample = try await query.result(for: store).first
-            let value = sample?.quantity.doubleValue(for: .count().unitDivided(by: .minute()))
-            if identifier == .heartRate { healthHeartRate = value } else { healthRespiratoryRate = value }
-        }
-        healthHRV = try await hrvQuery.result(for: store).first?.quantity.doubleValue(for: .secondUnit(with: .milli))
-    }
-
-    // Export only the selected person's side. Stable IDs replace samples on repeat sync.
-    func sync(side: BedSide, exportHeartRate: Bool) async {
-        guard available else { return }
-        busy = true; message = nil
-        defer { busy = false }
+    func configure(side: BedSide, exportHeartRate: Bool, automatic: Bool) async {
+        guard !busy, !AppMode.isDemo else { return }
+        busy = true; defer { busy = false }
         do {
-            let client = try PodClient.configured()
-            let start = Date().addingTimeInterval(-30 * 86400)
-            let query = [URLQueryItem(name: "side", value: side.rawValue),
-                URLQueryItem(name: "startTime", value: start.ISO8601Format()), URLQueryItem(name: "endTime", value: Date().ISO8601Format())]
-            async let identityRequest: HealthExportRecords.Identity = client.get("settings")
-            async let recordsRequest: [HealthExportRecords.Sleep] = client.healthExport(kind: "presence", query: query)
-            let (identity, records) = try await (identityRequest, recordsRequest)
-            let version = Int(Date().timeIntervalSince1970 * 1000)
-            var samples = HealthSampleBuilder.presence(records, pod: identity.id, side: side, version: version)
-            if exportHeartRate {
-                let vitals: [HealthExportRecords.Vital] = try await client.healthExport(kind: "heart", query: query)
-                samples += HealthSampleBuilder.heart(vitals, pod: identity.id, side: side, version: version)
-            }
-            let types: [HKSampleType] = exportHeartRate ? [sleepType, heartType] : [sleepType]
-            guard types.allSatisfy({ store.authorizationStatus(for: $0) == .sharingAuthorized }) else {
-                throw PodError.message("Allow writing the selected data types in Apple Health before syncing.")
-            }
-            // Save replacements first. Only then remove our obsolete samples in the same Pod/side/range.
-            for offset in stride(from: 0, to: samples.count, by: 400) {
-                try await store.save(Array(samples[offset..<min(offset + 400, samples.count)]))
-            }
-            let identifiers = Set(samples.compactMap { $0.metadata?[HKMetadataKeySyncIdentifier] as? String })
-            let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-                HKQuery.predicateForObjects(from: .default()),
-                HKQuery.predicateForObjects(withMetadataKey: "FreeSleepPod", allowedValues: [identity.id]),
-                HKQuery.predicateForObjects(withMetadataKey: "FreeSleepSide", allowedValues: [side.rawValue]),
-                HKQuery.predicateForSamples(withStart: start, end: Date(), options: []),
-            ])
-            for type in types {
-                let oldQuery = HKSampleQueryDescriptor(predicates: [.sample(type: type, predicate: predicate)], sortDescriptors: [], limit: HKObjectQueryNoLimit)
-                let old = try await oldQuery.result(for: store)
-                let removed = old.filter { sample in
-                    guard let identifier = sample.metadata?[HKMetadataKeySyncIdentifier] as? String else { return false }
-                    return !identifiers.contains(identifier)
-                }
-                if !removed.isEmpty { try await store.delete(removed) }
-            }
-            try await refreshComparison()
-            message = "Synced \(samples.count) samples for your \(side.rawValue) side. Repeat syncs replace matching samples."
+            let identity: HealthExportRecords.Identity = try await PodClient.configured().get("settings")
+            guard !identity.id.isEmpty else { throw PodError.message("Your Pod did not provide an identity. Check the connection.") }
+            let preserveHistory = settings?.podID == identity.id && settings?.side == side && settings?.exportHeartRate == exportHeartRate
+            settings = HealthSyncSettings(podID: identity.id, side: side, exportHeartRate: exportHeartRate, automatic: automatic,
+                lastSuccess: preserveHistory ? settings?.lastSuccess : nil,
+                lastAttempt: preserveHistory ? settings?.lastAttempt : nil, lastSampleCount: preserveHistory ? settings?.lastSampleCount : nil)
+            try persist()
+            scheduleBackground()
+            message = "Health is linked to your \(side.rawValue) side on this Pod. Run a sync to import its records."
         } catch { message = error.localizedDescription }
     }
+    func refreshComparison() async throws {
+        guard available, !AppMode.isDemo, defaults.bool(forKey: "healthAuthorizationRequested") else { return }
+        comparison = try await HealthComparisonReader(store: store).read()
+        comparisonRefreshedAt = .now
+    }
+    func refreshOnActivation() async {
+        guard !AppMode.isDemo else { return }
+        if settings?.automatic == true { _ = try? await synchronize(trigger: .foreground) }
+        if !busy && Date().timeIntervalSince(comparisonRefreshedAt) > 60 {
+            do { try await refreshComparison() } catch { message = error.localizedDescription }
+        }
+    }
+    func runBackground() async {
+        _ = try? await synchronize(trigger: .background)
+        scheduleBackground()
+    }
+    func scheduleBackground() {
+        do {
+            try HealthBackgroundScheduler.schedule(settings: settings)
+            backgroundMessage = settings?.automatic == true
+                ? "Automatic sync runs when you open the app and when iOS grants background time. A successful first sync is required."
+                : nil
+        } catch { backgroundMessage = "Background refresh is unavailable. Sync still runs when you open the app or choose Sync now." }
+    }
+    func cancel() { operation?.cancel() }
 
+    // One operation serves UI, Shortcuts and background refresh; cancellation propagates to network requests and reconciliation.
+    @discardableResult
+    func synchronize(trigger: HealthSyncPlan.Trigger = .manual) async throws -> Int? {
+        try AppMode.requireLiveConnection()
+        guard available else { throw PodError.message("Apple Health is unavailable on this device.") }
+        guard !busy else { throw PodError.message("A Health operation is already running.") }
+        guard var preferences = settings else { throw PodError.message("Save your personal Health side in Free Sleep Settings first.") }
+        guard let range = HealthSyncPlan.window(settings: preferences, trigger: trigger, now: .now) else { return nil }
+        busy = true; message = "Syncing your \(preferences.side.rawValue) side…"
+        defer { busy = false; operation = nil }
+        do {
+            preferences.lastAttempt = .now; settings = preferences
+            try persist()
+            let source = PodHealthExportSource(client: try PodClient.configured())
+            let task = Task { try await engine.synchronize(source: source, settings: preferences, range: range) }
+            operation = task
+            let count = try await withTaskCancellationHandler { try await task.value } onCancel: { task.cancel() }
+            try Task.checkCancellation()
+            preferences.lastSuccess = range.end; preferences.lastSampleCount = count; settings = preferences
+            try persist()
+            message = "Wrote or updated \(count) samples for your \(preferences.side.rawValue) side."
+            scheduleBackground()
+            // A denied Health read must not turn a successful export into a failed sync.
+            try? await refreshComparison()
+            return count
+        } catch {
+            message = error is CancellationError || Task.isCancelled
+                ? "Sync cancelled. Completed batches stay saved; sync again to finish."
+                : error.localizedDescription
+            throw error
+        }
+    }
+    func syncFromButton() async {
+        do { _ = try await synchronize() }
+        catch where error is CancellationError || Task.isCancelled {
+            message = "Sync cancelled. Completed batches stay saved; sync again to finish."
+        } catch { message = error.localizedDescription }
+    }
+    private func persist() throws {
+        if let settings { defaults.set(try JSONEncoder().encode(settings), forKey: settingsKey) }
+    }
 }

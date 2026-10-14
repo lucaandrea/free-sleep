@@ -5,7 +5,7 @@ struct SetPowerIntent: AppIntent {
     @Parameter(title: "Side", default: .left) var side: BedSide
     @Parameter(title: "Turn on", default: true) var enabled: Bool
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        try await PodClient.configured().post("deviceStatus", body: [side.rawValue: ["isOn": enabled]])
+        try await PodActions.client().post("deviceStatus", body: [side.rawValue: ["isOn": enabled]])
         return .result(dialog: "Your bed power command was sent.")
     }
 }

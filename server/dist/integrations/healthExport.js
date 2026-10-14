@@ -1,9 +1,9 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="f426454c-7905-595c-9bc9-1808ee3f0800")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="9725925e-2912-5666-a8be-1b755933ba11")}catch(e){}}();
 import express from 'express';
 import { z } from 'zod';
 import { prisma } from '../db/prisma.js';
-import { presenceIntervals } from '../analytics/summary.js';
+import { healthPresenceRecord } from './healthPresenceRecord.js';
 export const healthExportQuery = z.object({
     side: z.enum(['left', 'right']),
     kind: z.enum(['presence', 'heart']),
@@ -37,10 +37,8 @@ router.get('/export', async (request, response) => {
         where: { side: query.side, id: { gt: query.afterId }, left_bed_at: { gte: start }, entered_bed_at: { lte: end } },
         orderBy: { id: 'asc' }, take: limit,
     });
-    response.json({ records: records.map(record => ({ id: record.id,
-            present_intervals: presenceIntervals(record).map(([begin, finish]) => [new Date(begin * 1000).toISOString(), new Date(finish * 1000).toISOString()]),
-        })), nextCursor: records.length === limit ? records.at(-1).id : null });
+    response.json({ records: records.map(healthPresenceRecord), nextCursor: records.length === limit ? records.at(-1).id : null });
 });
 export default router;
 //# sourceMappingURL=healthExport.js.map
-//# debugId=f426454c-7905-595c-9bc9-1808ee3f0800
+//# debugId=9725925e-2912-5666-a8be-1b755933ba11

@@ -30,9 +30,8 @@ enum HealthSampleBuilder {
         }
     }
     static func date(_ value: String) -> Date? {
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        return formatter.date(from: value) ?? ISO8601DateFormatter().date(from: value)
+        (try? Date.ISO8601FormatStyle(includingFractionalSeconds: true).parse(value))
+            ?? (try? Date.ISO8601FormatStyle().parse(value))
     }
     private static func metadata(identifier: String, pod: String, side: BedSide, version: Int) -> [String: Any] {
         [HKMetadataKeySyncIdentifier: identifier, HKMetadataKeySyncVersion: version,

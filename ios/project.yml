@@ -31,6 +31,8 @@ targets:
         NSHealthShareUsageDescription: Compare your Apple Health sleep and vitals with your Pod routine on this iPhone.
         NSHealthUpdateUsageDescription: Save your selected bed side's time in bed and heart rate to Apple Health.
         NSHomeKitUsageDescription: Access your Apple Home scenes and connected Free Sleep bridge.
+        UIBackgroundModes: [fetch]
+        BGTaskSchedulerPermittedIdentifiers: [com.lucaandrea.freesleep.health.refresh]
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
     entitlements:
