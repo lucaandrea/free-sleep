@@ -10,7 +10,9 @@
     "build": "export VITE_ENV=prod && tsc -b && vite build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:hosted": "VITE_ENV=hosted tsc -b && VITE_ENV=hosted vite build",
+    "demo": "VITE_ENV=demo vite"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

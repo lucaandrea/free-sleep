@@ -1,5 +1,6 @@
+import { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
-import { Box } from '@mui/material';
+import { Box, LinearProgress } from '@mui/material';
 import Navbar from './Navbar';
 
 export default function Layout() {
@@ -13,7 +14,7 @@ export default function Layout() {
           pb: { xs: 'calc(88px + env(safe-area-inset-bottom))', md: 5 },
         } }
       >
-        <Outlet/>
+        <Suspense fallback={ <LinearProgress aria-label="Loading view" /> }><Outlet/></Suspense>
       </Box>
     </Box>
   );

@@ -16,7 +16,8 @@
     "migrate": "dotenv -e .env.pod -- npx prisma migrate dev --name ",
     "generate": "dotenv -e .env.pod -- npx prisma generate",
     "migrate:local": "dotenv -e .env.local -- npx prisma migrate dev --name ",
-    "generate:local": "dotenv -e .env.local -- npx prisma generate"
+    "generate:local": "dotenv -e .env.local -- npx prisma generate",
+    "test": "node --import tsx --test tests/*.test.ts"
   },
   "keywords": [],
   "author": "",
@@ -32,8 +33,10 @@
     "cbor": "^10.0.12",
     "chokidar": "^5.0.0",
     "cors": "^2.8.5",
+    "dbus-next": "^0.10.2",
     "dotenv-cli": "^11.0.0",
     "express": "^5.1.0",
+    "hap-nodejs": "^0.14.3",
     "lodash": "^4.17.0",
     "lowdb": "^7.0.1",
     "moment-timezone": "^0.6.5",
@@ -58,6 +61,7 @@
     "prisma": "6.19.3",
     "ts-essentials": "^10.2.1",
     "ts-node": "^10.9.0",
+    "tsx": "^4.23.15",
     "typescript": "~6.0.3"
   },
   "engines": {

@@ -6,24 +6,29 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
 import { CssBaseline } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { StrictMode } from 'react';
+import { lazy, StrictMode } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { theme } from './theme';
 
-import ControlTempPage from './pages/ControlTempPage/ControlTempPage';
-import SettingsPage from './pages/SettingsPage/SettingsPage';
+const ControlTempPage = lazy(() => import('./pages/ControlTempPage/ControlTempPage'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage/SettingsPage'));
 import Layout from './components/Layout';
 import { AppStoreProvider } from '@state/appStore.tsx';
-import SchedulePage from './pages/SchedulePage/SchedulePage.tsx';
+const SchedulePage = lazy(() => import('./pages/SchedulePage/SchedulePage.tsx'));
 import ErrorBoundary from './components/ErrorBoundary.tsx';
 import { GlobalStyles } from '@mui/material';
-import SleepPage from './pages/DataPage/SleepPage/SleepPage.tsx';
-import DataPage from './pages/DataPage/DataPage.tsx';
-import VitalsPage from './pages/DataPage/VitalsPage/VitalsPage.tsx';
+const SleepPage = lazy(() => import('./pages/DataPage/SleepPage/SleepPage.tsx'));
+const DataPage = lazy(() => import('./pages/DataPage/DataPage.tsx'));
+const VitalsPage = lazy(() => import('./pages/DataPage/VitalsPage/VitalsPage.tsx'));
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
-import LogsPage from './pages/DataPage/LogsPage/LogsPage.tsx';
-import StatusPage from './pages/StatusPage/StatusPage.tsx';
+const LogsPage = lazy(() => import('./pages/DataPage/LogsPage/LogsPage.tsx'));
+const StatusPage = lazy(() => import('./pages/StatusPage/StatusPage.tsx'));
+
+const TonightPage = lazy(() => import('./pages/Platform/TonightPage'));
+const InsightsPage = lazy(() => import('./pages/Platform/InsightsPage'));
+const CoachPage = lazy(() => import('./pages/Platform/CoachPage'));
+const ConnectionsPage = lazy(() => import('./pages/Platform/ConnectionsPage'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -55,7 +60,9 @@ const App = () => {
             <BrowserRouter basename="/">
               <SentryRoutes>
                 <Route path="/" element={ <Layout/> }>
-                  <Route index element={ <ControlTempPage/> }/>
+                  <Route index element={ <TonightPage/> }/>
+                  <Route path="insights" element={ <InsightsPage/> }/>
+                  <Route path="coach" element={ <CoachPage/> }/>
                   <Route path="temperature" element={ <ControlTempPage/> }/>
                   <Route path="left" element={ <ControlTempPage/> }/>
                   <Route path="right" element={ <ControlTempPage/> }/>
@@ -67,7 +74,8 @@ const App = () => {
                     <Route path="vitals" element={ <VitalsPage/> }/>
                   </Route>
 
-                  <Route path="settings" element={ <SettingsPage/> }/>
+                  <Route path="settings" element={ <ConnectionsPage/> }/>
+                  <Route path="settings/device" element={ <SettingsPage/> }/>
                   <Route path="schedules" element={ <SchedulePage/> }/>
                 </Route>
               </SentryRoutes>

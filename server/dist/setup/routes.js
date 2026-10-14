@@ -1,5 +1,5 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="06b3c546-1950-5ca6-86b4-d42c407fcde2")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="86c3039b-83dd-5452-9aa8-7ca8b80b69e7")}catch(e){}}();
 import * as Sentry from '@sentry/node';
 import express from 'express';
 import path from 'path';
@@ -18,10 +18,22 @@ import presence from '../routes/metrics/presence.js';
 import logs from '../routes/logs/logs.js';
 import serverStatus from '../routes/serverStatus/serverStatus.js';
 import logger from '../logger.js';
+import base from '../base/index.js';
+import analytics from '../analytics/index.js';
+import journal from '../analytics/journalRoutes.js';
+import ai from '../ai/index.js';
+import integrations from '../integrations/index.js';
+import healthExport from '../integrations/healthExport.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 export default function (app) {
     logger.debug('Registering routes...');
+    app.use('/api/base', base);
+    app.use('/api/analytics', analytics);
+    app.use('/api/journal', journal);
+    app.use('/api/ai', ai);
+    app.use('/api/integrations', integrations);
+    app.use('/api/health', healthExport);
     app.use('/api/', alarm);
     app.use('/api/', deviceStatus);
     app.use('/api/', execute);
@@ -67,4 +79,4 @@ export default function (app) {
     logger.debug('Registered routes!');
 }
 //# sourceMappingURL=routes.js.map
-//# debugId=06b3c546-1950-5ca6-86b4-d42c407fcde2
+//# debugId=86c3039b-83dd-5452-9aa8-7ca8b80b69e7

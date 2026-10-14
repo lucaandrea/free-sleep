@@ -47,9 +47,10 @@ const buildComponents = (): ThemeOptions['components'] => ({
       }),
       contained: ({ theme }) => ({
         '&.MuiButton-colorPrimary': {
-          backgroundColor: theme.palette.mode === 'dark' ? '#ededed' : '#202020',
+          backgroundColor: theme.palette.mode === 'dark' ? '#f6f1eb' : '#c6411c',
           color: theme.palette.mode === 'dark' ? '#202020' : '#ffffff',
-          '&:hover': { backgroundColor: theme.palette.mode === 'dark' ? '#ffffff' : '#383838' },
+          '&:hover': { backgroundColor: theme.palette.mode === 'dark' ? '#ffffff' : '#a73315' },
+          '&.Mui-disabled': { backgroundColor: theme.palette.action.disabledBackground, color: theme.palette.action.disabled },
         },
       }),
     },
@@ -130,23 +131,23 @@ const buildComponents = (): ThemeOptions['components'] => ({
   MuiTooltip: { styleOverrides: { tooltip: { fontSize: 12, borderRadius: 6 } } },
 });
 
-export const buildTheme = (mode: PaletteMode = 'dark') => createTheme({
+export const buildTheme = (mode: PaletteMode = 'light') => createTheme({
   typography,
   palette: {
     mode,
-    primary: { main: mode === 'dark' ? '#ededed' : '#262626', contrastText: '#111111' },
+    primary: { main: mode === 'dark' ? '#ff926e' : '#c6411c', contrastText: '#111111' },
     secondary: { main: '#aaaaaa' },
     success: { main: mode === 'dark' ? '#77cba5' : '#27835e' },
     info: { main: mode === 'dark' ? '#8baef4' : '#446dc2' },
     warning: { main: mode === 'dark' ? '#d8b477' : '#997021' },
     error: { main: '#dc7b85' },
-    divider: mode === 'dark' ? '#222222' : '#e3e3e3',
-    background: { default: mode === 'dark' ? '#000000' : '#fafafa', paper: mode === 'dark' ? '#0a0a0a' : '#ffffff' },
-    text: { primary: mode === 'dark' ? '#ededed' : '#202020', secondary: mode === 'dark' ? '#929292' : '#6d6d6d' },
+    divider: mode === 'dark' ? '#3c3834' : '#e8e2da',
+    background: { default: mode === 'dark' ? '#191817' : '#faf6f1', paper: mode === 'dark' ? '#252321' : '#ffffff' },
+    text: { primary: mode === 'dark' ? '#f6f1eb' : '#181818', secondary: mode === 'dark' ? '#b3aaa2' : '#736a62' },
     action: { hover: mode === 'dark' ? '#ffffff06' : '#00000005', selected: mode === 'dark' ? '#ffffff0d' : '#00000008' },
   },
-  shape: { borderRadius: 12 },
+  shape: { borderRadius: 16 },
   components: buildComponents(),
 });
 
-export const theme = buildTheme('dark');
+export const theme = buildTheme(localStorage.getItem('freeSleepAppearance') === 'dark' ? 'dark' : 'light');

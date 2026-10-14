@@ -1,17 +1,17 @@
 import { ReactElement } from 'react';
 import BarChartOutlinedIcon from '@mui/icons-material/BarChartOutlined';
-import ThermostatOutlinedIcon from '@mui/icons-material/ThermostatOutlined';
+import NightsStayOutlinedIcon from '@mui/icons-material/NightsStayOutlined';
 import ScheduleOutlinedIcon from '@mui/icons-material/ScheduleOutlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
-import GraphicEqOutlinedIcon from '@mui/icons-material/GraphicEqOutlined';
+import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined';
 
 type Page = { title: string; route: string; icon: ReactElement };
 
 export const PAGES: Page[] = [
-  { title: 'Temperature', route: '/temperature', icon: <ThermostatOutlinedIcon/> },
-  { title: 'Schedules', route: '/schedules', icon: <ScheduleOutlinedIcon/> },
-  { title: 'Data', route: '/data', icon: <BarChartOutlinedIcon/> },
-  { title: 'Status', route: '/status', icon: <GraphicEqOutlinedIcon/> },
+  { title: 'Tonight', route: '/', icon: <NightsStayOutlinedIcon/> },
+  { title: 'Sleep', route: '/insights', icon: <BarChartOutlinedIcon/> },
+  { title: 'Coach', route: '/coach', icon: <AutoAwesomeOutlinedIcon/> },
+  { title: 'Routines', route: '/schedules', icon: <ScheduleOutlinedIcon/> },
   { title: 'Settings', route: '/settings', icon: <SettingsOutlinedIcon/> },
 ];
 

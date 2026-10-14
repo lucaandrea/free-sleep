@@ -105,7 +105,7 @@ export default function SchedulePage() {
         maxWidth: 800,
       } }
     >
-      <PageHeader title="Schedules"/>
+      <PageHeader title="Set your rhythm."/>
       <SideControl/>
 
       <DayTabs/>

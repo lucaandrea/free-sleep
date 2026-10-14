@@ -1,5 +1,5 @@
 import { PropsWithChildren } from 'react';
-import { Container, ContainerProps, SxProps, Theme } from '@mui/material';
+import { Alert, Container, ContainerProps, SxProps, Theme } from '@mui/material';
 import ErrorBoundary from '@components/ErrorBoundary.tsx';
 
 type PageContainerProps = { containerProps?: ContainerProps; sx?: SxProps<Theme> };
@@ -17,6 +17,7 @@ export default function PageContainer({ children, sx = [], containerProps }: Pro
           ...(Array.isArray(sx) ? sx : [sx]),
         ] }
       >
+        { import.meta.env.VITE_ENV === 'demo' && <Alert severity="info">Demo · sample data and simulated controls</Alert> }
         { children }
       </Container>
     </ErrorBoundary>

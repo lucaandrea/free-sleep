@@ -1,3 +1,5 @@
+> **Platform development branch:** Native iOS, adjustable-base control, analytics/coaching and an authenticated Replit gateway are implemented here. Start with [setup and migration](docs/PLATFORM_SETUP.md), [research](docs/research/base-control.md), and [validation boundaries](docs/VALIDATION.md). The owner's stock Pod has not been modified or qualified with this version.
+
 # Free Sleep — Local Control for 8 Sleep Pods
 
 ## 👀 [Demo App](https://free-sleep.vercel.app/)

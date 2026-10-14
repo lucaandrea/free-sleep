@@ -3,6 +3,8 @@ import express from 'express';
 import schedule from 'node-schedule';
 import { Server } from 'http';
 import logger from './logger.js';
+import { baseController } from './base/index.js';
+import { startHomeKit, stopHomeKit } from './integrations/homekit.js';
 import { connectFranken, disconnectFranken } from './8sleep/frankenServer.js';
 import { FrankenMonitor } from './8sleep/frankenMonitor.js';
 import './jobs/jobScheduler.js';
@@ -17,7 +19,7 @@ import { prisma } from './db/prisma.js';
 import { setupSentryTags } from './setupSentryTags.js';
 import { loadWifiSignalStrength } from './8sleep/wifiSignalStrength.js';
 
-const port = 3000;
+const port = Number(process.env.PORT || 3000);
 const app = express();
 let server: Server | undefined;
 let frankenMonitor: FrankenMonitor | undefined;
@@ -57,6 +59,8 @@ async function gracefulShutdown(signal: string) {
     logger.error({ error });
     process.exit(1);
   }, 15_000);
+  baseController.close();
+  await stopHomeKit();
   logger.debug('Stopping node-schedule');
   await schedule.gracefulShutdown();
   await disconnectPrisma();
@@ -131,6 +135,7 @@ async function startServer() {
         logger.error(error);
       });
   }
+  void startHomeKit();
   void loadWifiSignalStrength();
   setInterval(loadWifiSignalStrength, 10_000);
 

@@ -1,0 +1,645 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		01F9BBFC6C94AFF82328D6E2 /* PodClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 185D26C9C0A9601AB05B8424 /* PodClient.swift */; };
+		04E6C99EF6A3FB222E72EF88 /* RoutinesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79660A534946AD8CDD7CC316 /* RoutinesView.swift */; };
+		060BFF38D535538C740864D3 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3D27F9E94EAB257B5041682 /* RootView.swift */; };
+		0E87E47DD765563489CC70F3 /* FreeSleepShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59555AB47FBAE7C43765908E /* FreeSleepShortcuts.swift */; };
+		0EAD20A2326B066E9AAB242D /* StopBaseIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B434EC9AD7EB7F2714336FB6 /* StopBaseIntent.swift */; };
+		11573FA8259FC980E0CF1824 /* AppleHomeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63CC344D4D3528E90AF0E98B /* AppleHomeService.swift */; };
+		1645649F3926D908836F420C /* TemperatureCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97DC74FD2969EF4E087A1801 /* TemperatureCard.swift */; };
+		1DAD4803728F980F3B627FE3 /* CoachProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0843AB6AD38D374CCD4446FE /* CoachProvider.swift */; };
+		1E6C3A469B2FC1CDB8FD7853 /* SleepCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6076D048AE54F451EB03AC14 /* SleepCard.swift */; };
+		29F501D5767132C0DB0C0A63 /* SetPowerIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63CEE115B2348D3F1B08087B /* SetPowerIntent.swift */; };
+		309BEE8A3AB77B7690159DE5 /* DeviceStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = A36B1337ACFC8F9D41715283 /* DeviceStatus.swift */; };
+		3412D0C6CBB7996CEAC39A78 /* SidePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F3203DA318344F7D5C818C /* SidePicker.swift */; };
+		3808CFF7DF2FD0EA97429B38 /* PodError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2192C3EA801DC513182CEDA3 /* PodError.swift */; };
+		3C8955DC44016B52D1D0F499 /* DailySchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F84326021EA05E2A4164BB9 /* DailySchedule.swift */; };
+		3F718E620DD34D344867E6FB /* HealthSampleBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35EE62D0C8CC36A7524A35FD /* HealthSampleBuilder.swift */; };
+		4059D00C9D4C6E3FFA3B91A9 /* InsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 416300BE6F0878E58CCF20A3 /* InsightsView.swift */; };
+		451744E3E6C643669BF803F8 /* Coaching.swift in Sources */ = {isa = PBXBuildFile; fileRef = E31D10A3B1E836D462A4C925 /* Coaching.swift */; };
+		495AF68281188C3482E18422 /* BaseStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E5F975F9CE3BFF376794221 /* BaseStatus.swift */; };
+		4A36E709DD29EE7B381D10FD /* BedPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3B08B5237483CA0A94740A4 /* BedPreview.swift */; };
+		522867315FE73ACEF48049C3 /* JournalCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D837912B5318EFBA7679C2D /* JournalCard.swift */; };
+		597A621AFE43DA1F191239FD /* HomeBridgeStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C827114BAFC416386E848B5 /* HomeBridgeStatus.swift */; };
+		5DD4877BC9B7186D9A29270B /* SetTemperatureIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 380D9B50ED5BAEED3BD0E95A /* SetTemperatureIntent.swift */; };
+		62CB7FBAA4570B57176F8EE8 /* SleepTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3110A5184F12C0AB0D2B0D47 /* SleepTheme.swift */; };
+		7ED29A0D13AD221E1339BE0E /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF663FAD40FED19ABAB4163A /* AppModel.swift */; };
+		899846CF0CE03A4F1B429785 /* SleepAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D263428D988BC577E3824E5 /* SleepAnalytics.swift */; };
+		8BA9BA1F7C8334CB6A8ED05D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FCBEA48F01B231C0DD3164BE /* Assets.xcassets */; };
+		93D24724AE0F06E66E8EB977 /* analytics-demo.json in Resources */ = {isa = PBXBuildFile; fileRef = E8113F55211592ECB2DED3D4 /* analytics-demo.json */; };
+		968A121FDA74D103F1C28DFB /* SetBaseAnglesIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB4CF20C1EE868FE52C5EDEF /* SetBaseAnglesIntent.swift */; };
+		9982B134A3F6702110DA997B /* HealthExportRecords.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8335933BCCBA6FA9F23624C /* HealthExportRecords.swift */; };
+		A15E4521DDDCC6C2F9194D43 /* Journal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 198E86863DA012DED35AEFD1 /* Journal.swift */; };
+		A2CB8294309DE331F25B345A /* PodSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB40835335F90972773AC065 /* PodSettings.swift */; };
+		A83019F12DC7E55488E33923 /* PodNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = B455CABD3A4CFBE772871391 /* PodNotifications.swift */; };
+		A9486F01D933B3DAD59E8E9E /* SleepSummaryIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B2101C856C989F1513BACDF /* SleepSummaryIntent.swift */; };
+		B0F1275229CFB334902B8BC4 /* BedSide.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA0D136E471C9D603A5E51E /* BedSide.swift */; };
+		B448E8D7D22F899B0C47E4EA /* BasePreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4393FC79F303779AE14BDF51 /* BasePreset.swift */; };
+		B9CB539A554A38459A6DEA49 /* CoachView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C34950CCFD7C1D84321B33B6 /* CoachView.swift */; };
+		BC5EC1C0FBF6DA104AB14221 /* FreeSleepApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42077EF2507B78E9D502DD36 /* FreeSleepApp.swift */; };
+		C27677694B9EF5A0226B9343 /* SleepPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC3532B532CDCD29707F8A29 /* SleepPage.swift */; };
+		C36F0B2B752F5124B76CF4D6 /* BaseCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76B632833DFE5D7F11C7C416 /* BaseCard.swift */; };
+		CC60FA283D3C426B73A76F13 /* FreeSleepTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20D358A1A8D513CCA647C34 /* FreeSleepTests.swift */; };
+		D0B76F7601CF1B1EFDED3185 /* ConnectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6F21131DB91A9BE07747C42 /* ConnectionsView.swift */; };
+		D8994C54053A0B27BD4367B3 /* TokenStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D400DC1BAE6D1428DDA45CC /* TokenStore.swift */; };
+		D9B318C5EE39EA7C2415E736 /* TonightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 338BB87387707E7A57B3DA47 /* TonightView.swift */; };
+		DD64EEEE91FBB73D9448B59F /* SetBasePresetIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3D02AACB0FE5D1F4B5311D7 /* SetBasePresetIntent.swift */; };
+		DE8EBC0BDA24D65639C299AD /* HealthSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48B8B14A19A7C36160605782 /* HealthSyncService.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		9F977549D9B648D9663FD92D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F38613BFA8C2E174BCE3C26A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CDC417546330B2F8C42B5A58;
+			remoteInfo = FreeSleep;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0843AB6AD38D374CCD4446FE /* CoachProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoachProvider.swift; sourceTree = "<group>"; };
+		185D26C9C0A9601AB05B8424 /* PodClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodClient.swift; sourceTree = "<group>"; };
+		198E86863DA012DED35AEFD1 /* Journal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Journal.swift; sourceTree = "<group>"; };
+		1B2101C856C989F1513BACDF /* SleepSummaryIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepSummaryIntent.swift; sourceTree = "<group>"; };
+		2192C3EA801DC513182CEDA3 /* PodError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodError.swift; sourceTree = "<group>"; };
+		2D263428D988BC577E3824E5 /* SleepAnalytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepAnalytics.swift; sourceTree = "<group>"; };
+		2E5F975F9CE3BFF376794221 /* BaseStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseStatus.swift; sourceTree = "<group>"; };
+		3110A5184F12C0AB0D2B0D47 /* SleepTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepTheme.swift; sourceTree = "<group>"; };
+		338BB87387707E7A57B3DA47 /* TonightView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TonightView.swift; sourceTree = "<group>"; };
+		35EE62D0C8CC36A7524A35FD /* HealthSampleBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthSampleBuilder.swift; sourceTree = "<group>"; };
+		380D9B50ED5BAEED3BD0E95A /* SetTemperatureIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetTemperatureIntent.swift; sourceTree = "<group>"; };
+		416300BE6F0878E58CCF20A3 /* InsightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsView.swift; sourceTree = "<group>"; };
+		42077EF2507B78E9D502DD36 /* FreeSleepApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeSleepApp.swift; sourceTree = "<group>"; };
+		4393FC79F303779AE14BDF51 /* BasePreset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasePreset.swift; sourceTree = "<group>"; };
+		47F3203DA318344F7D5C818C /* SidePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidePicker.swift; sourceTree = "<group>"; };
+		48B8B14A19A7C36160605782 /* HealthSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthSyncService.swift; sourceTree = "<group>"; };
+		48D5438F6B0AB226B4E58E1F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		4C827114BAFC416386E848B5 /* HomeBridgeStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeBridgeStatus.swift; sourceTree = "<group>"; };
+		577144F1842FA12A6A79E939 /* FreeSleepTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = FreeSleepTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		59555AB47FBAE7C43765908E /* FreeSleepShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeSleepShortcuts.swift; sourceTree = "<group>"; };
+		5F84326021EA05E2A4164BB9 /* DailySchedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailySchedule.swift; sourceTree = "<group>"; };
+		6076D048AE54F451EB03AC14 /* SleepCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepCard.swift; sourceTree = "<group>"; };
+		6307DCE5EBF606B56C8D3BFF /* FreeSleep.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = FreeSleep.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		63CC344D4D3528E90AF0E98B /* AppleHomeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleHomeService.swift; sourceTree = "<group>"; };
+		63CEE115B2348D3F1B08087B /* SetPowerIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetPowerIntent.swift; sourceTree = "<group>"; };
+		6D400DC1BAE6D1428DDA45CC /* TokenStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenStore.swift; sourceTree = "<group>"; };
+		76B632833DFE5D7F11C7C416 /* BaseCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCard.swift; sourceTree = "<group>"; };
+		79660A534946AD8CDD7CC316 /* RoutinesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutinesView.swift; sourceTree = "<group>"; };
+		9686B8DBB2CC3893DEEB30DA /* FreeSleep.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FreeSleep.entitlements; sourceTree = "<group>"; };
+		97DC74FD2969EF4E087A1801 /* TemperatureCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemperatureCard.swift; sourceTree = "<group>"; };
+		9D837912B5318EFBA7679C2D /* JournalCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalCard.swift; sourceTree = "<group>"; };
+		A36B1337ACFC8F9D41715283 /* DeviceStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceStatus.swift; sourceTree = "<group>"; };
+		AB40835335F90972773AC065 /* PodSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodSettings.swift; sourceTree = "<group>"; };
+		B434EC9AD7EB7F2714336FB6 /* StopBaseIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopBaseIntent.swift; sourceTree = "<group>"; };
+		B455CABD3A4CFBE772871391 /* PodNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodNotifications.swift; sourceTree = "<group>"; };
+		BEA0D136E471C9D603A5E51E /* BedSide.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BedSide.swift; sourceTree = "<group>"; };
+		C20D358A1A8D513CCA647C34 /* FreeSleepTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeSleepTests.swift; sourceTree = "<group>"; };
+		C34950CCFD7C1D84321B33B6 /* CoachView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoachView.swift; sourceTree = "<group>"; };
+		CC3532B532CDCD29707F8A29 /* SleepPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepPage.swift; sourceTree = "<group>"; };
+		CF663FAD40FED19ABAB4163A /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		E31D10A3B1E836D462A4C925 /* Coaching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coaching.swift; sourceTree = "<group>"; };
+		E3D02AACB0FE5D1F4B5311D7 /* SetBasePresetIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetBasePresetIntent.swift; sourceTree = "<group>"; };
+		E3D27F9E94EAB257B5041682 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		E6F21131DB91A9BE07747C42 /* ConnectionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionsView.swift; sourceTree = "<group>"; };
+		E8113F55211592ECB2DED3D4 /* analytics-demo.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "analytics-demo.json"; sourceTree = "<group>"; };
+		E8335933BCCBA6FA9F23624C /* HealthExportRecords.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthExportRecords.swift; sourceTree = "<group>"; };
+		F3B08B5237483CA0A94740A4 /* BedPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BedPreview.swift; sourceTree = "<group>"; };
+		FB4CF20C1EE868FE52C5EDEF /* SetBaseAnglesIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetBaseAnglesIntent.swift; sourceTree = "<group>"; };
+		FCBEA48F01B231C0DD3164BE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		000BE9E5D10FF36BDED2C83B /* Design */ = {
+			isa = PBXGroup;
+			children = (
+				6076D048AE54F451EB03AC14 /* SleepCard.swift */,
+				CC3532B532CDCD29707F8A29 /* SleepPage.swift */,
+				3110A5184F12C0AB0D2B0D47 /* SleepTheme.swift */,
+			);
+			path = Design;
+			sourceTree = "<group>";
+		};
+		4E315EFC6EFC5768B19BD737 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				4393FC79F303779AE14BDF51 /* BasePreset.swift */,
+				2E5F975F9CE3BFF376794221 /* BaseStatus.swift */,
+				BEA0D136E471C9D603A5E51E /* BedSide.swift */,
+				E31D10A3B1E836D462A4C925 /* Coaching.swift */,
+				0843AB6AD38D374CCD4446FE /* CoachProvider.swift */,
+				5F84326021EA05E2A4164BB9 /* DailySchedule.swift */,
+				A36B1337ACFC8F9D41715283 /* DeviceStatus.swift */,
+				E8335933BCCBA6FA9F23624C /* HealthExportRecords.swift */,
+				4C827114BAFC416386E848B5 /* HomeBridgeStatus.swift */,
+				198E86863DA012DED35AEFD1 /* Journal.swift */,
+				AB40835335F90972773AC065 /* PodSettings.swift */,
+				2D263428D988BC577E3824E5 /* SleepAnalytics.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		63C8FFFB854CBD4F6B795EE7 = {
+			isa = PBXGroup;
+			children = (
+				64C2033ACFDC0931B9E0F49E /* FreeSleep */,
+				75F9F89E6923F71A6896E5FA /* FreeSleepTests */,
+				837B7E8DA1CD74494676C35C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		64C2033ACFDC0931B9E0F49E /* FreeSleep */ = {
+			isa = PBXGroup;
+			children = (
+				93BF4ED45BC8900E841D3C0A /* App */,
+				000BE9E5D10FF36BDED2C83B /* Design */,
+				A608BC316A6F1378FD94B901 /* Features */,
+				BAB34D7BC3539B964A0B1761 /* Intents */,
+				4E315EFC6EFC5768B19BD737 /* Models */,
+				8E2F8621D3BD29D49BB4764A /* Resources */,
+				86013BE1E9A56D2CB0324B16 /* Services */,
+			);
+			path = FreeSleep;
+			sourceTree = "<group>";
+		};
+		75F9F89E6923F71A6896E5FA /* FreeSleepTests */ = {
+			isa = PBXGroup;
+			children = (
+				C20D358A1A8D513CCA647C34 /* FreeSleepTests.swift */,
+			);
+			path = FreeSleepTests;
+			sourceTree = "<group>";
+		};
+		837B7E8DA1CD74494676C35C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6307DCE5EBF606B56C8D3BFF /* FreeSleep.app */,
+				577144F1842FA12A6A79E939 /* FreeSleepTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		86013BE1E9A56D2CB0324B16 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				63CC344D4D3528E90AF0E98B /* AppleHomeService.swift */,
+				35EE62D0C8CC36A7524A35FD /* HealthSampleBuilder.swift */,
+				48B8B14A19A7C36160605782 /* HealthSyncService.swift */,
+				185D26C9C0A9601AB05B8424 /* PodClient.swift */,
+				2192C3EA801DC513182CEDA3 /* PodError.swift */,
+				6D400DC1BAE6D1428DDA45CC /* TokenStore.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		8E2F8621D3BD29D49BB4764A /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				E8113F55211592ECB2DED3D4 /* analytics-demo.json */,
+				FCBEA48F01B231C0DD3164BE /* Assets.xcassets */,
+				9686B8DBB2CC3893DEEB30DA /* FreeSleep.entitlements */,
+				48D5438F6B0AB226B4E58E1F /* Info.plist */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		93BF4ED45BC8900E841D3C0A /* App */ = {
+			isa = PBXGroup;
+			children = (
+				CF663FAD40FED19ABAB4163A /* AppModel.swift */,
+				42077EF2507B78E9D502DD36 /* FreeSleepApp.swift */,
+				E3D27F9E94EAB257B5041682 /* RootView.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		A608BC316A6F1378FD94B901 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				76B632833DFE5D7F11C7C416 /* BaseCard.swift */,
+				F3B08B5237483CA0A94740A4 /* BedPreview.swift */,
+				C34950CCFD7C1D84321B33B6 /* CoachView.swift */,
+				E6F21131DB91A9BE07747C42 /* ConnectionsView.swift */,
+				416300BE6F0878E58CCF20A3 /* InsightsView.swift */,
+				9D837912B5318EFBA7679C2D /* JournalCard.swift */,
+				B455CABD3A4CFBE772871391 /* PodNotifications.swift */,
+				79660A534946AD8CDD7CC316 /* RoutinesView.swift */,
+				47F3203DA318344F7D5C818C /* SidePicker.swift */,
+				97DC74FD2969EF4E087A1801 /* TemperatureCard.swift */,
+				338BB87387707E7A57B3DA47 /* TonightView.swift */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		BAB34D7BC3539B964A0B1761 /* Intents */ = {
+			isa = PBXGroup;
+			children = (
+				59555AB47FBAE7C43765908E /* FreeSleepShortcuts.swift */,
+				FB4CF20C1EE868FE52C5EDEF /* SetBaseAnglesIntent.swift */,
+				E3D02AACB0FE5D1F4B5311D7 /* SetBasePresetIntent.swift */,
+				63CEE115B2348D3F1B08087B /* SetPowerIntent.swift */,
+				380D9B50ED5BAEED3BD0E95A /* SetTemperatureIntent.swift */,
+				1B2101C856C989F1513BACDF /* SleepSummaryIntent.swift */,
+				B434EC9AD7EB7F2714336FB6 /* StopBaseIntent.swift */,
+			);
+			path = Intents;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3D494A2B952A20E5B3C49426 /* FreeSleepTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CE0C73402C73F6BE9B5086E1 /* Build configuration list for PBXNativeTarget "FreeSleepTests" */;
+			buildPhases = (
+				2A3F2C7DFFDB2F9BB55EC3ED /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0176DF9BBBF46F047252E16D /* PBXTargetDependency */,
+			);
+			name = FreeSleepTests;
+			packageProductDependencies = (
+			);
+			productName = FreeSleepTests;
+			productReference = 577144F1842FA12A6A79E939 /* FreeSleepTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		CDC417546330B2F8C42B5A58 /* FreeSleep */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 83922E271C01EA0255B40786 /* Build configuration list for PBXNativeTarget "FreeSleep" */;
+			buildPhases = (
+				3A6A648CBB514FBD8FA5B291 /* Sources */,
+				1E01A9143C508652EFBFE4D2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FreeSleep;
+			packageProductDependencies = (
+			);
+			productName = FreeSleep;
+			productReference = 6307DCE5EBF606B56C8D3BFF /* FreeSleep.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F38613BFA8C2E174BCE3C26A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					CDC417546330B2F8C42B5A58 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = BAF3C1CD1E6665DAF72381AF /* Build configuration list for PBXProject "FreeSleep" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 63C8FFFB854CBD4F6B795EE7;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 837B7E8DA1CD74494676C35C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				CDC417546330B2F8C42B5A58 /* FreeSleep */,
+				3D494A2B952A20E5B3C49426 /* FreeSleepTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1E01A9143C508652EFBFE4D2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8BA9BA1F7C8334CB6A8ED05D /* Assets.xcassets in Resources */,
+				93D24724AE0F06E66E8EB977 /* analytics-demo.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2A3F2C7DFFDB2F9BB55EC3ED /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CC60FA283D3C426B73A76F13 /* FreeSleepTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3A6A648CBB514FBD8FA5B291 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7ED29A0D13AD221E1339BE0E /* AppModel.swift in Sources */,
+				11573FA8259FC980E0CF1824 /* AppleHomeService.swift in Sources */,
+				C36F0B2B752F5124B76CF4D6 /* BaseCard.swift in Sources */,
+				B448E8D7D22F899B0C47E4EA /* BasePreset.swift in Sources */,
+				495AF68281188C3482E18422 /* BaseStatus.swift in Sources */,
+				4A36E709DD29EE7B381D10FD /* BedPreview.swift in Sources */,
+				B0F1275229CFB334902B8BC4 /* BedSide.swift in Sources */,
+				1DAD4803728F980F3B627FE3 /* CoachProvider.swift in Sources */,
+				B9CB539A554A38459A6DEA49 /* CoachView.swift in Sources */,
+				451744E3E6C643669BF803F8 /* Coaching.swift in Sources */,
+				D0B76F7601CF1B1EFDED3185 /* ConnectionsView.swift in Sources */,
+				3C8955DC44016B52D1D0F499 /* DailySchedule.swift in Sources */,
+				309BEE8A3AB77B7690159DE5 /* DeviceStatus.swift in Sources */,
+				BC5EC1C0FBF6DA104AB14221 /* FreeSleepApp.swift in Sources */,
+				0E87E47DD765563489CC70F3 /* FreeSleepShortcuts.swift in Sources */,
+				9982B134A3F6702110DA997B /* HealthExportRecords.swift in Sources */,
+				3F718E620DD34D344867E6FB /* HealthSampleBuilder.swift in Sources */,
+				DE8EBC0BDA24D65639C299AD /* HealthSyncService.swift in Sources */,
+				597A621AFE43DA1F191239FD /* HomeBridgeStatus.swift in Sources */,
+				4059D00C9D4C6E3FFA3B91A9 /* InsightsView.swift in Sources */,
+				A15E4521DDDCC6C2F9194D43 /* Journal.swift in Sources */,
+				522867315FE73ACEF48049C3 /* JournalCard.swift in Sources */,
+				01F9BBFC6C94AFF82328D6E2 /* PodClient.swift in Sources */,
+				3808CFF7DF2FD0EA97429B38 /* PodError.swift in Sources */,
+				A83019F12DC7E55488E33923 /* PodNotifications.swift in Sources */,
+				A2CB8294309DE331F25B345A /* PodSettings.swift in Sources */,
+				060BFF38D535538C740864D3 /* RootView.swift in Sources */,
+				04E6C99EF6A3FB222E72EF88 /* RoutinesView.swift in Sources */,
+				968A121FDA74D103F1C28DFB /* SetBaseAnglesIntent.swift in Sources */,
+				DD64EEEE91FBB73D9448B59F /* SetBasePresetIntent.swift in Sources */,
+				29F501D5767132C0DB0C0A63 /* SetPowerIntent.swift in Sources */,
+				5DD4877BC9B7186D9A29270B /* SetTemperatureIntent.swift in Sources */,
+				3412D0C6CBB7996CEAC39A78 /* SidePicker.swift in Sources */,
+				899846CF0CE03A4F1B429785 /* SleepAnalytics.swift in Sources */,
+				1E6C3A469B2FC1CDB8FD7853 /* SleepCard.swift in Sources */,
+				C27677694B9EF5A0226B9343 /* SleepPage.swift in Sources */,
+				A9486F01D933B3DAD59E8E9E /* SleepSummaryIntent.swift in Sources */,
+				62CB7FBAA4570B57176F8EE8 /* SleepTheme.swift in Sources */,
+				0EAD20A2326B066E9AAB242D /* StopBaseIntent.swift in Sources */,
+				1645649F3926D908836F420C /* TemperatureCard.swift in Sources */,
+				D8994C54053A0B27BD4367B3 /* TokenStore.swift in Sources */,
+				D9B318C5EE39EA7C2415E736 /* TonightView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		0176DF9BBBF46F047252E16D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CDC417546330B2F8C42B5A58 /* FreeSleep */;
+			targetProxy = 9F977549D9B648D9663FD92D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		08EC572EBD30A008C0009182 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = FreeSleep/Resources/FreeSleep.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FreeSleep/Resources/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Free Sleep";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.lucaandrea.freesleep;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		0DD94B17D7C55C75D3A8570D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.lucaandrea.FreeSleepTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FreeSleep.app/FreeSleep";
+			};
+			name = Debug;
+		};
+		47B0B5159704F1A065D43157 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.lucaandrea.FreeSleepTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FreeSleep.app/FreeSleep";
+			};
+			name = Release;
+		};
+		87D46E63A7C2E5334947A817 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		970F205C788E103F9FCD3A29 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = FreeSleep/Resources/FreeSleep.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FreeSleep/Resources/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Free Sleep";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.lucaandrea.freesleep;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		E02A6DCEB08BC72171745F74 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		83922E271C01EA0255B40786 /* Build configuration list for PBXNativeTarget "FreeSleep" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				08EC572EBD30A008C0009182 /* Debug */,
+				970F205C788E103F9FCD3A29 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		BAF3C1CD1E6665DAF72381AF /* Build configuration list for PBXProject "FreeSleep" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E02A6DCEB08BC72171745F74 /* Debug */,
+				87D46E63A7C2E5334947A817 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		CE0C73402C73F6BE9B5086E1 /* Build configuration list for PBXNativeTarget "FreeSleepTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0DD94B17D7C55C75D3A8570D /* Debug */,
+				47B0B5159704F1A065D43157 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F38613BFA8C2E174BCE3C26A /* Project object */;
+}

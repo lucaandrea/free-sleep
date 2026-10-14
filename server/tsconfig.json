@@ -18,6 +18,7 @@
     // This improves issue grouping in Sentry.
     "sourceRoot": "/"
   },
+  "include": ["src/**/*.ts"],
   "ts-node": {
     "esm": true,
     "transpileOnly": true

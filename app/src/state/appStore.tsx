@@ -25,7 +25,7 @@ export const COVER_VERSION_KEY = 'cover_version';
 export const useAppStore = create<AppState>((set) => ({
   isUpdating: false,
   setIsUpdating: (isUpdating: boolean) => set({ isUpdating }),
-  side: localStorage.getItem(SIDE_KEY) as Side || 'left',
+  side: localStorage.getItem(SIDE_KEY) === 'right' ? 'right' : 'left',
   setSide: (side: Side) => {
     set({ side });
     localStorage.setItem(SIDE_KEY, side);
