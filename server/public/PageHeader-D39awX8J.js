@@ -1,2 +1,0 @@
-import{i as e,jt as t,n,r}from"./ErrorBoundary-0fjZO3L9.js";var i=t();function a({title:t,children:a}){return(0,i.jsxs)(r,{sx:{width:`100%`,mb:.5,display:`flex`,alignItems:`center`,justifyContent:`space-between`,gap:2,flexWrap:`wrap`},children:[(0,i.jsx)(e,{variant:`h2`,component:`h1`,sx:{fontSize:{xs:n.type.pageTitle,md:n.type.widePageTitle}},children:t}),a]})}export{a as t};
-//# sourceMappingURL=PageHeader-D39awX8J.js.map

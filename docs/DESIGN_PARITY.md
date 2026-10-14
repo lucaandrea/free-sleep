@@ -24,6 +24,7 @@ The web theme and native design components consume these values. Both use system
 - Sleep metrics and the presence chart's twelve-hour scale, missing-value markers and horizontal overflow.
 - Native navigation from “Explore sleep” and the same Coach result wording for sample data.
 - Next-alarm card, timezone/date labels and one-time change, skip and restore actions. iOS uses a native time picker and sheet.
+- Routines: Monday–Sunday selector, overnight temperature timeline, power/adjustment/alarm groups, outlined fields, numeric alarm controls and weekday/weekend copying. Both use the same demo week in `shared/fixtures/routines-demo.json` and keep drafts per Pod, side and day. See [routine behavior](ROUTINES.md).
 
 This is not a claim that every screen is visually identical. OS chrome, permission sheets and native accessibility text layout differ. The following product differences remain explicit work:
 
@@ -32,7 +33,7 @@ This is not a claim that every screen is visually identical. OS chrome, permissi
 | Tonight | Notification presentation; alarm editors retain native sheet/picker chrome |
 | Sleep | Native recorded-episode and raw-vital browsing; matching journal form controls |
 | Coach | Matching selector and outlined text-field presentation |
-| Routines | One common editing layout, day selection, copying days and schedule visualization |
+| Routines | Native time/menu picker chrome and confirmation presentation; accessibility text sizes use an adaptive day picker |
 | Settings | Matching common connection/Home/settings layout, with native Health permissions and Shortcuts entry points |
 
 Use the same side, data, appearance, viewport width and text-size setting when comparing. The existing demo states differ in priming and scheduled-alarm notifications; those banners must not be removed merely to make captures match.

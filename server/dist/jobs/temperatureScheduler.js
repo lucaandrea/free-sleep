@@ -1,11 +1,13 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="9427ac20-38ad-5600-8a86-c3495ee76bb9")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="e6c3850d-7fc7-5376-8704-caf88feaa168")}catch(e){}}();
 import schedule from 'node-schedule';
 import { getDayIndexForSchedule, logJob } from './utils.js';
 import { updateDeviceStatus } from '../routes/deviceStatus/updateDeviceStatus.js';
 import serverStatus from '../serverStatus.js';
 import logger from '../logger.js';
-const scheduleAdjustment = (timeZone, side, day, time, temperature, powerOnTime) => {
+import { currentRoutine } from '../routines/current.js';
+import { minutesAfter } from '../routines/contract.js';
+const scheduleAdjustment = (timeZone, side, day, time, temperature, powerOnTime, send) => {
     const onRule = new schedule.RecurrenceRule();
     const dayOfWeekIndex = getDayIndexForSchedule(day, time, powerOnTime);
     const [onHour, onMinute] = time.split(':').map(Number);
@@ -16,8 +18,17 @@ const scheduleAdjustment = (timeZone, side, day, time, temperature, powerOnTime)
     onRule.tz = timeZone;
     schedule.scheduleJob(`${side}-${day}-${time}-${temperature}-temperature-adjustment`, onRule, async () => {
         try {
+            const current = await currentRoutine(timeZone, side, day);
+            if (!current)
+                return;
+            const offset = minutesAfter(time, current.power.on);
+            // Ignore a callback disabled or edited before the filesystem watcher refreshed its job.
+            if (current.power.on !== powerOnTime
+                || current.temperatures[time] !== temperature
+                || !(offset > 0 && offset < minutesAfter(current.power.off, current.power.on)))
+                return;
             logJob('Executing temperature adjustment job', side, day, dayOfWeekIndex, time);
-            await updateDeviceStatus({
+            await send({
                 [side]: {
                     targetTemperatureF: temperature,
                 }
@@ -33,15 +44,20 @@ const scheduleAdjustment = (timeZone, side, day, time, temperature, powerOnTime)
         }
     });
 };
-export const scheduleTemperatures = (settingsData, side, day, dailySchedule) => {
+export const scheduleTemperatures = (settingsData, side, day, dailySchedule, send = updateDeviceStatus) => {
+    if (!dailySchedule.power.enabled)
+        return;
     if (settingsData[side].awayMode)
         return;
     const { timeZone } = settingsData;
     if (timeZone === null)
         return;
     Object.entries(dailySchedule.temperatures).forEach(([time, temperature]) => {
-        scheduleAdjustment(timeZone, side, day, time, temperature, dailySchedule.power.on);
+        const offset = minutesAfter(time, dailySchedule.power.on);
+        if (!(offset > 0 && offset < minutesAfter(dailySchedule.power.off, dailySchedule.power.on)))
+            return;
+        scheduleAdjustment(timeZone, side, day, time, temperature, dailySchedule.power.on, send);
     });
 };
 //# sourceMappingURL=temperatureScheduler.js.map
-//# debugId=9427ac20-38ad-5600-8a86-c3495ee76bb9
+//# debugId=e6c3850d-7fc7-5376-8704-caf88feaa168

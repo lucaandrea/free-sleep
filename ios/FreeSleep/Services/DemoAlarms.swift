@@ -2,6 +2,8 @@ import Foundation
 
 @MainActor
 final class DemoAlarms {
+    private let workspace: RoutineWorkspace?
+    init(workspace: RoutineWorkspace? = nil) { self.workspace = workspace }
     private var overrides: [BedSide: AlarmPreview] = [:]
     private var replacedDates: [BedSide: Date] = [:]
     private let timeZone = TimeZone(identifier: "America/Los_Angeles")!
@@ -12,6 +14,10 @@ final class DemoAlarms {
                 saved.state = "paused"; saved.alarm = nil
             }
             return saved
+        }
+        if let book = workspace?.demoBook {
+            let alarm = RoutinePlan.nextAlarm(book, side: side, now: now, timeZone: timeZone)
+            return AlarmPreview(side: side, timeZone: timeZone.identifier, state: alarm == nil ? "none" : "scheduled", alarm: alarm)
         }
         var calendar = Calendar(identifier: .gregorian); calendar.timeZone = timeZone
         let next = calendar.nextDate(after: now, matching: DateComponents(hour: 7, minute: 0), matchingPolicy: .nextTime)!

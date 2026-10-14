@@ -1,54 +1,56 @@
-import _ from 'lodash';
-import express, { Request, Response } from 'express';
-import type { DeepPartial } from 'ts-essentials';
-import { Schedules } from '../../db/schedulesSchema.js';
+import express from 'express';
+import schedulesDB, { updateSchedules } from '../../db/schedules.js';
+import { SchedulesSchema, type DayOfWeek, type Side } from '../../db/schedulesSchema.js';
+import { applyRoutine, RoutineConflict, RoutineSaveSchema, RoutineValidationError } from '../../routines/contract.js';
 import logger from '../../logger.js';
-import schedulesDB from '../../db/schedules.js';
-
-
-import {
-  DailySchedule,
-  DayOfWeek,
-  SchedulesSchema,
-  Side,
-  SideSchedule,
-} from '../../db/schedulesSchema.js';
 
 const router = express.Router();
-
-
-router.get('/schedules', async (req: Request, res: Response) => {
+router.get('/schedules', async (_request, response) => {
   await schedulesDB.read();
-  res.json(schedulesDB.data);
+  response.json(schedulesDB.data);
 });
 
-router.post('/schedules', async (req: Request, res: Response) => {
-  const body = req.body;
-  const validationResult = SchedulesSchema.deepPartial().safeParse(body);
-  if (!validationResult.success) {
-    logger.error('Invalid schedules update:', validationResult.error);
-    res.status(400).json({
-      error: 'Invalid request data',
-      details: validationResult?.error?.errors,
-    });
+router.post('/schedules/routine', async (request, response) => {
+  const input = RoutineSaveSchema.safeParse(request.body);
+  if (!input.success) {
+    response.status(400).json({ error: { message: 'Choose valid routine values and target days.' } });
     return;
   }
-  const schedules: DeepPartial<Schedules> = validationResult.data;
-  await schedulesDB.read();
-
-  (
-    Object.entries(schedules) as [Side, Partial<SideSchedule>][]).forEach(([side, sideSchedule]) => {
-    (Object.entries(sideSchedule) as [DayOfWeek, Partial<DailySchedule>][]).forEach(([day, schedule]) => {
-      if (schedule.power) {
-        _.merge(schedulesDB.data[side][day].power, schedule.power);
-      }
-      if (schedule.temperatures) schedulesDB.data[side][day].temperatures = schedule.temperatures;
-      if (schedule.alarm) schedulesDB.data[side][day].alarm = schedule.alarm;
+  try {
+    const result = await updateSchedules((schedules) => {
+      applyRoutine(schedules, input.data);
+      return schedules;
     });
-  });
-  await schedulesDB.write();
-  res.status(200).json(schedulesDB.data);
+    response.json(result);
+  } catch (error) {
+    if (error instanceof RoutineConflict || error instanceof RoutineValidationError) {
+      response.status(error instanceof RoutineConflict ? 409 : 400).json({ error: { message: error.message } });
+    } else {
+      logger.error(error);
+      response.status(500).json({ error: { message: 'Unable to save the routine. Please try again.' } });
+    }
+  }
 });
 
-
+// Partial writes retain omitted alarm/power fields; an explicit temperature map replaces that map.
+router.post('/schedules', async (request, response) => {
+  const input = SchedulesSchema.deepPartial().safeParse(request.body);
+  if (!input.success) {
+    response.status(400).json({ error: { message: 'Choose valid routine values.' } });
+    return;
+  }
+  const result = await updateSchedules((schedules) => {
+    for (const side of Object.keys(input.data) as Side[]) {
+      for (const day of Object.keys(input.data[side]!) as DayOfWeek[]) {
+        const change = input.data[side]![day]!;
+        const current = schedules[side][day];
+        if (change.power) Object.assign(current.power, change.power);
+        if (change.alarm) Object.assign(current.alarm, change.alarm);
+        if (change.temperatures) current.temperatures = change.temperatures;
+      }
+    }
+    return schedules;
+  });
+  response.json(result);
+});
 export default router;

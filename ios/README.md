@@ -8,4 +8,6 @@ See [platform setup](../docs/PLATFORM_SETUP.md) for signing and connection, and 
 
 Tonight includes the same next-alarm card and one-time change, skip and restore controls as the web app. Dates and times use the Pod timezone; native clock input stays independent of the phone timezone. See [alarm behavior](../docs/ALARMS.md) for date boundaries and the four alarm actions available in Shortcuts.
 
+Routines shares its layout and sample week with the web app. Drafts survive screen/day/side changes within the running app and retain their original server values for conflict checks. Saving copies complete routines to selected days; an existing draft on a destination must be saved or reset first. Update the server and gateway with the client: saving uses the new `POST /api/schedules/routine` contract. See [routine editing and API](../docs/ROUTINES.md).
+
 Tests cover connection validation, analytics decoding, Health sample provenance, cancellation and partial failure, Pod/side isolation, reconciliation versions, automatic sync windows, preservation of schedule fields and alarm date/time contracts. HealthKit permissions, actual background refresh, Apple Home pairing and Siri behavior still need a signed iPhone.

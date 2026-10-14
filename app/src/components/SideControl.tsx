@@ -4,9 +4,9 @@ import { useSettings } from '@api/settings.ts';
 import { useDeviceStatus } from '@api/deviceStatus.ts';
 import { formatTemperature } from '@lib/temperatureConversions.ts';
 
-type SideControlProps = { showTemp?: boolean };
+type SideControlProps = { showTemp?: boolean; disabled?: boolean };
 
-export default function SideControl({ showTemp }: SideControlProps) {
+export default function SideControl({ showTemp, disabled }: SideControlProps) {
   const { side, setSide } = useAppStore();
   const { data: settings } = useSettings();
   const { data: deviceStatus } = useDeviceStatus();
@@ -15,6 +15,7 @@ export default function SideControl({ showTemp }: SideControlProps) {
   return (
     <ToggleButtonGroup
       exclusive
+      disabled={ disabled }
       value={ side }
       onChange={ (_, selectedSide: unknown) => {
         if (selectedSide === 'left' || selectedSide === 'right') setSide(selectedSide);

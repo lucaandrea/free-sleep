@@ -19,11 +19,15 @@ final class AppModel {
     private var analyticsKey = ""
     private var analyticsRefreshedAt = Date.distantPast
     let demo: Bool
-    let demoAlarms = DemoAlarms()
+    let routineWorkspace: RoutineWorkspace
+    let demoAlarms: DemoAlarms
     var connected: Bool { device != nil }
 
     init() {
         demo = AppMode.isDemo
+        let workspace = RoutineWorkspace()
+        routineWorkspace = workspace
+        demoAlarms = DemoAlarms(workspace: workspace)
     }
 
     func refresh(includeAnalytics: Bool = true) async {

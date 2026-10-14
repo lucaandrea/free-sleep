@@ -12,6 +12,7 @@ import { executeFunction } from '../8sleep/deviceApi.js';
 import { getDayIndexForSchedule, logJob } from './utils.js';
 import { connectFranken } from '../8sleep/frankenServer.js';
 import { Settings } from '../db/settingsSchema.js';
+import { currentRoutine } from '../routines/current.js';
 import { alarmRule, overrideOccurrence } from '../alarms/timing.js';
 import { isCurrentOverride, overrideAlarmProfile } from '../alarms/overrides.js';
 
@@ -105,7 +106,7 @@ export function scheduleAlarmOverride(settingsData: Settings, side: Side) {
 }
 
 
-export const scheduleAlarm = (settingsData: Settings, side: Side, day: DayOfWeek, dailySchedule: DailySchedule) => {
+export const scheduleAlarm = (settingsData: Settings, side: Side, day: DayOfWeek, dailySchedule: DailySchedule, send = executeAlarm) => {
   if (!dailySchedule.power.enabled) return;
   if (!dailySchedule.alarm.enabled) return;
   if (settingsData[side].awayMode) return;
@@ -119,6 +120,9 @@ export const scheduleAlarm = (settingsData: Settings, side: Side, day: DayOfWeek
 
   schedule.scheduleJob(`${side}-${day}-${time}-alarm`, recurrence, async () => {
     try {
+      const current = await currentRoutine(settingsData.timeZone, side, day);
+      if (!current || !current.alarm.enabled || current.power.on !== dailySchedule.power.on
+        || current.alarm.time !== dailySchedule.alarm.time) return;
       logJob('Executing alarm job', side, day, dayIndex, time);
       await settingsDB.read();
 
@@ -131,11 +135,11 @@ export const scheduleAlarm = (settingsData: Settings, side: Side, day: DayOfWeek
         }
       }
 
-      await executeAlarm({
+      await send({
         side,
-        vibrationIntensity: dailySchedule.alarm.vibrationIntensity,
-        duration: dailySchedule.alarm.duration,
-        vibrationPattern: dailySchedule.alarm.vibrationPattern,
+        vibrationIntensity: current.alarm.vibrationIntensity,
+        duration: current.alarm.duration,
+        vibrationPattern: current.alarm.vibrationPattern,
       });
     } catch (error: unknown) {
       serverStatus.status.alarmSchedule.status = 'failed';

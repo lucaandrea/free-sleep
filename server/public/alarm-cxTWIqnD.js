@@ -1,2 +1,0 @@
-import{t as e}from"./api-BDjUZcBs.js";import{n as t}from"./Button-BIxgplV_.js";var n=t=>e.post(`/alarm`,t),r=n=>t({queryKey:[`alarm`,n],queryFn:async()=>(await e.get(`/alarm/next`,{params:{side:n}})).data,refetchInterval:15e3,retry:1}),i=async t=>(await e.post(`/alarm/override`,t)).data;export{n,r,i as t};
-//# sourceMappingURL=alarm-cxTWIqnD.js.map

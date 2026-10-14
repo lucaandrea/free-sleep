@@ -1,3 +1,4 @@
+import { applyRoutine, RoutineConflict, RoutineSaveSchema } from '../../../server/src/routines/contract';
 import { http, HttpResponse } from 'msw/http';
 import { delay } from 'msw/utils/delay';
 import { sse } from 'msw/sse';
@@ -56,6 +57,17 @@ export const handlers = [
     const updated = updateServices(body);
     await delay(120);
     return HttpResponse.json(deepClone(updated));
+  }),
+  http.post('/api/schedules/routine', async ({ request }) => {
+    const input = RoutineSaveSchema.safeParse(await request.json());
+    if (!input.success) return HttpResponse.json({ error: { message: 'Choose valid routine values and target days.' } }, { status: 400 });
+    try {
+      applyRoutine(getSchedules(), input.data);
+      return HttpResponse.json(deepClone(getSchedules()));
+    } catch (error) {
+      return HttpResponse.json({ error: { message: error instanceof Error ? error.message : 'Unable to save the routine.' } },
+        { status: error instanceof RoutineConflict ? 409 : 400 });
+    }
   }),
   http.get('/api/schedules', async () => {
     await delay(120);

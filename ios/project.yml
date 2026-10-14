@@ -13,7 +13,10 @@ targets:
   FreeSleep:
     type: application
     platform: iOS
-    sources: [FreeSleep]
+    sources:
+      - FreeSleep
+      - path: ../shared/fixtures/routines-demo.json
+        buildPhase: resources
     settings:
       base:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon

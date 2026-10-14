@@ -1,6 +1,6 @@
 # Validation evidence
 
-Validation date: 2026-10-13. Branch: `lucas-assistant/free-sleep-platform`.
+Initial validation: 2026-10-13. Follow-up evidence is dated below. Branch: `lucas-assistant/free-sleep-platform`.
 
 ## Automated source checks
 
@@ -35,6 +35,20 @@ The shared-design follow-up passed web typecheck/lint, demo and hosted builds, t
 - The 402 px web demo and native simulator completed change, skip and restore flows. Both display the alarm date and Pod timezone; the native editor uses the system time picker. A final web check exercised the revision-bearing restore request. Final captures: `alarm-web-changed.jpg`, `alarm-web-restored.jpg`, `alarm-ios-editor.jpg`, `alarm-ios-changed.jpg`, and `alarm-ios-restored.jpg` in [screenshots](screenshots). These are labelled simulated states.
 
 No owner Pod, live vibration, Health database or provider account was used for this follow-up. Alarm changes do not move scheduled power-off; the selected side still must be on when the alarm fires. See [alarm behavior and API](ALARMS.md).
+
+## Routines follow-up — 2026-10-14
+
+- Server compilation and all 45 tests passed. Four new routine tests cover overnight/afternoon offsets, active-window boundaries, disabling an invalid legacy window, Monday–Friday copying, full adjustment deletion, false flags, side/weekend isolation, all-or-nothing conflicts and concurrent HTTP writes. The route test also invokes actual scheduled callbacks with injected fake senders to check disabled/away/timezone/start changes, deleted adjustments and edited alarm profiles. Temporary storage is removed after the tests; hardware executors are not called.
+- Server lint remains at zero errors and 21 legacy warnings. Generated JavaScript/source maps include local Sentry debug IDs; nothing was uploaded.
+- Web typecheck, demo and hosted builds passed. Web lint has zero errors and eight legacy warnings after the obsolete routine components were removed. Vite still reports large shared chunks. All 15 design outputs match the shared source, and the demo transport isolation test passed.
+- All five gateway tests passed, including strict method/path allowlisting and request-body forwarding for `POST /api/schedules/routine`.
+- Native build and all 22 Swift Testing tests passed on the isolated iOS 27 simulator. Four new tests cover the shared week, timing and chart order, invalid/duplicate copy targets, incomplete-week rejection, draft baselines surviving refresh, side/day isolation and demo saves updating Tonight's next alarm. The final UI reset adjustment was followed by another successful native build.
+- In the 402 px web demo, switching day/side/screen retained drafts. Copying Monday–Friday applied the selected temperature and removed adjustment while preserving Sunday and the right side. Duplicate adjustment input produced feedback. Reload saved restored the saved values and cleared both the draft and the editor's error. The final build saved a 61-second alarm to Monday–Friday and displayed the five-day success message.
+- The iPhone simulator rendered the same routine groups and overnight chart from the shared fixture. A simulated 61-second weekday save displayed the same five-day success message. Duplicate adjustment feedback and reset were also exercised. The native time picker, confirmation sheet and system accessibility presentation remain native.
+
+Captures in [screenshots](screenshots): `routines-web-phone.jpg`, `routines-web-saved.jpg`, `routines-ios-top.jpg` and `routines-ios-saved.jpg`. They show labelled demo state. The screenshots establish layout and simulated behavior, not complete visual identity or physical schedule execution. See [routine behavior and API](ROUTINES.md).
+
+No owner Pod, live vibration, Health database, cloud model or Replit deployment was used in this follow-up. Cross-day overlap detection, iOS 18 runtime testing and physical overnight qualification remain open.
 
 ## Remaining device and service checks
 

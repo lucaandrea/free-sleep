@@ -1,5 +1,5 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="f8e132fd-fe65-5dc3-9d18-b789cb1e7807")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="f841be59-edf6-5ca9-8bd1-cfb54f01a7d6")}catch(e){}}();
 import schedule from 'node-schedule';
 import cbor from 'cbor';
 import moment from 'moment-timezone';
@@ -11,6 +11,7 @@ import settingsDB from '../db/settings.js';
 import { executeFunction } from '../8sleep/deviceApi.js';
 import { getDayIndexForSchedule, logJob } from './utils.js';
 import { connectFranken } from '../8sleep/frankenServer.js';
+import { currentRoutine } from '../routines/current.js';
 import { alarmRule, overrideOccurrence } from '../alarms/timing.js';
 import { isCurrentOverride, overrideAlarmProfile } from '../alarms/overrides.js';
 export const executeAlarm = async ({ vibrationIntensity, duration, vibrationPattern, side, force = false }) => {
@@ -90,7 +91,7 @@ export function scheduleAlarmOverride(settingsData, side) {
         });
     });
 }
-export const scheduleAlarm = (settingsData, side, day, dailySchedule) => {
+export const scheduleAlarm = (settingsData, side, day, dailySchedule, send = executeAlarm) => {
     if (!dailySchedule.power.enabled)
         return;
     if (!dailySchedule.alarm.enabled)
@@ -105,6 +106,10 @@ export const scheduleAlarm = (settingsData, side, day, dailySchedule) => {
     logJob('Scheduling alarm job', side, day, dayIndex, time);
     schedule.scheduleJob(`${side}-${day}-${time}-alarm`, recurrence, async () => {
         try {
+            const current = await currentRoutine(settingsData.timeZone, side, day);
+            if (!current || !current.alarm.enabled || current.power.on !== dailySchedule.power.on
+                || current.alarm.time !== dailySchedule.alarm.time)
+                return;
             logJob('Executing alarm job', side, day, dayIndex, time);
             await settingsDB.read();
             if (settingsDB.data[side].scheduleOverrides.alarm.expiresAt) {
@@ -115,11 +120,11 @@ export const scheduleAlarm = (settingsData, side, day, dailySchedule) => {
                     return;
                 }
             }
-            await executeAlarm({
+            await send({
                 side,
-                vibrationIntensity: dailySchedule.alarm.vibrationIntensity,
-                duration: dailySchedule.alarm.duration,
-                vibrationPattern: dailySchedule.alarm.vibrationPattern,
+                vibrationIntensity: current.alarm.vibrationIntensity,
+                duration: current.alarm.duration,
+                vibrationPattern: current.alarm.vibrationPattern,
             });
         }
         catch (error) {
@@ -131,4 +136,4 @@ export const scheduleAlarm = (settingsData, side, day, dailySchedule) => {
     });
 };
 //# sourceMappingURL=alarmScheduler.js.map
-//# debugId=f8e132fd-fe65-5dc3-9d18-b789cb1e7807
+//# debugId=f841be59-edf6-5ca9-8bd1-cfb54f01a7d6
