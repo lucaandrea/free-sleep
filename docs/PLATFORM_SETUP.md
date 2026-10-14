@@ -54,6 +54,8 @@ The coach sends numerical analytics, numerical journal patterns, and the questio
 
 Use a **Reserved VM**, one instance, for the persistent Pod WebSocket. `.replit` builds the web UI and starts `gateway/server.mjs`; do not run the embedded Pod server in Replit. This follows [Replit's deployment types](https://docs.replit.com/features/publishing/deployment-types).
 
+Reproduce the deployment build from a clean checkout with `node scripts/build-hosted.mjs`. Replit and the hosted CI job use this same command. It installs locked web and shared server-schema dependencies, builds `server/public`, then installs and tests the gateway. Server dependencies are needed only because the browser imports those TypeScript contracts; their install hooks are skipped, and no Pod service or database is started. No environment file, provider key or deployment token is needed for this build, and it does not upload source maps. Build tools are installed explicitly even when the hosting environment sets `NODE_ENV=production`.
+
 ```mermaid
 flowchart LR
   Browser[Web browser] -->|HTTPS + access token| Gateway[Replit gateway]
@@ -73,7 +75,7 @@ flowchart LR
 
 The gateway forwards app operations through a fixed allowlist and bounded requests. Raw command execution, root maintenance jobs and log streaming stay LAN-only. It holds no sleep database, but authorized API data transits Replit. The hosted UI cannot call a private HTTP Pod directly from HTTPS; use the gateway or the local app.
 
-No Replit project has been created, published, or connected to the owner's Pod. The Git remote currently points at upstream `throwaway31265/free-sleep`; choose the user's destination before pushing or publishing.
+No Replit project has been created, published, or connected to the owner's Pod. The Git remote is `lucaandrea/free-sleep`; the intended Replit project and published domain still need to be selected.
 
 ## Native iOS
 

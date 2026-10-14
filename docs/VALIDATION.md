@@ -97,6 +97,15 @@ Captures in [screenshots](screenshots): `connections-web-saved.jpg`, `connection
 - Guard tests verify that cancellation prevents a queued socket write, the delayed feet packet and a stale manual comfort pause. The compiled production supervisor/worker also launched, reported an intentionally corrupt temporary identity and exited cleanly, without publication or hardware commands.
 - All publisher processes and temporary test identities were cleaned up. No owner Home/Health records, Pod, physical base or provider credentials were used. Actual pairing, owner-network discovery, long-running embedded resource use, Wi-Fi/reboot behavior and physical operation remain unverified.
 
+## Replit build follow-up — 2026-10-14
+
+- Reproduced a clean-checkout failure in the original deployment command: the web typecheck could not resolve dependencies of imported server schemas. Installing the locked server dependencies with install hooks disabled resolved it without generating Prisma or starting the Pod runtime.
+- The shared `scripts/build-hosted.mjs` command passed in an isolated source copy on Node 24.21.0 with `NODE_ENV=production`, starting without any package's `node_modules` or a prebuilt `server/public`. It explicitly includes build dependencies, verifies all 15 shared design outputs, builds the hosted web bundle and runs gateway tests. Replit and the new hosted CI job use this command. Vite's existing large-chunk warning remains.
+- Fixed the gateway package test script, which previously exited successfully after finding zero tests. The corrected command runs all six tests: the five existing transport tests and one new offline-hosting test for static pages/assets, health, authentication and API errors. Previous five-test evidence came from direct test-file runs; the broken package script did not provide that coverage.
+- All six web contract tests passed in the same isolated Node 24 checkout. A local HTTP smoke check served the actual generated HTML, all nine entry JS/CSS references and a nested app route through the gateway; health, unauthorized access and authenticated Pod-offline responses behaved as expected. Temporary test tokens were generated in memory and no Pod connection was opened for that smoke check.
+- This is a local clean-build and HTTP check. The new Linux CI job has not run remotely, and no Replit project, external HTTPS endpoint, tunnel service or signed iPhone installation was created. App UI, Pod runtime and native source did not change in this follow-up.
+- The unchanged lockfiles still produce npm audit advisories: 16 for server dependencies, one for the app and zero for the gateway at this check. These counts are installation output, not a completed vulnerability assessment or a security-clearance claim.
+
 ## Remaining device and service checks
 
 - Stock Pod access, firmware compatibility, installation/recovery, D-Bus permissions, BLE service discovery and real motion/Stop/calibration.

@@ -3,7 +3,7 @@ modules = ["nodejs-24"]
 
 [deployment]
 deploymentTarget = "vm"
-build = ["sh", "-c", "npm --prefix app ci && npm --prefix app run build:hosted && npm --prefix gateway ci"]
+build = ["node", "scripts/build-hosted.mjs"]
 run = ["sh", "-c", "npm --prefix gateway start"]
 
 [[ports]]

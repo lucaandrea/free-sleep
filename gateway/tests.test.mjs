@@ -2,6 +2,9 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { once } from 'node:events';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { WebSocket } from 'ws';
 import { createGateway } from './server.mjs';
 import { connectPod } from './agent.mjs';
@@ -9,6 +12,40 @@ import { allowedRequest, authorized, boundedResponse, MAX_BODY } from './policy.
 const accessToken = 'a'.repeat(40), tunnelToken = 'b'.repeat(40);
 const listen = async server => { server.listen(0, '127.0.0.1'); await once(server, 'listening'); return `http://127.0.0.1:${server.address().port}`; };
 const headers = { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' };
+
+test('hosted pages and health stay available offline without swallowing API errors', async context => {
+  const publicPath = await mkdtemp(join(tmpdir(), 'free-sleep-hosted-'));
+  context.after(() => rm(publicPath, { recursive: true, force: true }));
+  const html = '<!doctype html><html><body><div id="root"></div></body></html>';
+  await writeFile(join(publicPath, 'index.html'), html);
+  await writeFile(join(publicPath, 'index.js'), 'window.hostedBuild = true;');
+  const gateway = createGateway({ accessToken, tunnelToken, publicPath });
+  context.after(() => gateway.close());
+  const origin = await listen(gateway.server);
+
+  for (const route of ['/', '/sleep', '/settings']) {
+    const response = await fetch(`${origin}${route}`);
+    assert.equal(response.status, 200);
+    assert.match(response.headers.get('content-type'), /text\/html/);
+    assert.equal(await response.text(), html);
+  }
+  const asset = await fetch(`${origin}/index.js`);
+  assert.equal(asset.status, 200);
+  assert.equal(asset.headers.get('x-content-type-options'), 'nosniff');
+  assert.equal(asset.headers.get('referrer-policy'), 'no-referrer');
+  assert.equal(await asset.text(), 'window.hostedBuild = true;');
+  assert.deepEqual(await (await fetch(`${origin}/healthz`)).json(), { status: 'ok' });
+
+  for (const [route, requestHeaders, expectedStatus] of [
+    ['/api/settings', {}, 401], ['/api/settings', headers, 503], ['/api/jobs', headers, 403],
+  ]) {
+    const response = await fetch(`${origin}${route}`, { headers: requestHeaders });
+    assert.equal(response.status, expectedStatus);
+    assert.equal(response.headers.get('cache-control'), 'no-store');
+    assert.match(response.headers.get('content-type'), /application\/json/);
+    assert.equal(typeof (await response.json()).error.message, 'string');
+  }
+});
 
 test('allowlist excludes maintenance, encoded paths and origin escapes', () => {
   for (const route of ['/api/jobs', '/api/logs/x', '/api/base/%73top', '//example.com/api/base', '/api/../jobs']) {
