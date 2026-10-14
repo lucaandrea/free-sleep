@@ -5,6 +5,7 @@ import { JSONFile } from 'lowdb/node';
 
 import { Settings, SideSettings } from './settingsSchema.js';
 import config from '../config.js';
+import { createSettingsUpdater } from './settingsUpdater.js';
 
 const defaultSideSettings: SideSettings = {
   name: 'Side',
@@ -67,3 +68,4 @@ settingsDB.data = _.merge({}, defaultData, settingsDB.data);
 await settingsDB.write();
 
 export default settingsDB;
+export const updateSettings = createSettingsUpdater(settingsDB);

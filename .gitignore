@@ -22,3 +22,10 @@ app/dist/
 /server/free-sleep-data/*
 
 !.gitkeep
+
+# Local credentials and generated build output
+.env.features
+gateway/.env
+ios/build/
+ios/DerivedData/
+**/xcuserdata/

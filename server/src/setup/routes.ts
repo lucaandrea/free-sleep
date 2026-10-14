@@ -17,12 +17,26 @@ import presence from '../routes/metrics/presence.js';
 import logs from '../routes/logs/logs.js';
 import serverStatus from '../routes/serverStatus/serverStatus.js';
 import logger from '../logger.js';
+import base from '../base/index.js';
+import analytics from '../analytics/index.js';
+import journal from '../analytics/journalRoutes.js';
+import ai from '../ai/index.js';
+import integrations from '../integrations/index.js';
+import healthExport from '../integrations/healthExport.js';
+import comfort from '../thermal/runtime.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default function (app: Express) {
   logger.debug('Registering routes...');
+  app.use('/api/base', base);
+  app.use('/api/comfort', comfort);
+  app.use('/api/analytics', analytics);
+  app.use('/api/journal', journal);
+  app.use('/api/ai', ai);
+  app.use('/api/integrations', integrations);
+  app.use('/api/health', healthExport);
   app.use('/api/', alarm);
   app.use('/api/', deviceStatus);
   app.use('/api/', execute);

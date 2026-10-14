@@ -1,10 +1,11 @@
 // LowDB, stores the schedules in /persistent/free-sleep-data/lowdb/schedulesDB.json
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="7ed451b1-4dd1-5acd-8d4c-e695b94a21b2")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="f6d33b07-1be9-5a99-b5a8-df400aa1395a")}catch(e){}}();
 import _ from 'lodash';
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import config from '../config.js';
+import { createStoreUpdater } from './storeUpdater.js';
 const defaultDailySchedule = {
     temperatures: {},
     power: {
@@ -42,5 +43,6 @@ await schedulesDB.read();
 schedulesDB.data = _.merge({}, defaultData, schedulesDB.data);
 await schedulesDB.write();
 export default schedulesDB;
+export const updateSchedules = createStoreUpdater(schedulesDB);
 //# sourceMappingURL=schedules.js.map
-//# debugId=7ed451b1-4dd1-5acd-8d4c-e695b94a21b2
+//# debugId=f6d33b07-1be9-5a99-b5a8-df400aa1395a

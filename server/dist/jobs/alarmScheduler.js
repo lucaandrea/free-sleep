@@ -1,5 +1,5 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="9255f6d2-cabe-5a5f-9838-091702577fb5")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="f841be59-edf6-5ca9-8bd1-cfb54f01a7d6")}catch(e){}}();
 import schedule from 'node-schedule';
 import cbor from 'cbor';
 import moment from 'moment-timezone';
@@ -11,6 +11,9 @@ import settingsDB from '../db/settings.js';
 import { executeFunction } from '../8sleep/deviceApi.js';
 import { getDayIndexForSchedule, logJob } from './utils.js';
 import { connectFranken } from '../8sleep/frankenServer.js';
+import { currentRoutine } from '../routines/current.js';
+import { alarmRule, overrideOccurrence } from '../alarms/timing.js';
+import { isCurrentOverride, overrideAlarmProfile } from '../alarms/overrides.js';
 export const executeAlarm = async ({ vibrationIntensity, duration, vibrationPattern, side, force = false }) => {
     try {
         const min10Duration = Math.max(10, duration);
@@ -61,39 +64,25 @@ export const executeAlarm = async ({ vibrationIntensity, duration, vibrationPatt
         logger.error(error);
     }
 };
-/**
- * Next occurrence of HH:mm in tz (today or tomorrow depending on 'now').
- * If the HH:mm is already passed for 'now', schedule for tomorrow.
- */
-function nextOccurrenceHhMm(tz, hhmm) {
-    const now = moment.tz(tz);
-    const [h, m] = hhmm.split(':').map(Number);
-    const candidate = now.clone().hour(h).minute(m).second(0).millisecond(0);
-    if (candidate.isSameOrBefore(now)) {
-        candidate.add(1, 'day');
-    }
-    return candidate;
-}
 export function scheduleAlarmOverride(settingsData, side) {
+    if (settingsData[side].awayMode)
+        return null;
     const alarmOverride = settingsData[side]?.scheduleOverrides?.alarm;
-    if (!alarmOverride || alarmOverride.disabled)
+    if (!alarmOverride)
         return null;
-    if (!alarmOverride.timeOverride || !alarmOverride.expiresAt)
+    const occurrence = overrideOccurrence(alarmOverride, settingsData.timeZone, Date.now());
+    if (!occurrence)
         return null;
-    const now = moment.tz(settingsData.timeZone);
-    const expiresAt = moment.tz(alarmOverride.expiresAt, settingsData.timeZone);
-    if (!expiresAt.isAfter(now))
-        return null;
-    const next = nextOccurrenceHhMm(settingsData.timeZone, alarmOverride.timeOverride);
+    const next = moment.tz(occurrence, settingsData.timeZone);
     logger.debug(`Alarm override is set! Scheduling alarm for ${next.format()}`);
-    schedule.scheduleJob(`${side}-alarm-override-${alarmOverride.timeOverride}`, next.toDate(), async () => {
-        const dayKey = next.tz(settingsData.timeZone).format('dddd').toLowerCase();
-        const daySchedule = schedulesDB.data?.[side]?.[dayKey];
-        const { vibrationIntensity, duration, vibrationPattern } = daySchedule?.alarm ?? {
-            vibrationIntensity: 100,
-            duration: 60,
-            vibrationPattern: 'rise',
-        };
+    return schedule.scheduleJob(`${side}-alarm-override-${alarmOverride.timeOverride}`, next.toDate(), async () => {
+        await settingsDB.read();
+        const current = settingsDB.data[side].scheduleOverrides.alarm;
+        // A settings write may arrive before the filesystem watcher cancels this callback.
+        if (!isCurrentOverride(alarmOverride, current, Date.now()))
+            return;
+        await schedulesDB.read();
+        const { vibrationIntensity, duration, vibrationPattern } = overrideAlarmProfile(alarmOverride, schedulesDB.data[side], occurrence, settingsData.timeZone);
         await executeAlarm({
             side,
             vibrationIntensity,
@@ -102,7 +91,7 @@ export function scheduleAlarmOverride(settingsData, side) {
         });
     });
 }
-export const scheduleAlarm = (settingsData, side, day, dailySchedule) => {
+export const scheduleAlarm = (settingsData, side, day, dailySchedule, send = executeAlarm) => {
     if (!dailySchedule.power.enabled)
         return;
     if (!dailySchedule.alarm.enabled)
@@ -111,17 +100,16 @@ export const scheduleAlarm = (settingsData, side, day, dailySchedule) => {
         return;
     if (settingsData.timeZone === null)
         return;
-    const alarmRule = new schedule.RecurrenceRule();
+    const recurrence = alarmRule(day, dailySchedule, settingsData.timeZone);
     const dayIndex = getDayIndexForSchedule(day, dailySchedule.alarm.time, dailySchedule.power.on);
-    alarmRule.dayOfWeek = dayIndex;
     const { time } = dailySchedule.alarm;
-    const [alarmHour, alarmMinute] = time.split(':').map(Number);
-    alarmRule.hour = alarmHour;
-    alarmRule.minute = alarmMinute;
-    alarmRule.tz = settingsData.timeZone;
     logJob('Scheduling alarm job', side, day, dayIndex, time);
-    schedule.scheduleJob(`${side}-${day}-${time}-alarm`, alarmRule, async () => {
+    schedule.scheduleJob(`${side}-${day}-${time}-alarm`, recurrence, async () => {
         try {
+            const current = await currentRoutine(settingsData.timeZone, side, day);
+            if (!current || !current.alarm.enabled || current.power.on !== dailySchedule.power.on
+                || current.alarm.time !== dailySchedule.alarm.time)
+                return;
             logJob('Executing alarm job', side, day, dayIndex, time);
             await settingsDB.read();
             if (settingsDB.data[side].scheduleOverrides.alarm.expiresAt) {
@@ -132,11 +120,11 @@ export const scheduleAlarm = (settingsData, side, day, dailySchedule) => {
                     return;
                 }
             }
-            await executeAlarm({
+            await send({
                 side,
-                vibrationIntensity: dailySchedule.alarm.vibrationIntensity,
-                duration: dailySchedule.alarm.duration,
-                vibrationPattern: dailySchedule.alarm.vibrationPattern,
+                vibrationIntensity: current.alarm.vibrationIntensity,
+                duration: current.alarm.duration,
+                vibrationPattern: current.alarm.vibrationPattern,
             });
         }
         catch (error) {
@@ -148,4 +136,4 @@ export const scheduleAlarm = (settingsData, side, day, dailySchedule) => {
     });
 };
 //# sourceMappingURL=alarmScheduler.js.map
-//# debugId=9255f6d2-cabe-5a5f-9838-091702577fb5
+//# debugId=f841be59-edf6-5ca9-8bd1-cfb54f01a7d6

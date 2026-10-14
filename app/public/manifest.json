@@ -1,10 +1,10 @@
 {
   "name": "Free Sleep",
   "short_name": "Free Sleep",
-  "start_url": "/temperature",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#000000",
+  "background_color": "#faf6f1",
+  "theme_color": "#faf6f1",
   "description": "Free Sleep",
   "icons": [
     {

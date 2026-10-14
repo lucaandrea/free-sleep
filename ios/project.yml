@@ -1,0 +1,63 @@
+name: FreeSleep
+options:
+  bundleIdPrefix: com.lucaandrea
+  deploymentTarget:
+    iOS: '18.0'
+settings:
+  base:
+    SWIFT_VERSION: '6.0'
+    SWIFT_STRICT_CONCURRENCY: complete
+    MARKETING_VERSION: '0.1.0'
+    CURRENT_PROJECT_VERSION: '1'
+targets:
+  FreeSleep:
+    type: application
+    platform: iOS
+    sources:
+      - FreeSleep
+      - path: ../shared/fixtures/routines-demo.json
+        buildPhase: resources
+      - path: ../shared/fixtures/sleep-demo.json
+        buildPhase: resources
+    settings:
+      base:
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        PRODUCT_BUNDLE_IDENTIFIER: com.lucaandrea.freesleep
+        CODE_SIGN_STYLE: Automatic
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Free Sleep
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        TARGETED_DEVICE_FAMILY: '1,2'
+    info:
+      path: FreeSleep/Resources/Info.plist
+      properties:
+        NSLocalNetworkUsageDescription: Connect to your Free Sleep Pod on your home network.
+        NSHealthShareUsageDescription: Compare your Apple Health sleep and vitals with your Pod routine on this iPhone.
+        NSHealthUpdateUsageDescription: Save your selected bed side's time in bed and heart rate to Apple Health.
+        NSHomeKitUsageDescription: Access your Apple Home scenes and connected Free Sleep bridge.
+        UIBackgroundModes: [fetch]
+        BGTaskSchedulerPermittedIdentifiers: [com.lucaandrea.freesleep.health.refresh]
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+    entitlements:
+      path: FreeSleep/Resources/FreeSleep.entitlements
+      properties:
+        com.apple.developer.healthkit: true
+        com.apple.developer.homekit: true
+  FreeSleepTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [FreeSleepTests]
+    dependencies:
+      - target: FreeSleep
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  FreeSleep:
+    build:
+      targets:
+        FreeSleep: all
+    test:
+      targets: [FreeSleepTests]

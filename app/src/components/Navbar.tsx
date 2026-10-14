@@ -1,3 +1,4 @@
+import { design } from '../design/tokens';
 import { Badge, Box, BottomNavigation, BottomNavigationAction, Button, LinearProgress, Typography } from '@mui/material';
 import { ReactElement } from 'react';
 import NightsStayOutlinedIcon from '@mui/icons-material/NightsStayOutlined';
@@ -33,7 +34,7 @@ export default function Navbar() {
       <Box
         component="aside"
         sx={ {
-          display: { xs: 'none', md: 'flex' }, position: 'fixed', inset: '0 auto 0 0', width: 224, p: 2,
+          display: { xs: 'none', md: 'flex' }, position: 'fixed', inset: '0 auto 0 0', width: design.layout.sidebarWidth, p: 2,
           flexDirection: 'column', borderRight: '1px solid', borderColor: 'divider', bgcolor: 'background.default', zIndex: 1100,
         } }
       >
@@ -82,7 +83,7 @@ export default function Navbar() {
           value={ PAGES.indexOf(activePage) }
           onChange={ (_, index) => navigate(PAGES[index].route) }
           sx={ {
-            bgcolor: 'transparent', height: 68,
+            bgcolor: 'transparent', height: design.layout.navigationHeight,
             '& .MuiBottomNavigationAction-root': { minWidth: 0, color: 'text.secondary', px: 0.5, gap: 0.75 },
             '& .MuiBottomNavigationAction-label, & .MuiBottomNavigationAction-label.Mui-selected': { fontSize: 10, fontWeight: 500 },
             '& .Mui-selected': { color: 'primary.main' },

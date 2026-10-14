@@ -4,6 +4,7 @@ import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import { DailySchedule, Schedules, SideSchedule } from './schedulesSchema.js';
 import config from '../config.js';
+import { createStoreUpdater } from './storeUpdater.js';
 
 
 const defaultDailySchedule: DailySchedule = {
@@ -47,3 +48,4 @@ schedulesDB.data = _.merge({}, defaultData, schedulesDB.data);
 await schedulesDB.write();
 
 export default schedulesDB;
+export const updateSchedules = createStoreUpdater(schedulesDB);

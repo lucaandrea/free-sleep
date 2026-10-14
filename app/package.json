@@ -5,12 +5,18 @@
   "type": "module",
   "scripts": {
     "dev": "VITE_ENV=dev vite",
-    "build:pr": "export VITE_ENV=pr && tsc -b && vite build",
-    "build:demo": "export VITE_ENV=demo VITE_USE_MSW=true && tsc -b && vite build",
-    "build": "export VITE_ENV=prod && tsc -b && vite build",
+    "build:pr": "node ../scripts/generate-design.mjs --check && export VITE_ENV=pr && tsc -b && vite build",
+    "build:demo": "node ../scripts/generate-design.mjs --check && export VITE_ENV=demo VITE_USE_MSW=true && tsc -b && vite build",
+    "build": "node ../scripts/generate-design.mjs --check && export VITE_ENV=prod && tsc -b && vite build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "preview:demo": "VITE_ENV=demo vite preview",
+    "preview:hosted": "VITE_ENV=hosted vite preview",
+    "build:hosted": "node ../scripts/generate-design.mjs --check && VITE_ENV=hosted tsc -b && VITE_ENV=hosted vite build",
+    "demo": "VITE_ENV=demo vite",
+    "test": "node --experimental-strip-types --test tests/*.test.mjs",
+    "design:check": "node ../scripts/generate-design.mjs --check"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

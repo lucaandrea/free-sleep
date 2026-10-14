@@ -28,6 +28,7 @@ export default defineConfig({
     port: 5173, // Optional: specify a port if you want something other than the default
   },
   build: {
+    emptyOutDir: true,
     sourcemap: !isDemoMode,
     outDir: isDemoMode ? './dist/' : '../server/public/',
     rolldownOptions: {

@@ -4,7 +4,7 @@ import logger from '../../logger.js';
 
 const router = express.Router();
 
-import settingsDB from '../../db/settings.js';
+import settingsDB, { updateSettings } from '../../db/settings.js';
 import { SettingsSchema } from '../../db/settingsSchema.js';
 
 router.get('/settings', async (req: Request, res: Response) => {
@@ -24,11 +24,22 @@ router.post('/settings', async (req: Request, res: Response) => {
     });
     return;
   }
-  delete body.id;
-  await settingsDB.read();
-  _.merge(settingsDB.data, body);
-  await settingsDB.write();
-  res.status(200).json(settingsDB.data);
+  const update = validationResult.data;
+  delete update.id;
+  const result = await updateSettings(settings => {
+    // A legacy clock edit replaces absolute occurrence metadata; unrelated partial settings preserve it.
+    for (const side of ['left', 'right'] as const) {
+      const alarm = update[side]?.scheduleOverrides?.alarm;
+      if (alarm && !Object.hasOwn(alarm, 'scheduledAt') && ['timeOverride', 'expiresAt', 'disabled'].some(key => Object.hasOwn(alarm, key))) {
+        delete settings[side].scheduleOverrides.alarm.scheduledAt;
+        delete settings[side].scheduleOverrides.alarm.replacedAt;
+        delete settings[side].scheduleOverrides.alarm.scheduleDay;
+        delete settings[side].scheduleOverrides.alarm.revision;
+      }
+    }
+    return _.merge(settings, update);
+  });
+  res.status(200).json(result);
 });
 
 

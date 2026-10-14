@@ -1,5 +1,5 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="6b43c70f-e2b3-5d28-8caa-657592d8aaa4")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="1feb9e19-4670-53a1-be13-e17baaa68469")}catch(e){}}();
 import schedule from 'node-schedule';
 import { updateDeviceStatus } from '../routes/deviceStatus/updateDeviceStatus.js';
 import { getDayIndexForSchedule, getDayOfWeekIndex, logJob } from './utils.js';
@@ -9,7 +9,8 @@ import serverStatus from '../serverStatus.js';
 import logger from '../logger.js';
 import servicesDB from '../db/services.js';
 import memoryDB from '../db/memoryDB.js';
-export const schedulePowerOn = (settingsData, side, day, power) => {
+import { currentRoutine } from '../routines/current.js';
+export const schedulePowerOn = (settingsData, side, day, power, send = updateDeviceStatus) => {
     if (!power.enabled)
         return;
     if (settingsData[side].awayMode)
@@ -27,13 +28,16 @@ export const schedulePowerOn = (settingsData, side, day, power) => {
     logJob('Scheduling power on job', side, day, dayOfWeekIndex, time);
     schedule.scheduleJob(`${side}-${day}-${time}-power-on`, onRule, async () => {
         try {
+            const current = await currentRoutine(settingsData.timeZone, side, day);
+            if (current?.power.on !== power.on || current.power.onTemperature !== power.onTemperature)
+                return;
             logJob('Executing power on job', side, day, dayOfWeekIndex, time);
-            await updateDeviceStatus({
+            await send({
                 [side]: {
                     isOn: true,
                     targetTemperatureF: power.onTemperature
                 }
-            });
+            }, 'schedule');
             serverStatus.status.powerSchedule.status = 'healthy';
             serverStatus.status.powerSchedule.message = '';
         }
@@ -77,7 +81,7 @@ const scheduleAnalyzeSleep = (dayOfWeekIndex, offHour, offMinute, timeZone, side
         executeAnalyzeSleep(side, moment().subtract(12, 'hours').toISOString(), moment().add(1, 'hours').toISOString());
     });
 };
-export const schedulePowerOffAndSleepAnalysis = (settingsData, side, day, power) => {
+export const schedulePowerOffAndSleepAnalysis = (settingsData, side, day, power, send = updateDeviceStatus) => {
     if (!power.enabled)
         return;
     if (settingsData[side].awayMode)
@@ -96,12 +100,15 @@ export const schedulePowerOffAndSleepAnalysis = (settingsData, side, day, power)
     logJob('Scheduling power off job', side, day, dayOfWeekIndex, time);
     schedule.scheduleJob(`${side}-${day}-${time}-power-off`, offRule, async () => {
         try {
+            const current = await currentRoutine(settingsData.timeZone, side, day);
+            if (current?.power.on !== power.on || current.power.off !== power.off)
+                return;
             logJob('Executing power off job', side, day, dayOfWeekIndex, time);
-            await updateDeviceStatus({
+            await send({
                 [side]: {
                     isOn: false,
                 }
-            });
+            }, 'schedule');
             serverStatus.status.powerSchedule.status = 'healthy';
             serverStatus.status.powerSchedule.message = '';
         }
@@ -114,4 +121,4 @@ export const schedulePowerOffAndSleepAnalysis = (settingsData, side, day, power)
     });
 };
 //# sourceMappingURL=powerScheduler.js.map
-//# debugId=6b43c70f-e2b3-5d28-8caa-657592d8aaa4
+//# debugId=1feb9e19-4670-53a1-be13-e17baaa68469

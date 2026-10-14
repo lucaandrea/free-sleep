@@ -28,9 +28,11 @@
 - The app imports schemas directly from `server/src/db/*Schema.ts`; schema changes must remain compatible with both app and server TypeScript settings.
 
 ## Scheduling Hotspots
-- Client schedule state lives in `app/src/pages/SchedulePage/scheduleStore.tsx`.
+- Client routine drafts live in `app/src/pages/SchedulePage/routineDrafts.ts`; native drafts live in `ios/FreeSleep/Services/RoutineWorkspace.swift`.
 - Schedule save payloads are assembled in `app/src/pages/SchedulePage/SchedulePage.tsx`.
-- Server schedule writes are handled by `server/src/routes/schedules/schedules.ts`.
+- Server schedule writes are handled by `server/src/routes/schedules/schedules.ts` through the serialized `updateSchedules` helper.
+- Full routine saves use `server/src/routines/contract.ts`: compare every selected day's original before replacing any day. Keep the native `RoutinePlan.swift` contract and shared demo fixture compatible.
+- Scheduled control callbacks recheck persisted settings and routines through `server/src/routines/current.ts` before issuing commands.
 - Scheduled jobs are created in:
   - `server/src/jobs/powerScheduler.ts`
   - `server/src/jobs/temperatureScheduler.ts`

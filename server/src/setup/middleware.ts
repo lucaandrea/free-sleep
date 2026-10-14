@@ -1,6 +1,7 @@
 import express, { Express } from 'express';
 import cors from 'cors';
 import logger from '../logger.js';
+import { authenticateAPI } from './authentication.js';
 
 import os from 'os';
 
@@ -23,35 +24,25 @@ function getLocalIp(): string {
 
 /**
  * Check if the request origin is allowed, i.e., from localhost or LAN IP, or
- * matches the `ALLOWED_ORIGIN` environment variable. The function also allows
+ * exactly matches `ALLOWED_ORIGIN`. The function also allows
  * requests with no origin (e.g., `curl`).
- *
- * If `ALLOWED_ORIGIN` is set to a wildcard (`*`), all origins are allowed.
  *
  * @param origin - The origin to check.
  * @returns True if the origin is allowed, false otherwise.
  */
 function isAllowedOrigin(origin: string | undefined): boolean {
-  if (!origin) {
-    return true;
-  }
-
-  if (ALLOWED_ORIGIN === '*') {
-    return true;
-  }
-
-  if (
-    origin.startsWith(`http://${getLocalIp()}:`) ||
-    origin.startsWith('http://localhost') ||
-    origin.startsWith('http://192.168.') ||
-    origin.startsWith('http://172.16.') ||
-    origin.startsWith('http://10.0.') ||
-    (ALLOWED_ORIGIN && origin.startsWith(ALLOWED_ORIGIN))
-  ) {
-    return true;
-  }
-
-  return false;
+  if (!origin) return true;
+  if (ALLOWED_ORIGIN && origin === ALLOWED_ORIGIN) return true;
+  try {
+    const url = new URL(origin);
+    if (!['http:', 'https:'].includes(url.protocol)) return false;
+    const host = url.hostname;
+    if (host === 'localhost' || host === '127.0.0.1' || host === getLocalIp()) return true;
+    const octets = host.split('.').map(Number);
+    if (octets.length !== 4 || octets.some(value => !Number.isInteger(value) || value < 0 || value > 255)) return false;
+    return octets[0] === 10 || (octets[0] === 192 && octets[1] === 168)
+      || (octets[0] === 172 && octets[1] >= 16 && octets[1] <= 31);
+  } catch { return false; }
 }
 
 export default function (app: Express) {
@@ -67,7 +58,7 @@ export default function (app: Express) {
     next();
   });
 
-  app.use(express.json());
+  app.use(express.json({ limit: '1mb' }));
 
   // Allow local development
   app.use(
@@ -81,6 +72,8 @@ export default function (app: Express) {
       }
     })
   );
+
+  app.use('/api', authenticateAPI);
 
   // Logging
   app.use((req, res, next) => {

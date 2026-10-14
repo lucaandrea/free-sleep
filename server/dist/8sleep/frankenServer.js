@@ -1,5 +1,5 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="19743398-7780-5bb6-8302-1ea6556da568")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="f581d99b-0aae-5297-a82f-79c988fa5d4f")}catch(e){}}();
 import { SequentialQueue } from './sequentialQueue.js';
 import { MessageReadTimeoutError, MessageStream } from './messageStream.js';
 import { frankenCommands } from './deviceApi.js';
@@ -36,11 +36,13 @@ export class Franken {
         this.sequentialQueue = sequentialQueue;
     }
     static separator = Buffer.from('\n\n');
-    async sendMessage(message) {
+    async sendMessage(message, notAfter) {
         logger.debug(`Sending message to sock | message: ${message}`);
         let responseBytes;
         try {
             responseBytes = await this.sequentialQueue.exec(async () => {
+                if (notAfter !== undefined && Date.now() > notAfter)
+                    throw new Error('Temperature decision expired before dispatch');
                 const requestBytes = Buffer.concat([Buffer.from(message), Franken.separator]);
                 await this.write(requestBytes);
                 const resp = await this.messageStream.readMessage(FRANKEN_RESPONSE_TIMEOUT_MS);
@@ -67,13 +69,13 @@ export class Franken {
             return arg;
         return arg.replace(/\n/gm, '');
     }
-    async callFunction(command, arg) {
+    async callFunction(command, arg, notAfter) {
         logger.debug(`Calling function | command: ${command} | arg: ${arg}`);
         const commandNumber = frankenCommands[command];
         const cleanedArg = this.tryStripNewlines(arg);
         logger.debug(`commandNumber: ${commandNumber}`);
         logger.debug(`cleanedArg: ${cleanedArg}`);
-        await this.sendMessage(`${commandNumber}\n${cleanedArg}`);
+        await this.sendMessage(`${commandNumber}\n${cleanedArg}`, notAfter);
     }
     async getDeviceStatus(getGestures = false) {
         const command = 'DEVICE_STATUS';
@@ -139,6 +141,10 @@ function promiseWithTimeout(promise, onTimeout) {
 }
 let frankenServer;
 let franken;
+// Autonomous controls may use a live connection, but must not wait for reconnect and replay later.
+export function connectedFranken() {
+    return franken && !franken.isClosed ? franken : undefined;
+}
 let connectPromise;
 function waitForFrankenWithTimeout(server) {
     if (!FRANKEN_CONNECTION_TIMEOUT_MS) {
@@ -206,4 +212,4 @@ export async function disconnectFranken() {
     await shutdownFrankenServer();
 }
 //# sourceMappingURL=frankenServer.js.map
-//# debugId=19743398-7780-5bb6-8302-1ea6556da568
+//# debugId=f581d99b-0aae-5297-a82f-79c988fa5d4f

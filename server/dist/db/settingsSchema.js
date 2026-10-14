@@ -1,8 +1,8 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="db39d296-3006-596f-ac6f-ecb70407ce0c")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="3889cdf6-4c36-5aec-9210-10b22e393590")}catch(e){}}();
 import { z } from 'zod';
 import { TIME_ZONES } from './timeZones.js';
-import { TimeSchema } from './schedulesSchema.js';
+import { TimeSchema, SideScheduleSchema } from './schedulesSchema.js';
 export const TEMPERATURES = ['celsius', 'fahrenheit'];
 const Temperatures = z.enum(TEMPERATURES);
 const TemperatureTapConfig = z.object({
@@ -32,6 +32,10 @@ const SideSettingsSchema = z.object({
         alarm: z.object({
             disabled: z.boolean(),
             timeOverride: z.string(),
+            scheduledAt: z.string().datetime({ offset: true }).optional(),
+            replacedAt: z.string().datetime({ offset: true }).optional(),
+            scheduleDay: SideScheduleSchema.keyof().optional(),
+            revision: z.string().uuid().optional(),
             expiresAt: z.string(),
         })
     }),
@@ -54,4 +58,4 @@ export const SettingsSchema = z.object({
     rebootDaily: z.boolean(),
 }).strict();
 //# sourceMappingURL=settingsSchema.js.map
-//# debugId=db39d296-3006-596f-ac6f-ecb70407ce0c
+//# debugId=3889cdf6-4c36-5aec-9210-10b22e393590

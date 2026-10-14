@@ -1,3 +1,4 @@
+import routinesDemo from '../../../shared/fixtures/routines-demo.json';
 import moment from 'moment-timezone';
 import type { Services } from '@api/services.ts';
 import type { Schedules } from '@api/schedulesSchema.ts';
@@ -117,82 +118,7 @@ const createVitalsRecords = (): VitalsRecord[] => {
   return records;
 };
 
-const createSchedules = (): Schedules => ({
-  left: {
-    sunday: {
-      temperatures: { '06:00': 82, '07:00': 100 },
-      power: { on: '21:30', off: '07:30', enabled: true, onTemperature: 60 },
-      alarm: { time: '07:30', vibrationIntensity: 2, vibrationPattern: 'rise', duration: 10, enabled: true, alarmTemperature: 82 },
-    },
-    monday: {
-      temperatures: { '06:00': 82, '07:00': 100 },
-      power: { on: '21:30', off: '07:00', enabled: true, onTemperature: 60 },
-      alarm: { time: '07:00', vibrationIntensity: 3, vibrationPattern: 'double', duration: 10, enabled: true, alarmTemperature: 83 },
-    },
-    tuesday: {
-      temperatures: { '06:00': 82, '07:00': 100 },
-      power: { on: '21:30', off: '07:00', enabled: true, onTemperature: 60 },
-      alarm: { time: '07:00', vibrationIntensity: 2, vibrationPattern: 'rise', duration: 8, enabled: true, alarmTemperature: 82 },
-    },
-    wednesday: {
-      temperatures: { '06:00': 82, '07:00': 100 },
-      power: { on: '21:30', off: '07:00', enabled: true, onTemperature: 60 },
-      alarm: { time: '07:00', vibrationIntensity: 1, vibrationPattern: 'rise', duration: 8, enabled: true, alarmTemperature: 82 },
-    },
-    thursday: {
-      temperatures: { '06:00': 82, '07:00': 100 },
-      power: { on: '21:30', off: '07:00', enabled: true, onTemperature: 60 },
-      alarm: { time: '07:00', vibrationIntensity: 2, vibrationPattern: 'rise', duration: 8, enabled: true, alarmTemperature: 81 },
-    },
-    friday: {
-      temperatures: { '06:00': 82, '07:00': 100 },
-      power: { on: '22:00', off: '08:00', enabled: true, onTemperature: 60 },
-      alarm: { time: '08:00', vibrationIntensity: 3, vibrationPattern: 'rise', duration: 12, enabled: true, alarmTemperature: 84 },
-    },
-    saturday: {
-      temperatures: { '06:00': 82, '07:00': 100 },
-      power: { on: '22:30', off: '09:00', enabled: true, onTemperature: 60 },
-      alarm: { time: '09:00', vibrationIntensity: 1, vibrationPattern: 'rise', duration: 12, enabled: true, alarmTemperature: 85 },
-    },
-  },
-  right: {
-    sunday: {
-      temperatures: { '06:00': 82, '07:00': 100 },
-      power: { on: '21:00', off: '07:00', enabled: true, onTemperature: 60 },
-      alarm: { time: '07:00', vibrationIntensity: 2, vibrationPattern: 'rise', duration: 10, enabled: true, alarmTemperature: 84 },
-    },
-    monday: {
-      temperatures: { '06:00': 82, '07:00': 100 },
-      power: { on: '21:00', off: '08:30', enabled: true, onTemperature: 60 },
-      alarm: { time: '06:30', vibrationIntensity: 3, vibrationPattern: 'double', duration: 10, enabled: true, alarmTemperature: 84 },
-    },
-    tuesday: {
-      temperatures: { '06:00': 82, '07:00': 100 },
-      power: { on: '21:15', off: '06:30', enabled: true, onTemperature: 60 },
-      alarm: { time: '06:30', vibrationIntensity: 3, vibrationPattern: 'double', duration: 8, enabled: true, alarmTemperature: 83 },
-    },
-    wednesday: {
-      temperatures: { '05:00': 82, '6:00': 100 },
-      power: { on: '21:15', off: '06:30', enabled: true, onTemperature: 60 },
-      alarm: { time: '06:30', vibrationIntensity: 2, vibrationPattern: 'double', duration: 8, enabled: true, alarmTemperature: 83 },
-    },
-    thursday: {
-      temperatures: { '05:00': 82, '6:00': 100 },
-      power: { on: '21:15', off: '06:30', enabled: true, onTemperature: 60 },
-      alarm: { time: '06:30', vibrationIntensity: 2, vibrationPattern: 'double', duration: 8, enabled: true, alarmTemperature: 83 },
-    },
-    friday: {
-      temperatures: { '05:00': 82, '6:00': 100 },
-      power: { on: '22:00', off: '07:30', enabled: true, onTemperature: 60 },
-      alarm: { time: '07:30', vibrationIntensity: 3, vibrationPattern: 'rise', duration: 12, enabled: true, alarmTemperature: 85 },
-    },
-    saturday: {
-      temperatures: { '05:00': 82, '6:00': 100 },
-      power: { on: '22:30', off: '08:30', enabled: true, onTemperature: 60 },
-      alarm: { time: '08:30', vibrationIntensity: 2, vibrationPattern: 'rise', duration: 12, enabled: true, alarmTemperature: 86 },
-    },
-  },
-});
+const createSchedules = (): Schedules => structuredClone(routinesDemo) as Schedules;
 
 const createSettings = (): Settings => ({
   id: 'demo-user',

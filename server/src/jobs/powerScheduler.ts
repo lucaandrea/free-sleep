@@ -10,10 +10,13 @@ import serverStatus from '../serverStatus.js';
 import logger from '../logger.js';
 import servicesDB from '../db/services.js';
 import memoryDB from '../db/memoryDB.js';
+import { currentRoutine } from '../routines/current.js';
 
 
 
-export const schedulePowerOn = (settingsData: Settings, side: Side, day: DayOfWeek, power: DailySchedule['power']) => {
+export const schedulePowerOn = (
+  settingsData: Settings, side: Side, day: DayOfWeek, power: DailySchedule['power'], send = updateDeviceStatus
+) => {
   if (!power.enabled) return;
   if (settingsData[side].awayMode) return;
   if (settingsData.timeZone === null) return;
@@ -30,14 +33,16 @@ export const schedulePowerOn = (settingsData: Settings, side: Side, day: DayOfWe
   logJob('Scheduling power on job', side, day, dayOfWeekIndex, time);
   schedule.scheduleJob(`${side}-${day}-${time}-power-on`, onRule, async () => {
     try {
+      const current = await currentRoutine(settingsData.timeZone, side, day);
+      if (current?.power.on !== power.on || current.power.onTemperature !== power.onTemperature) return;
       logJob('Executing power on job', side, day, dayOfWeekIndex, time);
 
-      await updateDeviceStatus({
+      await send({
         [side]: {
           isOn: true,
           targetTemperatureF: power.onTemperature
         }
-      });
+      }, 'schedule');
       serverStatus.status.powerSchedule.status = 'healthy';
       serverStatus.status.powerSchedule.message = '';
     } catch (error: unknown) {
@@ -86,7 +91,9 @@ const scheduleAnalyzeSleep = (dayOfWeekIndex: number, offHour: number, offMinute
 };
 
 
-export const schedulePowerOffAndSleepAnalysis = (settingsData: Settings, side: Side, day: DayOfWeek, power: DailySchedule['power']) => {
+export const schedulePowerOffAndSleepAnalysis = (
+  settingsData: Settings, side: Side, day: DayOfWeek, power: DailySchedule['power'], send = updateDeviceStatus
+) => {
   if (!power.enabled) return;
   if (settingsData[side].awayMode) return;
   if (settingsData.timeZone === null) return;
@@ -104,12 +111,14 @@ export const schedulePowerOffAndSleepAnalysis = (settingsData: Settings, side: S
 
   schedule.scheduleJob(`${side}-${day}-${time}-power-off`, offRule, async () => {
     try {
+      const current = await currentRoutine(settingsData.timeZone, side, day);
+      if (current?.power.on !== power.on || current.power.off !== power.off) return;
       logJob('Executing power off job', side, day, dayOfWeekIndex, time);
-      await updateDeviceStatus({
+      await send({
         [side]: {
           isOn: false,
         }
-      });
+      }, 'schedule');
       serverStatus.status.powerSchedule.status = 'healthy';
       serverStatus.status.powerSchedule.message = '';
     } catch (error: unknown) {
