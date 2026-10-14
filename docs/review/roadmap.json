@@ -225,9 +225,9 @@
       "category": "Routines & Shortcuts",
       "pitch": "Build a schedule in natural language and inspect every affected day, side and setting before applying it.",
       "example": "“On weekdays, warm my side at 9:30 and turn it off at 7” becomes a visible schedule diff.",
-      "delta": "The app already edits schedules and exposes native actions. Add a common web/iOS routine composer that produces the same validated plan, plus a Shortcut entry point for drafting it.",
+      "delta": "The app now has matching web/iOS Routines editors, per-day drafts, copy-days controls and stale-edit checks. Add a natural-language composer that drafts the same validated plan, plus a Shortcut entry point and an explicit before/after preview.",
       "approach": "Constrain the model to a schedule schema. Resolve dates and daylight-saving transitions in application code. Apply only a user-confirmed plan through existing authenticated services; keep model tools read-only.",
-      "dependencies": "Finish and validate the common Routines editor; that work is currently in progress. One-time alarm change/skip/restore is already implemented and locally validated in f5e2b51. Preserve unknown schedule fields, provide rollback, and resolve ambiguous weekdays, sides and overnight intervals.",
+      "dependencies": "Build on the locally validated Routines milestone 6c37306 and one-time alarm milestone f5e2b51. Add a versioned generated-plan contract, cross-day overlap checks, undo, and resolution of ambiguous days, sides and overnight intervals. Keep hardware qualification separate from draft generation.",
       "acceptance": "A DST/timezone fixture suite passes. The preview shows all edits and any rejected request. No base movement, schedule write or temperature command occurs during generation.",
       "sources": [
         "structured",
@@ -242,7 +242,7 @@
       "category": "Trustworthy analytics",
       "pitch": "Distinguish a real shift in your routine from a missing night, an offline sensor or a changed data source.",
       "example": "“This week has only two recorded nights, so a trend would be misleading.”",
-      "delta": "Current analytics preserve unknown values. Add completeness indicators, signal-quality history, comparisons that control for recorded-night count, and a “Why did this change?” drawer.",
+      "delta": "Episode details already split charts at absence, invalid readings and long gaps, while retaining original values. Add completeness history, device/source freshness, comparisons that control for recorded-night count, and a “Why did this change?” drawer linked to those original readings.",
       "approach": "Use deterministic checks and robust personal baselines for quality signals. Give the model read-only, typed access to calculations and source metadata, so explanations point to exact evidence rather than making arithmetic up.",
       "dependencies": "Ingestion timestamps, device/source identifiers, missingness flags and a baseline policy. General wearable foundation models require separate Pod-specific evaluation before any use.",
       "acceptance": "Injected outages, clock shifts and duplicate records are identified without becoming health alerts. No diagnosis, apnea detector, readiness score or sleep stage is inferred from presence alone.",
@@ -302,5 +302,5 @@
       ]
     }
   ],
-  "reviewed_revision": "f5e2b51"
+  "reviewed_revision": "b7a56cb"
 }

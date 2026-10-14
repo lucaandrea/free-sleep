@@ -1175,7 +1175,7 @@ dialog::backdrop {
   font-size:11px;
   margin-bottom:24px
 }
-.alarm-followup {
+.completed-followup {
   margin-top:40px;
   padding:28px;
   border:1px solid var(--line);
@@ -1227,7 +1227,7 @@ dialog::backdrop {
   padding:0 0 14px
 }
 @media(max-width:760px) {
-  .alarm-followup {
+  .completed-followup {
     padding:20px
   }
   .followup-grid {

@@ -1,12 +1,12 @@
 # Free Sleep — twelve next improvements
 
-Research snapshot: 14 October 2026. Design captures: `e05cd99`; completed implementation reviewed through `f5e2b51`.
+Research snapshot: 14 October 2026. Design foundation: `e05cd99`; completed implementation reviewed through `b7a56cb`.
 
 These are proposals, not shipped features. Effort is relative engineering scope, not a deadline. Start with data-quality explanations (#9), model evaluation and budgeting (#3), then the evidence-linked morning brief (#1). Expand Health context (#2) after signed-device validation.
 
 ## Current foundation
 
-The repository already contains the shared web/SwiftUI design system, base preview/control adapter, presence analytics, journal, optional AI adapters, bounded feedback-based comfort, one-time alarm change/skip/restore, native Health workflows, Home bridge and App Intents. These have local/source/simulator evidence. Physical Pod/base operation, signed integrations, provider quality and Replit deployment remain unverified. Full visual parity also remains unfinished.
+The repository already contains the shared web/SwiftUI design system, base preview/control adapter, presence analytics, journal, optional AI adapters, bounded feedback-based comfort, one-time alarm change/skip/restore, matching Routines editors, episode/vitals browsing, native Health workflows, Home bridge and App Intents. These have local/source/simulator evidence. Physical Pod/base operation, signed integrations, provider quality and Replit deployment remain unverified. Journal, Coach and common Settings layouts still need alignment.
 
 ## Model recommendation
 
@@ -174,11 +174,11 @@ Build a schedule in natural language and inspect every affected day, side and se
 
 > “On weekdays, warm my side at 9:30 and turn it off at 7” becomes a visible schedule diff.
 
-**New work:** The app already edits schedules and exposes native actions. Add a common web/iOS routine composer that produces the same validated plan, plus a Shortcut entry point for drafting it.
+**New work:** The app now has matching web/iOS Routines editors, per-day drafts, copy-days controls and stale-edit checks. Add a natural-language composer that drafts the same validated plan, plus a Shortcut entry point and an explicit before/after preview.
 
 **AI approach:** Constrain the model to a schedule schema. Resolve dates and daylight-saving transitions in application code. Apply only a user-confirmed plan through existing authenticated services; keep model tools read-only.
 
-**Dependencies:** Finish and validate the common Routines editor; that work is currently in progress. One-time alarm change/skip/restore is already implemented and locally validated in f5e2b51. Preserve unknown schedule fields, provide rollback, and resolve ambiguous weekdays, sides and overnight intervals.
+**Dependencies:** Build on the locally validated Routines milestone 6c37306 and one-time alarm milestone f5e2b51. Add a versioned generated-plan contract, cross-day overlap checks, undo, and resolution of ambiguous days, sides and overnight intervals. Keep hardware qualification separate from draft generation.
 
 **Acceptance:** A DST/timezone fixture suite passes. The preview shows all edits and any rejected request. No base movement, schedule write or temperature command occurs during generation.
 
@@ -192,7 +192,7 @@ Distinguish a real shift in your routine from a missing night, an offline sensor
 
 > “This week has only two recorded nights, so a trend would be misleading.”
 
-**New work:** Current analytics preserve unknown values. Add completeness indicators, signal-quality history, comparisons that control for recorded-night count, and a “Why did this change?” drawer.
+**New work:** Episode details already split charts at absence, invalid readings and long gaps, while retaining original values. Add completeness history, device/source freshness, comparisons that control for recorded-night count, and a “Why did this change?” drawer linked to those original readings.
 
 **AI approach:** Use deterministic checks and robust personal baselines for quality signals. Give the model read-only, typed access to calculations and source metadata, so explanations point to exact evidence rather than making arithmetic up.
 
@@ -258,15 +258,15 @@ Research: [Apple · Foundation Models framework](https://developer.apple.com/fou
 
 ## What is new in the research
 
-Apple’s 2026 Foundation Models additions support private native input and explanation workflows. Its new Evaluations framework can test the native coach against recorded evidence fixtures and track regressions across prompt/model changes. Gemini’s current catalog includes 4 Argon for reasoning, 3.8 Flash for responsive work and 3.8 Live for voice. OpenAI’s Sol and Anthropic’s Sonnet are current candidates for the bounded cloud coach. No live comparison has been performed here.
+Apple’s WWDC26 Foundation Models additions include on-device image understanding and local search, which could support the private coach and photo journal. Its Evaluations framework integrates with Swift Testing to measure regressions. [Foundation Models additions](https://developer.apple.com/videos/play/wwdc2026/241/), [Evaluations](https://developer.apple.com/videos/play/wwdc2026/298/). Gemini’s current catalog separates reasoning, responsive text and live voice models. OpenAI Sol and Anthropic Sonnet are additional candidates for the bounded cloud coach; no live comparison has been performed here. [Gemini catalog](https://ai.google.dev/gemini-api/docs/models), [Sol](https://developers.openai.com/api/docs/models/gpt-6.1-sol), [Claude catalog](https://platform.claude.com/docs/en/models/overview).
 
-SensorFM is a wearable-representation research direction, not a drop-in validated sleep-staging feature. TimesFM 3 is newer, but its downloaded weights are restricted to non-commercial, non-production use; weights through 2.5 remain Apache-2.0. Evaluate the latter or a simple thermal baseline for a local production path. Authorized cloud use of 3 has different terms. Apple Private Cloud Compute access also has eligibility conditions to check before relying on it.
+SensorFM is a wearable-representation research direction, not a drop-in validated sleep-staging feature. [Google Research](https://research.google/blog/sensorfm-towards-a-general-intelligence-and-interface-for-wearable-health-data/). TimesFM 3 is newer, but its downloaded weights are restricted to non-commercial, non-production use; weights through 2.5 remain Apache-2.0. Evaluate the latter or a simple thermal baseline for a local production path. Authorized cloud use of 3 has different terms. [TimesFM license notice](https://github.com/google-research/timesfm). Apple Private Cloud Compute access also has eligibility conditions to check before relying on it. [Apple framework overview](https://developer.apple.com/foundation-models-framework/).
 
-Cost illustration: Sol’s listed standard $2 input / $10 output per million tokens makes 4,000 input + 800 total billed output tokens $0.016 per call, or $0.48 for 30. Extra reasoning beyond this allowance, retries, tools, voice, hosting and hardware are excluded. This is illustrative arithmetic, not a measured bill or equivalence to Eight Sleep’s subscription.
+Cost illustration: Sol’s listed standard $2 input / $10 output per million tokens makes 4,000 input + 800 total billed output tokens $0.016 per call, or $0.48 for 30. Extra reasoning beyond this allowance, retries, tools, voice, hosting and hardware are excluded. This is illustrative arithmetic, not a measured bill or equivalence to Eight Sleep’s subscription. [Listed Sol rates](https://developers.openai.com/api/docs/models/gpt-6.1-sol).
 
 ## Release prerequisites
 
-- Finish and validate the in-progress shared Routines editor, then journal, raw-data and Settings flows. Alarm change/skip/restore is locally validated; compare equal data/state for the remaining screens.
+- Align journal, Coach and common Settings forms and add native record editing/deletion. Routines and episode browsing are locally validated; compare equal data/state for the remaining screens.
 - Verify stock-Pod access/recovery, base telemetry/calibration/Stop, temperature control and overnight behavior.
 - Test a signed iPhone’s Health authorization/sync and Shortcuts; pair the real Home bridge.
 - Deploy and verify the authenticated Replit gateway, reconnect and offline behavior.
