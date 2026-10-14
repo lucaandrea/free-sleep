@@ -1,0 +1,142 @@
+{
+  "date": "14 October 2026",
+  "baseline": "e05cd99",
+  "sources": [
+    {"id":"openai", "title":"OpenAI · GPT-6.1 Sol", "url":"https://developers.openai.com/api/docs/models/gpt-6.1-sol", "note":"Current model capabilities and standard token pricing. Candidate for concise cloud coaching; no sleep-specific evaluation has been run."},
+    {"id":"structured", "title":"OpenAI · Structured Outputs", "url":"https://developers.openai.com/api/docs/guides/structured-outputs", "note":"Schema-constrained output can shape a routine or brief. Application validation must still check every value and action."},
+    {"id":"claude", "title":"Anthropic · Current model catalog", "url":"https://platform.claude.com/docs/en/models/overview", "note":"Sonnet 5.5 is a balanced challenger; the catalog also includes Opus 5.5 and Fable 5.1. Bigger models are optional evaluation candidates, not automatic upgrades."},
+    {"id":"gemini", "title":"Google · Gemini model catalog", "url":"https://ai.google.dev/gemini-api/docs/models", "note":"Lists Gemini 4 Argon, 3.8 Flash and 3.8 Live as stable. Different models serve reasoning, responsive summaries and spoken interaction."},
+    {"id":"argon", "title":"Google · What’s new in Gemini 4 Argon", "url":"https://ai.google.dev/gemini-api/docs/latest-model", "note":"Current flagship supports tunable reasoning. Introductory pricing ends 30 November 2026; evaluate quality and full reasoning-token cost before adopting."},
+    {"id":"live", "title":"Google · Live API", "url":"https://ai.google.dev/gemini-api/docs/live-api", "note":"Realtime audio makes an optional spoken check-in feasible. It adds microphone, connection and audio-retention decisions."},
+    {"id":"apple", "title":"Apple · Foundation Models framework", "url":"https://developer.apple.com/foundation-models-framework/", "note":"Native Swift APIs now cover on-device models, guided generation, image understanding and other model providers. Feature availability must be checked at runtime."},
+    {"id":"wwdc", "title":"Apple · What’s new in Foundation Models, WWDC26", "url":"https://developer.apple.com/videos/play/wwdc2026/241/", "note":"2026 additions include vision, context management, semantic search and broader model integration. Our iOS 18 minimum requires a fallback path."},
+    {"id":"sensorfm", "title":"Google Research · SensorFM", "url":"https://research.google/blog/sensorfm-towards-a-general-intelligence-and-interface-for-wearable-health-data/", "note":"9 July 2026 research on general representations for wearable signals. A research direction, not a validated drop-in model for Pod sleep stages."},
+    {"id":"timesfm", "title":"Google Research · TimesFM releases and weight licenses", "url":"https://github.com/google-research/timesfm", "note":"August–September 2026 brought TimesFM 3 multivariate forecasting and cloud rollout. Self-hosted 3.0 weights are non-commercial/non-production; weights through 2.5 remain Apache-2.0. Authorized cloud production use has separate terms."},
+    {"id":"pha", "title":"Google Research · Anatomy of a personal health agent", "url":"https://www.research.google/blog/the-anatomy-of-a-personal-health-agent/", "note":"30 September 2025 foundational research separates data analysis, domain context and coaching. Useful architecture guidance; not a clinical endorsement of this app."},
+    {"id":"health", "title":"Apple · HealthKit", "url":"https://developer.apple.com/documentation/healthkit", "note":"Native, authorized access to personal health records. Data origin and the user’s selected bed side remain essential."},
+    {"id":"home", "title":"Apple · Apple Home", "url":"https://developer.apple.com/apple-home/", "note":"Platform context for user-selected Home accessories and scenes. A LAN bridge and real pairing still need qualification."},
+    {"id":"intents", "title":"Apple · App Intents", "url":"https://developer.apple.com/documentation/appintents", "note":"Typed actions for Shortcuts and system surfaces. Discovery in a build is distinct from execution on a signed phone."}
+  ],
+  "updates": [
+    {
+      "number":1, "phase":"First", "effort":"Medium", "title":"A morning brief with receipts", "category":"Daily insight",
+      "pitch":"Open the app to one useful observation, the nights behind it, and one optional next step.",
+      "example":"“Your bedtime was more consistent on 5 recorded nights. See the dates.”",
+      "delta":"Coach currently answers an explicit request. Add a saved daily brief, delivery preference, and an evidence drawer that links each statement to source dates and computed metrics.",
+      "approach":"Calculate facts locally, then ask the chosen language model to explain an allowlisted fact set in a typed response. Start with GPT-6.1 Sol and compare Sonnet 5.5 and Gemini 3.8 Flash. Render a deterministic brief if no cloud sharing is enabled.",
+      "dependencies":"A versioned evidence record, wake-date/timezone handling, freshness checks and opt-in delivery. Pod presence must remain distinct from measured sleep.",
+      "acceptance":"Every numerical statement resolves to a stored calculation; missing or sparse nights cause abstention; the same evidence opens on web and iOS. No model may invent a score or a sleep stage.",
+      "sources":["openai","structured","pha"]
+    },
+    {
+      "number":2, "phase":"First", "effort":"Large", "title":"One timeline for Apple Health and your bed", "category":"Connected context",
+      "pitch":"See Watch sleep, Pod presence, temperature changes and morning feedback on one clearly sourced timeline.",
+      "example":"Tap a restless interval to see what was recorded, by which device, and what is missing.",
+      "delta":"The native app already has personal-side Health sync and local comparison. Extend this to an aligned timeline with source filters and explicit overlap resolution; add an opt-in derived-summary path for web parity.",
+      "approach":"Keep alignment and statistics deterministic. Offer an optional explanation of selected intervals, using only the aggregates the user chooses to share. Use wearable-model research as a future evaluation direction, not as a replacement for source provenance.",
+      "dependencies":"Signed-device HealthKit validation, per-type consent, a stable personal-side binding, timestamp normalization and clear handling of multiple sleep sources. Web cannot query HealthKit directly.",
+      "acceptance":"Duplicate sources never double-count time. Users can inspect origin, revoke sharing and remove synchronized summaries. A missing Health sample never becomes a fabricated zero or an inferred stage.",
+      "sources":["health","sensorfm"]
+    },
+    {
+      "number":3, "phase":"First", "effort":"Medium", "title":"A quality and cost center for AI", "category":"Foundation",
+      "pitch":"Choose a provider with visible evidence, a monthly budget and an understandable privacy setting.",
+      "example":"“Local only” or “Cloud summaries · chosen provider · usage this month.”",
+      "delta":"Provider adapters and explicit sharing already exist. Add a repeatable evaluation set, model/version history, usage accounting, a hard request budget and a user-visible comparison of tested results.",
+      "approach":"Benchmark Sol, Sonnet and Flash on identical de-identified or synthetic cases. Include Gemini 4 Argon as a deeper-reasoning challenger. Test factual grounding, numbers, missing data, misleading notes, response time and total billed tokens. A second model may flag issues but cannot define the ground truth.",
+      "dependencies":"Provider keys for live evaluation, expected answers from deterministic calculations, per-provider retention settings and a budget ledger. Cloud data never silently switches to another vendor.",
+      "acceptance":"All critical fixtures pass with zero fabricated measurements or device commands. The budget blocks further paid calls at its configured ceiling. Publish measured quality/cost results before changing the default.",
+      "sources":["openai","claude","gemini","argon"]
+    },
+    {
+      "number":4, "phase":"Next", "effort":"Large", "title":"A private coach that works offline", "category":"Privacy",
+      "pitch":"Ask about your recent pattern on your iPhone without sending your night to a cloud provider.",
+      "example":"“What changed this week?” answered from local, cited facts even without Wi-Fi.",
+      "delta":"The server supports a separately installed Ollama model. Add an on-device iOS coach and an editable, deletable memory of user-approved preferences. Keep the same brief and evidence layout on the web.",
+      "approach":"Use Apple Foundation Models where available, with guided output and a small local evidence index. Use deterministic summaries on unsupported iPhones; a capable Mac/PC can serve the optional local web model. Do not put a large language model on the Pod.",
+      "dependencies":"OS/device availability checks, a local evaluation suite, explicit memory controls and shared output contracts. Cloud escalation requires a user choice.",
+      "acceptance":"Airplane-mode tests produce grounded answers on eligible devices; older supported iOS versions render useful fallback summaries. Deleting a memory removes it from subsequent prompts.",
+      "sources":["apple","wwdc"]
+    },
+    {
+      "number":5, "phase":"Next", "effort":"Large", "title":"Personal experiments, one change at a time", "category":"Learning",
+      "pitch":"Turn “I think cooler helps” into a small, optional experiment with a clear result and honest uncertainty.",
+      "example":"Compare your usual setting with a user-selected 1°F change over balanced nights, then review comfort ratings.",
+      "delta":"The journal already shows habit associations and adaptive comfort learns a bounded offset. Add a guided experiment planner, baseline period, adherence tracking and a review screen.",
+      "approach":"Let the model explain a predefined protocol. Assign conditions and calculate differences locally, accounting for missed nights and obvious confounders. Use perceived comfort as the primary outcome until other measures are validated.",
+      "dependencies":"Enough baseline observations, repeat check-ins, user-chosen boundaries, a pause control and qualification of any scheduled temperature changes on real hardware.",
+      "acceptance":"Only one variable changes per protocol; incomplete data yields an inconclusive result; every change remains reversible. Observational habit patterns are never presented as proof of causation.",
+      "sources":["pha","structured"]
+    },
+    {
+      "number":6, "phase":"Later", "effort":"Large", "title":"Predictive comfort before bedtime", "category":"Comfort",
+      "pitch":"Have the bed approach your chosen temperature at bedtime using its measured heating and cooling behavior.",
+      "example":"“Start preparation at 9:12 to target 9:30” with a visible forecast and uncertainty range.",
+      "delta":"Current adaptive comfort adjusts from morning feedback with strict limits. Add a thermal-response forecast, optional room context and a shadow mode that records predictions without controlling the bed.",
+      "approach":"Start with a simple per-side thermal model. Evaluate TimesFM 2.5 as an offline challenger on a capable local host. A deterministic controller applies validated limits; the LLM only explains the plan. TimesFM 3 self-hosted weights are not a production option under their current license.",
+      "dependencies":"Real target/actual temperature history, room-temperature data if available, power/presence context and overnight hardware qualification. Performance must be evaluated on held-out nights.",
+      "acceptance":"Forecast error improves on a simple baseline before activation. Shadow mode, stale-data rejection, manual override, away/alarm guards and rollback all pass physical-device tests.",
+      "sources":["timesfm"]
+    },
+    {
+      "number":7, "phase":"Next", "effort":"Medium", "title":"A 20-second spoken morning check-in", "category":"Low-friction input",
+      "pitch":"Hold a button, say how the night felt, and review a short check-in before saving it.",
+      "example":"“Too warm around three; felt okay this morning” becomes editable comfort and restfulness fields.",
+      "delta":"Replace repetitive form entry with an optional voice path while keeping the existing accessible text form.",
+      "approach":"Try local dictation first. Offer Gemini 3.8 Live for an explicitly selected conversational mode. Convert speech into typed fields, preserve uncertainty, and require the user to confirm the result.",
+      "dependencies":"Microphone permission, a visible recording indicator, explicit cloud-audio choice and a clear retention setting. Avoid capturing a sleeping partner with always-on listening.",
+      "acceptance":"Ambiguous times or negations require correction instead of silent guesses. Cancel discards unsaved audio/transcript data; saving never triggers a device action.",
+      "sources":["live","gemini","structured"]
+    },
+    {
+      "number":8, "phase":"Next", "effort":"Large", "title":"Describe a routine; review the exact changes", "category":"Routines & Shortcuts",
+      "pitch":"Build a schedule in natural language and inspect every affected day, side and setting before applying it.",
+      "example":"“On weekdays, warm my side at 9:30 and turn it off at 7” becomes a visible schedule diff.",
+      "delta":"The app already edits schedules and exposes native actions. Add a common web/iOS routine composer that produces the same validated plan, plus a Shortcut entry point for drafting it.",
+      "approach":"Constrain the model to a schedule schema. Resolve dates and daylight-saving transitions in application code. Apply only a user-confirmed plan through existing authenticated services; keep model tools read-only.",
+      "dependencies":"Finish the shared Routines layout and alarm parity first. Preserve unknown schedule fields, provide rollback, and handle ambiguous weekdays, sides and overnight intervals.",
+      "acceptance":"A DST/timezone fixture suite passes. The preview shows all edits and any rejected request. No base movement, schedule write or temperature command occurs during generation.",
+      "sources":["structured","intents"]
+    },
+    {
+      "number":9, "phase":"First", "effort":"Medium", "title":"Explain changes and detect bad data", "category":"Trustworthy analytics",
+      "pitch":"Distinguish a real shift in your routine from a missing night, an offline sensor or a changed data source.",
+      "example":"“This week has only two recorded nights, so a trend would be misleading.”",
+      "delta":"Current analytics preserve unknown values. Add completeness indicators, signal-quality history, comparisons that control for recorded-night count, and a “Why did this change?” drawer.",
+      "approach":"Use deterministic checks and robust personal baselines for quality signals. Give the model read-only, typed access to calculations and source metadata, so explanations point to exact evidence rather than making arithmetic up.",
+      "dependencies":"Ingestion timestamps, device/source identifiers, missingness flags and a baseline policy. General wearable foundation models require separate Pod-specific evaluation before any use.",
+      "acceptance":"Injected outages, clock shifts and duplicate records are identified without becoming health alerts. No diagnosis, apnea detector, readiness score or sleep stage is inferred from presence alone.",
+      "sources":["sensorfm","pha"]
+    },
+    {
+      "number":10, "phase":"Later", "effort":"Large", "title":"A wind-down scene that fits your evening", "category":"Apple Home",
+      "pitch":"Connect a chosen bedtime routine with selected lights and bedroom settings, with a clear preview of what will happen.",
+      "example":"“Wind down” proposes the user’s selected lamp scene and bed preparation time.",
+      "delta":"The LAN Home bridge foundation already exists. Add scene selection, a readable automation plan, quiet-hour preferences and execution history in the app.",
+      "approach":"The model drafts a plan from a narrow inventory of user-approved actions. Home and the local scheduler execute fixed, reviewed rules. Remote availability is shown separately from local readiness.",
+      "dependencies":"Real Home pairing, a supported home hub where required, accessory availability, explicit scene selection and shared-household preferences.",
+      "acceptance":"Unavailable accessories are reported correctly; duplicate requests do not repeat an action; cancelling the routine stops pending actions. Base movement is excluded from unattended scenes.",
+      "sources":["home","structured"]
+    },
+    {
+      "number":11, "phase":"Later", "effort":"Large", "title":"Position profiles that remember comfort", "category":"Pod Ultra base",
+      "pitch":"Save your preferred reading or resting position and compare how comfortable it felt over time.",
+      "example":"“Your saved reading position: head 24°, feet 10°” with preview, explicit Move and persistent Stop.",
+      "delta":"Head/feet sliders, presets and a reported-position view already exist. Add user-named profiles, feedback history and optional recommendations based on the positions the user has actually tried.",
+      "approach":"Use a small transparent ranking model for preference learning; use an LLM only to explain the evidence. Recommendations are drafts. Whole-bed movement remains a deliberate physical action.",
+      "dependencies":"Verify BLE telemetry, limits, calibration, motion and Stop on the owner’s stock Pod/base first. Account for partner presence and shared-bed preferences.",
+      "acceptance":"Reported position stays separate from requested position. Stale telemetry blocks movement; Stop cancels pending movement. The product makes no snoring, apnea or therapeutic claims.",
+      "sources":["structured"]
+    },
+    {
+      "number":12, "phase":"Later", "effort":"Medium", "title":"An optional photo-assisted context journal", "category":"Multimodal input",
+      "pitch":"Reduce logging effort by extracting visible text from a caffeine label or travel itinerary, then letting you correct it.",
+      "example":"A label photo suggests a product name and printed caffeine amount; the user supplies portion and time.",
+      "delta":"The journal currently uses checkboxes and text. Add a small attachment flow with highlighted evidence, confidence and editable fields, linked to the night it may help explain.",
+      "approach":"Prefer on-device OCR/image understanding where available; evaluate a selected multimodal cloud model only with consent. Treat text in images as data, never instructions. Do not infer consumed dose, meal calories or medical implications from appearance.",
+      "dependencies":"Image privacy controls, attachment deletion, time/portion confirmation, and a richer journal schema shared by web and iOS.",
+      "acceptance":"Every extracted fact highlights its source text. Unreadable fields stay empty. Cloud sharing and photo retention are optional, and extracted context cannot directly change the bed.",
+      "sources":["apple","gemini"]
+    }
+  ]
+}
