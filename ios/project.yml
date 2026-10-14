@@ -50,7 +50,10 @@ targets:
   FreeSleepTests:
     type: bundle.unit-test
     platform: iOS
-    sources: [FreeSleepTests]
+    sources:
+      - FreeSleepTests
+      - path: ../shared/fixtures/coverage-cases.json
+        buildPhase: resources
     dependencies:
       - target: FreeSleep
     settings:

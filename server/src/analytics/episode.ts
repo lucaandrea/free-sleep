@@ -1,6 +1,7 @@
 import { presenceIntervals, summarizeSleep, type SleepObservation, type VitalObservation } from './summary.js';
 
-export const MAX_EPISODE_SECONDS = 72 * 60 * 60;
+import { validRecordWindow } from './coverage.js';
+export { MAX_EPISODE_SECONDS } from './coverage.js';
 export const MAX_EPISODE_SAMPLES = 2880;
 export const VITAL_GAP_SECONDS = 15 * 60;
 export const vitalMetrics = [
@@ -11,10 +12,7 @@ export const vitalMetrics = [
 
 export class EpisodeRangeError extends Error {}
 export function validateEpisode(record: SleepObservation): void {
-  const duration = record.left_bed_at - record.entered_bed_at;
-  if (!Number.isFinite(new Date(record.entered_bed_at * 1000).getTime())
-    || !Number.isFinite(new Date(record.left_bed_at * 1000).getTime())
-    || !(duration > 0 && duration <= MAX_EPISODE_SECONDS)) {
+  if (!validRecordWindow(record.entered_bed_at, record.left_bed_at)) {
     throw new EpisodeRangeError('This episode has invalid times or exceeds the 72-hour detail limit.');
   }
 }

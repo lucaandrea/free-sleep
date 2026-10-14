@@ -1,6 +1,7 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="2fbc69ed-ada3-53a8-943b-3a1f45906e88")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="7c3452c8-7143-5657-be97-174b1b727561")}catch(e){}}();
 import moment from 'moment-timezone';
+import { dataCoverage, validRecordWindow } from './coverage.js';
 const round = (value) => Math.round(value * 10) / 10;
 const mean = (values) => values.length ? round(values.reduce((total, value) => total + value, 0) / values.length) : null;
 const valid = (value, minimum, maximum) => value !== null && Number.isFinite(value) && value >= minimum && value <= maximum;
@@ -47,7 +48,7 @@ export function summarizeSleep(records, vitals, timeZone, goalMinutes = 480) {
         return lower;
     };
     const nights = records
-        .filter((record) => record.left_bed_at > record.entered_bed_at)
+        .filter((record) => validRecordWindow(record.entered_bed_at, record.left_bed_at))
         .map((record) => {
         const intervals = presenceIntervals(record);
         const occupiedMinutes = intervals.length
@@ -84,6 +85,7 @@ export function summarizeSleep(records, vitals, timeZone, goalMinutes = 480) {
             daily.set(night.date, night);
     }
     const mainNights = [...daily.values()].sort((first, second) => first.date.localeCompare(second.date));
+    const coverage = dataCoverage(mainNights, timeZone, records.length - nights.length);
     // Compare calendar weeks anchored to the latest recorded wake date, without filling gaps with zeroes.
     const latestDate = mainNights[mainNights.length - 1]?.date;
     const recentStart = moment.tz(latestDate, timeZone).subtract(6, 'days').format('YYYY-MM-DD');
@@ -112,12 +114,14 @@ export function summarizeSleep(records, vitals, timeZone, goalMinutes = 480) {
             averageHrv: mean(recent.map((night) => night.hrv).filter((value) => value !== null)),
             averageRespiratoryRate: mean(recent.map((night) => night.respiratoryRate).filter((value) => value !== null)),
             bedtimeVariationMinutes: variation,
-            weeklyChangeMinutes: average === null || previousAverage === null ? null : round(average - previousAverage),
+            weeklyChangeMinutes: !coverage.comparisonAvailable || average === null || previousAverage === null
+                ? null : round(average - previousAverage),
             opportunityGapMinutes: average === null ? null : Math.max(0, round(goalMinutes - average)),
             averageExits: mean(recent.map((night) => night.exits)),
         },
         quality: {
             source: 'pod-presence-and-vitals',
+            coverage,
             stageClassification: false,
             hrvValidated: false,
             respiratoryRateValidated: false,
@@ -132,4 +136,4 @@ export function summarizeSleep(records, vitals, timeZone, goalMinutes = 480) {
     };
 }
 //# sourceMappingURL=summary.js.map
-//# debugId=2fbc69ed-ada3-53a8-943b-3a1f45906e88
+//# debugId=7c3452c8-7143-5657-be97-174b1b727561

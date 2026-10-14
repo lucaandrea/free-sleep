@@ -20,6 +20,8 @@ Permission is consumed when each request starts, including a failed request. A r
 
 The request sends numerical analytics and habit associations, not saved journal notes. Question text is sent as entered. The UI explains this before sharing. Provider keys remain server configuration, and unavailable providers stay disabled. Failure to load provider availability leaves local calculations usable with a retry action.
 
+Coaching names the recorded period's end date, which may be historical. Weekly presence changes are withheld unless both seven-date periods have three known-presence nights. Model requests receive aggregate coverage counts; the per-date coverage inventory stays local. This display rule is not a medical confidence threshold. See [analytics coverage](DATA_QUALITY.md) for the exact calculation and provider-test limits.
+
 Demo mode labels its simulated provider **Demo model · no external calls**. Both clients read deterministic coaching generated from `shared/fixtures/sleep-demo.json` for each history range. These fixtures verify presentation and request lifecycle, not model quality or clinical accuracy.
 
 See [validation evidence](VALIDATION.md) for executed checks. Real provider accounts, signed-device integrations and physical Pod behavior remain separate qualification work.

@@ -4,6 +4,8 @@ Open **Sleep → Browse episodes** on web or iPhone. The same card lists every r
 
 The selector uses the episode's wake date. The presence bar and charts label both the start and end dates in the Pod timezone. Recorded-reading rows include the timezone abbreviation, so repeated daylight-saving hours remain distinguishable. A selected episode shows its window, detected presence duration, recorded exits and number of original vital records. Changing side or range resets the detail selection; native analytics are also cleared before loading a different side or range.
 
+The overview now explains returned-record coverage and withholds sparse weekly comparisons. Invalid timestamps, nonpositive windows and windows over 72 hours are excluded from the overview with a count. See [analytics coverage](DATA_QUALITY.md) for missing-data states and calendar rules.
+
 ## What the charts mean
 
 Heart rate, HRV and breathing share one chart layout. Each shows its eligible-reading count, mean and range. These values use the same presence intervals and plausible-value thresholds as the existing overview:

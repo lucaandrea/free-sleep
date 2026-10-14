@@ -8064,6 +8064,92 @@
     },
     "quality": {
       "source": "pod-presence-and-vitals",
+      "coverage": {
+        "version": 1,
+        "minimumNights": 3,
+        "recent": {
+          "from": "2026-10-07",
+          "through": "2026-10-13",
+          "days": [
+            {
+              "date": "2026-10-07",
+              "status": "known"
+            },
+            {
+              "date": "2026-10-08",
+              "status": "known"
+            },
+            {
+              "date": "2026-10-09",
+              "status": "known"
+            },
+            {
+              "date": "2026-10-10",
+              "status": "known"
+            },
+            {
+              "date": "2026-10-11",
+              "status": "known"
+            },
+            {
+              "date": "2026-10-12",
+              "status": "known"
+            },
+            {
+              "date": "2026-10-13",
+              "status": "known"
+            }
+          ],
+          "recordedNights": 7,
+          "presenceNights": 7,
+          "heartRateNights": 7,
+          "hrvNights": 7,
+          "respiratoryRateNights": 7
+        },
+        "previous": {
+          "from": "2026-09-30",
+          "through": "2026-10-06",
+          "days": [
+            {
+              "date": "2026-09-30",
+              "status": "known"
+            },
+            {
+              "date": "2026-10-01",
+              "status": "known"
+            },
+            {
+              "date": "2026-10-02",
+              "status": "known"
+            },
+            {
+              "date": "2026-10-03",
+              "status": "known"
+            },
+            {
+              "date": "2026-10-04",
+              "status": "known"
+            },
+            {
+              "date": "2026-10-05",
+              "status": "known"
+            },
+            {
+              "date": "2026-10-06",
+              "status": "known"
+            }
+          ],
+          "recordedNights": 7,
+          "presenceNights": 7,
+          "heartRateNights": 7,
+          "hrvNights": 7,
+          "respiratoryRateNights": 7
+        },
+        "comparisonAvailable": true,
+        "comparisonReason": "Both periods have at least 3 nights with known presence. This is a descriptive comparison, not proof of a change in sleep quality.",
+        "excludedEpisodes": 0,
+        "scopeNote": "Based on records returned for your selected range. A date without a record does not prove sensor failure or no sleep. Choose a longer range to include earlier dates."
+      },
       "stageClassification": false,
       "hrvValidated": false,
       "respiratoryRateValidated": false,
@@ -8325,6 +8411,92 @@
       },
       "quality": {
         "source": "pod-presence-and-vitals",
+        "coverage": {
+          "version": 1,
+          "minimumNights": 3,
+          "recent": {
+            "from": "2026-10-07",
+            "through": "2026-10-13",
+            "days": [
+              {
+                "date": "2026-10-07",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-08",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-09",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-10",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-11",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-12",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-13",
+                "status": "known"
+              }
+            ],
+            "recordedNights": 7,
+            "presenceNights": 7,
+            "heartRateNights": 7,
+            "hrvNights": 7,
+            "respiratoryRateNights": 7
+          },
+          "previous": {
+            "from": "2026-09-30",
+            "through": "2026-10-06",
+            "days": [
+              {
+                "date": "2026-09-30",
+                "status": "not_returned"
+              },
+              {
+                "date": "2026-10-01",
+                "status": "not_returned"
+              },
+              {
+                "date": "2026-10-02",
+                "status": "not_returned"
+              },
+              {
+                "date": "2026-10-03",
+                "status": "not_returned"
+              },
+              {
+                "date": "2026-10-04",
+                "status": "not_returned"
+              },
+              {
+                "date": "2026-10-05",
+                "status": "not_returned"
+              },
+              {
+                "date": "2026-10-06",
+                "status": "not_returned"
+              }
+            ],
+            "recordedNights": 0,
+            "presenceNights": 0,
+            "heartRateNights": 0,
+            "hrvNights": 0,
+            "respiratoryRateNights": 0
+          },
+          "comparisonAvailable": false,
+          "comparisonReason": "A weekly change needs at least 3 nights with known presence in each period. This is an app display rule, not a medical confidence threshold.",
+          "excludedEpisodes": 0,
+          "scopeNote": "Based on records returned for your selected range. A date without a record does not prove sensor failure or no sleep. Choose a longer range to include earlier dates."
+        },
         "stageClassification": false,
         "hrvValidated": false,
         "respiratoryRateValidated": false,
@@ -8795,6 +8967,92 @@
       },
       "quality": {
         "source": "pod-presence-and-vitals",
+        "coverage": {
+          "version": 1,
+          "minimumNights": 3,
+          "recent": {
+            "from": "2026-10-07",
+            "through": "2026-10-13",
+            "days": [
+              {
+                "date": "2026-10-07",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-08",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-09",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-10",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-11",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-12",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-13",
+                "status": "known"
+              }
+            ],
+            "recordedNights": 7,
+            "presenceNights": 7,
+            "heartRateNights": 7,
+            "hrvNights": 7,
+            "respiratoryRateNights": 7
+          },
+          "previous": {
+            "from": "2026-09-30",
+            "through": "2026-10-06",
+            "days": [
+              {
+                "date": "2026-09-30",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-01",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-02",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-03",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-04",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-05",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-06",
+                "status": "known"
+              }
+            ],
+            "recordedNights": 7,
+            "presenceNights": 7,
+            "heartRateNights": 7,
+            "hrvNights": 7,
+            "respiratoryRateNights": 7
+          },
+          "comparisonAvailable": true,
+          "comparisonReason": "Both periods have at least 3 nights with known presence. This is a descriptive comparison, not proof of a change in sleep quality.",
+          "excludedEpisodes": 0,
+          "scopeNote": "Based on records returned for your selected range. A date without a record does not prove sensor failure or no sleep. Choose a longer range to include earlier dates."
+        },
         "stageClassification": false,
         "hrvValidated": false,
         "respiratoryRateValidated": false,
@@ -9265,6 +9523,92 @@
       },
       "quality": {
         "source": "pod-presence-and-vitals",
+        "coverage": {
+          "version": 1,
+          "minimumNights": 3,
+          "recent": {
+            "from": "2026-10-07",
+            "through": "2026-10-13",
+            "days": [
+              {
+                "date": "2026-10-07",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-08",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-09",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-10",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-11",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-12",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-13",
+                "status": "known"
+              }
+            ],
+            "recordedNights": 7,
+            "presenceNights": 7,
+            "heartRateNights": 7,
+            "hrvNights": 7,
+            "respiratoryRateNights": 7
+          },
+          "previous": {
+            "from": "2026-09-30",
+            "through": "2026-10-06",
+            "days": [
+              {
+                "date": "2026-09-30",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-01",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-02",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-03",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-04",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-05",
+                "status": "known"
+              },
+              {
+                "date": "2026-10-06",
+                "status": "known"
+              }
+            ],
+            "recordedNights": 7,
+            "presenceNights": 7,
+            "heartRateNights": 7,
+            "hrvNights": 7,
+            "respiratoryRateNights": 7
+          },
+          "comparisonAvailable": true,
+          "comparisonReason": "Both periods have at least 3 nights with known presence. This is a descriptive comparison, not proof of a change in sleep quality.",
+          "excludedEpisodes": 0,
+          "scopeNote": "Based on records returned for your selected range. A date without a record does not prove sensor failure or no sleep. Choose a longer range to include earlier dates."
+        },
         "stageClassification": false,
         "hrvValidated": false,
         "respiratoryRateValidated": false,
@@ -33467,7 +33811,7 @@
     "7": {
       "headline": "A little context for your nights",
       "observations": [
-        "Your recent average bed presence is 456 minutes per recorded night.",
+        "For the recorded period ending 2026-10-13, average bed presence is 456 minutes per recorded night.",
         "Bed-entry timing varies by about 0 minutes across recent recorded nights."
       ],
       "suggestions": [
@@ -33475,7 +33819,8 @@
       ],
       "limitations": [
         "Presence is not measured sleep; sleep stages and diagnoses cannot be inferred here.",
-        "HRV and breathing estimates have not been validated."
+        "HRV and breathing estimates have not been validated.",
+        "A weekly change needs at least 3 nights with known presence in each period. This is an app display rule, not a medical confidence threshold."
       ],
       "provider": "rules",
       "model": "Demo insights"
@@ -33483,7 +33828,7 @@
     "30": {
       "headline": "A little context for your nights",
       "observations": [
-        "Your recent average bed presence is 456 minutes per recorded night.",
+        "For the recorded period ending 2026-10-13, average bed presence is 456 minutes per recorded night.",
         "Bed-entry timing varies by about 0 minutes across recent recorded nights.",
         "Average bed presence changed by 0 minutes."
       ],
@@ -33492,7 +33837,8 @@
       ],
       "limitations": [
         "Presence is not measured sleep; sleep stages and diagnoses cannot be inferred here.",
-        "HRV and breathing estimates have not been validated."
+        "HRV and breathing estimates have not been validated.",
+        "Both periods have at least 3 nights with known presence. This is a descriptive comparison, not proof of a change in sleep quality."
       ],
       "provider": "rules",
       "model": "Demo insights"
@@ -33500,7 +33846,7 @@
     "90": {
       "headline": "A little context for your nights",
       "observations": [
-        "Your recent average bed presence is 456 minutes per recorded night.",
+        "For the recorded period ending 2026-10-13, average bed presence is 456 minutes per recorded night.",
         "Bed-entry timing varies by about 0 minutes across recent recorded nights.",
         "Average bed presence changed by 0 minutes."
       ],
@@ -33509,7 +33855,8 @@
       ],
       "limitations": [
         "Presence is not measured sleep; sleep stages and diagnoses cannot be inferred here.",
-        "HRV and breathing estimates have not been validated."
+        "HRV and breathing estimates have not been validated.",
+        "Both periods have at least 3 nights with known presence. This is a descriptive comparison, not proof of a change in sleep quality."
       ],
       "provider": "rules",
       "model": "Demo insights"

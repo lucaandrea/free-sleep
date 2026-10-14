@@ -22,6 +22,7 @@ The web theme and native design components consume these values. Both use system
 - Matching side-selector height, button shapes, status badges, heading sizes and secondary text colors.
 - Temperature card, selected base presets, head/feet sliders and the bed illustration's geometry.
 - Sleep metrics and the presence chart's twelve-hour scale, missing-value markers and horizontal overflow.
+- Analytics coverage: matching period counts, explicit known/unknown/not-returned dates, collapsible date lists and explanations for withheld weekly comparisons. The native demo is checked against server-generated calendar cases. See [data coverage](DATA_QUALITY.md).
 - Recorded-episode selection, short-episode browsing, presence intervals, heart-rate/HRV/breathing charts and paginated original readings. Both clients consume the same detail response and generated sleep-demo fixture. See [recorded episodes](EPISODES.md).
 - Record correction and deletion from the episode browser: side/timezone context, original-window conflict checks, validation, confirmation and refreshed charts. The legacy web editor uses the same controls.
 - Native navigation from “Explore sleep” and the same Coach result wording for sample data.

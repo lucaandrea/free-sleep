@@ -135,6 +135,16 @@ The iPhone adaptive-comfort Shortcut now requires the updated server and gateway
 
 Captures in [screenshots](screenshots): `preferences-web-saved.jpg`, `health-web.jpg`, `preferences-ios-top.jpg`, `preferences-ios-saved.jpg` and `health-ios.jpg`. Native images include the simulator mirror. See [device preferences](DEVICE_PREFERENCES.md) for the additive API and client/server/gateway update requirement. Advanced maintenance, LED controls, service management and logs remain web-only. No owner credentials, Health/Home records, hardware or deployment was used.
 
+## Analytics coverage follow-up — 2026-10-14
+
+- All 103 server tests passed on Node 24. Seven new tests cover the three-known-night threshold in both directions, unknown main episodes versus naps, metric-specific counts, absent dates, DST/leap-day periods, empty ranges, known zero values, invalid/overlong windows, historical coaching wording and aggregate-only model coverage. Existing provider adapter tests also inspect the actual mocked payloads for all four adapters. No provider was called.
+- Native build and all 53 Swift Testing tests passed on the isolated iOS 27 simulator, with zero failures, skips or runtime warnings in the test result. Three new tests compare native demo calculations with seven server-generated cases, preserve decoding from older servers and verify the local Coach's sparse-data explanation.
+- Web demo/hosted builds, all six web contract tests and all six gateway tests passed. Server compilation and local debug-ID injection passed. Lint has zero errors, with the existing eight web and 19 server warnings; the existing Vite shared-chunk warning remains. Generated server/web output and fixtures are updated without source-map uploads.
+- Browser checks switched 30 → 7 → 30 days, expanded both date lists, verified seven not-returned dates in the 7-day view and rendered the local Coach's historical-period wording and comparison limitation. This caught and fixed duplicate React sibling keys that left a previous coverage card in the DOM after switching ranges. The corrected view has one coverage card, and the browser error log was empty.
+- The web DOM reported a 530×932 viewport and a 519-pixel document width, with no horizontal overflow. The native demo displayed the same 7-day coverage counts and comparison explanation, and opened the previous period's not-returned date list. Native calculation tests cover both threshold states; the native screen captures are the 7-day state. The simulator mirror occasionally retained an old frame until reloaded, so captures were taken after verifying the refreshed frame.
+
+Captures in [screenshots](screenshots): `coverage-web-7-days.jpg`, `coverage-web-30-days.jpg`, `coverage-coach-web.jpg`, `coverage-ios-7-days.jpg` and `coverage-ios-dates.jpg`. Native images include the simulator mirror. See [coverage rules and API](DATA_QUALITY.md). The 72-hour filter changes which corrupt/overlong records contribute to analytics; it never rewrites source data. Real sensor coverage, model compliance, physical Pod operation and deployment were not tested. The dated HTML comparison remains a separate snapshot through `189d54e`.
+
 ## Remaining device and service checks
 
 - Stock Pod access, firmware compatibility, installation/recovery, D-Bus permissions, BLE service discovery and real motion/Stop/calibration.

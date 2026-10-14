@@ -9,6 +9,7 @@ import SideControl from '@components/SideControl';
 import Surface from './Surface';
 import JournalCard from './JournalCard';
 import EpisodeBrowser from './EpisodeBrowser';
+import DataCoverageCard from './DataCoverageCard';
 
 export default function InsightsPage() {
   const { side } = useAppStore();
@@ -70,6 +71,11 @@ export default function InsightsPage() {
           </Surface>
         )) }
       </Box>
+      { analytics.data && <DataCoverageCard
+        key={ `coverage:${side}:${days}` }
+        report={ analytics.data.quality?.coverage }
+        timeZone={ analytics.data.timeZone }
+      /> }
       <Surface title="Time made for rest" eyebrow="BED PRESENCE">
         { nights.length ? (
           <Box sx={ { display: 'flex', alignItems: 'flex-end', gap: 0.75, height: 170, overflowX: 'auto', pb: 2 } }>

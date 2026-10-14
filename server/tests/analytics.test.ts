@@ -53,5 +53,5 @@ test('weekly comparison uses calendar days without pulling old observations into
   const summary = summarizeSleep(records, [], 'UTC').summary;
   assert.equal(summary.recentRecordedNights, 1);
   assert.equal(summary.previousRecordedNights, 7);
-  assert.equal(summary.weeklyChangeMinutes, 120);
+  assert.equal(summary.weeklyChangeMinutes, null);
 });
