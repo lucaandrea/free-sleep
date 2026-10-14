@@ -61,6 +61,18 @@ No owner Pod, live vibration, Health database, cloud model or Replit deployment 
 
 Captures: `episodes-web-phone.jpg`, `episodes-web-vitals.jpg` and `episodes-ios-detail.jpg` in [screenshots](screenshots). The shared detailed contract is documented in [recorded episodes](EPISODES.md). Real sensor accuracy, continuous overnight data, signed iPhone integrations, iOS 18 runtime behavior and deployment remain unverified.
 
+## Journal and Coach follow-up — 2026-10-14
+
+- Server compilation and all 51 tests passed. Two new tests exercise old-date selection independently of the trend window, side isolation, absent entries, invalid dates/ranges before loading, trimmed-note round trips and actual Express HTTP persistence against temporary storage.
+- Native build and all 30 Swift Testing tests passed on the isolated iOS 27 simulator. Five new tests cover Pod-timezone dates around midnight/DST, invalid dates, UTF-16/emoji limits, isolated drafts and save locks, newer drafts surviving late saves, old-date demo storage, cancelled/superseded Coach responses, and all three shared coaching ranges.
+- Web TypeScript, demo and hosted builds, lint and both web tests passed. The draft test covers Pod/side isolation, duplicate in-flight saves and retention of newer notes. All five gateway tests passed. Shared design and generated sleep-fixture checks passed. Existing warnings remain: eight web, 21 server and Vite's large shared chunks. Server debug IDs were injected locally; no source maps were uploaded.
+- The 402 px browser demo saved a check-in dated November 14, 2000, switched dates and reloaded the original note/habit outside the analytics window. An unsaved draft survived navigation and side changes; the opposite side stayed empty, and Reset draft restored the saved value. The final browser error log was empty.
+- Browser and native simulator both rendered the new outlined journal fields and habit checkboxes. The simulator saved a changed habit and displayed success. Both rendered a simulated Coach result of 456 minutes for the 30-day range and reset sharing after the request, disabling another model request until permission is selected again. Changing the browser's range cleared the old result. A long local-calculations label wraps at phone width.
+
+Captures in [screenshots](screenshots): `journal-web-phone.jpg`, `journal-ios.jpg`, `journal-ios-saved.jpg`, `coach-web-phone.jpg`, `coach-web-form.jpg` and `coach-ios.jpg`. The native images include the simulator mirror as provenance. These establish labelled demo rendering and simulated actions. The shared coaching fixture does not exercise a live model or journal-dependent recommendation quality.
+
+See [journal and Coach behavior](JOURNAL_COACH.md) for the additive selected-date API contract and client/server update requirement. No owner data, real model calls, Health database, physical controls or deployment were involved.
+
 ## Remaining device and service checks
 
 - Stock Pod access, firmware compatibility, installation/recovery, D-Bus permissions, BLE service discovery and real motion/Stop/calibration.

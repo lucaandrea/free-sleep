@@ -52,6 +52,7 @@ struct SleepDemo: Decodable {
     var analytics: SleepAnalytics
     var ranges: [String: SleepAnalytics]
     var details: [String: EpisodeDetail]
+    var coaching: [String: Coaching]
     static let shared: SleepDemo? = {
         guard let url = Bundle.main.url(forResource: "sleep-demo", withExtension: "json"), let data = try? Data(contentsOf: url) else { return nil }
         return try? JSONDecoder().decode(SleepDemo.self, from: data)

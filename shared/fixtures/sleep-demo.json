@@ -25855,5 +25855,57 @@
         "Recorded readings retain excluded values. Missing readings are not zero."
       ]
     }
+  },
+  "coaching": {
+    "7": {
+      "headline": "A little context for your nights",
+      "observations": [
+        "Your recent average bed presence is 456 minutes per recorded night.",
+        "Bed-entry timing varies by about 0 minutes across recent recorded nights."
+      ],
+      "suggestions": [
+        "Keep your routine comfortable and collect more nights before changing several things at once."
+      ],
+      "limitations": [
+        "Presence is not measured sleep; sleep stages and diagnoses cannot be inferred here.",
+        "HRV and breathing estimates have not been validated."
+      ],
+      "provider": "rules",
+      "model": "Demo insights"
+    },
+    "30": {
+      "headline": "A little context for your nights",
+      "observations": [
+        "Your recent average bed presence is 456 minutes per recorded night.",
+        "Bed-entry timing varies by about 0 minutes across recent recorded nights.",
+        "Average bed presence changed by 0 minutes."
+      ],
+      "suggestions": [
+        "Keep your routine comfortable and collect more nights before changing several things at once."
+      ],
+      "limitations": [
+        "Presence is not measured sleep; sleep stages and diagnoses cannot be inferred here.",
+        "HRV and breathing estimates have not been validated."
+      ],
+      "provider": "rules",
+      "model": "Demo insights"
+    },
+    "90": {
+      "headline": "A little context for your nights",
+      "observations": [
+        "Your recent average bed presence is 456 minutes per recorded night.",
+        "Bed-entry timing varies by about 0 minutes across recent recorded nights.",
+        "Average bed presence changed by 0 minutes."
+      ],
+      "suggestions": [
+        "Keep your routine comfortable and collect more nights before changing several things at once."
+      ],
+      "limitations": [
+        "Presence is not measured sleep; sleep stages and diagnoses cannot be inferred here.",
+        "HRV and breathing estimates have not been validated."
+      ],
+      "provider": "rules",
+      "model": "Demo insights"
+    }
   }
 }

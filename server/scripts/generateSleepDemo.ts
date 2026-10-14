@@ -1,6 +1,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { episodeDetail } from '../src/analytics/episode.js';
 import { summarizeSleep } from '../src/analytics/summary.js';
+import { localInsights } from '../src/ai/coach.js';
 
 // Fixed, synthetic dates make cross-platform screenshots and decoding tests reproducible.
 const anchor = Date.parse('2026-10-13T06:00:00Z') / 1000;
@@ -25,7 +26,10 @@ const data = {
     vitals.filter(sample => sample.timestamp >= record.entered_bed_at && sample.timestamp <= record.left_bed_at), 'America/Los_Angeles')])),
 };
 const target = new URL('../../shared/fixtures/sleep-demo.json', import.meta.url);
-const content = JSON.stringify(data, null, 2) + '\n';
+const coaching = Object.fromEntries(Object.entries(data.ranges).map(([days, analytics]) => [days, {
+  ...localInsights(analytics), provider: 'rules', model: 'Demo insights',
+}]));
+const content = JSON.stringify({ ...data, coaching }, null, 2) + '\n';
 if (process.argv.includes('--check')) {
   if (await readFile(target, 'utf8') !== content) throw new Error('Regenerate the shared sleep demo fixture.');
   console.log('Shared sleep fixture matches the analytics contract.');

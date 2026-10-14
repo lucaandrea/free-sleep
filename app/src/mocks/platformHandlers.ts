@@ -26,10 +26,17 @@ export const platformHandlers = [
     status.history.unshift({ at: Date.now(), message: `Adaptive comfort set to ${input.config.mode}.`, targetF: null });
     return HttpResponse.json(status);
   }),
-  http.get('/api/journal', () => HttpResponse.json({ entries: journalEntries, patterns: { associations: [],
-    note: 'Self-reported habits are associations, not causes. Each comparison needs at least five recorded nights in both groups.' } })),
+  http.get('/api/journal', ({ request }) => {
+    const parameters = new URL(request.url).searchParams;
+    const side = parameters.get('side'); const date = parameters.get('date');
+    const entries = journalEntries.filter(entry => entry.side === side);
+    return HttpResponse.json({ entries, selectedDate: date, selected: entries.find(entry => entry.date === date) ?? null,
+      timeZone: 'America/Los_Angeles', patterns: { associations: [],
+        note: 'Self-reported habits are associations, not causes. Each comparison needs at least five recorded nights in both groups.' } });
+  }),
   http.post('/api/journal', async ({ request }) => {
     const entry = await request.json() as (typeof journalEntries)[number];
+    entry.notes = entry.notes.trim();
     const index = journalEntries.findIndex(item => item.date === entry.date && item.side === entry.side);
     if (index >= 0) journalEntries.splice(index, 1);
     journalEntries.push(entry);
@@ -55,10 +62,15 @@ export const platformHandlers = [
     return HttpResponse.json(status());
   }),
   http.post('/api/base/stop', () => HttpResponse.json(status())),
-  http.get('/api/ai/providers', () => HttpResponse.json([{ provider: 'rules', model: 'Deterministic insights', configured: true }])),
-  http.post('/api/ai/coach', () => HttpResponse.json({ headline: 'A steadier rhythm is taking shape', model: 'Demo insights', provider: 'rules',
-    observations: ['Your sample nights show an average of about eight hours of bed presence.'],
-    suggestions: ['Try keeping your wind-down time consistent for another week.'],
-    limitations: ['This is sample data. Bed presence is not measured sleep.'] })),
+  http.get('/api/ai/providers', () => HttpResponse.json([{ provider: 'rules', model: 'Deterministic insights', configured: true },
+    { provider: 'openai', model: 'Demo model · no external calls', configured: true }])),
+  http.post('/api/ai/coach', async ({ request }) => {
+    const input = await request.json() as { days: number; provider: string; shareSummary: boolean };
+    if (input.provider !== 'rules' && !input.shareSummary) {
+      return HttpResponse.json({ error: { message: 'Allow sharing for this simulated request first.' } }, { status: 400 });
+    }
+    const result = (sleepDemo.coaching as Record<string, typeof sleepDemo.coaching['30']>)[String(input.days)] ?? sleepDemo.coaching['30'];
+    return HttpResponse.json({ ...result, provider: input.provider });
+  }),
   http.get('/api/integrations/homekit', () => HttpResponse.json({ enabled: false, running: false, pairingCode: null, error: null })),
 ];

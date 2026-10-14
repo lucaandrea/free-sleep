@@ -24,6 +24,7 @@ final class AppModel {
     private var analyticsRefreshedAt = Date.distantPast
     let demo: Bool
     let routineWorkspace: RoutineWorkspace
+    let journalWorkspace = JournalWorkspace()
     let demoAlarms: DemoAlarms
     var connected: Bool { device != nil }
 

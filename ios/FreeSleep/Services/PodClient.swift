@@ -50,9 +50,9 @@ struct PodClient: Sendable {
         try JSONDecoder().decode(Result.self, from: await request(route, method: "POST", body: JSONEncoder().encode(body)))
     }
     func action(_ route: String) async throws { _ = try await request(route, method: "POST", body: Data("{}".utf8)) }
-    func coach(side: BedSide, provider: String, share: Bool, question: String) async throws -> Coaching {
-        struct Body: Encodable { var side: String; var provider: String; var shareSummary: Bool; var question: String; var days = 30 }
-        let body = Body(side: side.rawValue, provider: provider, shareSummary: share, question: question)
+    func coach(side: BedSide, provider: String, share: Bool, question: String, days: Int = 30) async throws -> Coaching {
+        struct Body: Encodable { var side: String; var provider: String; var shareSummary: Bool; var question: String; var days: Int }
+        let body = Body(side: side.rawValue, provider: provider, shareSummary: share, question: question, days: days)
         return try JSONDecoder().decode(Coaching.self, from: await request("ai/coach", method: "POST", body: JSONEncoder().encode(body)))
     }
     func healthExport<Record: Decodable & Sendable & Identifiable>(kind: String, query: [URLQueryItem]) async throws -> [Record] where Record.ID == Int {

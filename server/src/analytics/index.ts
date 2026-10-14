@@ -5,12 +5,8 @@ import settingsDB from '../db/settings.js';
 import { summarizeSleep } from './summary.js';
 import { episodeRoutes } from './episodeRoutes.js';
 import { MAX_EPISODE_SAMPLES } from './episode.js';
-
-export const analyticsQuery = z.object({
-  side: z.enum(['left', 'right']).default('left'),
-  days: z.coerce.number().int().min(7).max(365).default(30),
-  goalMinutes: z.coerce.number().int().min(240).max(720).default(480),
-});
+import { analyticsQuery } from './query.js';
+export { analyticsQuery } from './query.js';
 export async function loadAnalytics(query: z.infer<typeof analyticsQuery>) {
   const since = Math.floor(Date.now() / 1000) - query.days * 86400;
   const [records, vitals] = await Promise.all([

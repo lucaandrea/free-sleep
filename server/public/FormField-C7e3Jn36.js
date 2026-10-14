@@ -1,0 +1,2 @@
+import{At as e,i as t}from"./ErrorBoundary-D1s88vnD.js";import{t as n}from"./Stack-BiggdD5O.js";var r=e();function i({title:e,children:i}){return(0,r.jsxs)(n,{spacing:1,children:[(0,r.jsx)(t,{variant:`body2`,color:`text.secondary`,children:e}),i]})}export{i as t};
+//# sourceMappingURL=FormField-C7e3Jn36.js.map
