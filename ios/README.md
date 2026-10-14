@@ -6,4 +6,6 @@ Shared colors, typography and dimensions are generated from `design/tokens.json`
 
 See [platform setup](../docs/PLATFORM_SETUP.md) for signing and connection, and [Apple integrations](../docs/APPLE_INTEGRATIONS.md) for personal Health setup, automatic sync, privacy, Shortcuts and device acceptance checks. Launch a Debug build with `--demo` for labelled sample data and simulated controls. Release builds ignore that argument. Debug demo mode blocks Health access and system actions; live Shortcuts use the saved authenticated API connection.
 
-Tests cover connection validation, analytics decoding, Health sample provenance, cancellation and partial failure, Pod/side isolation, reconciliation versions, automatic sync windows and preservation of schedule fields. HealthKit permissions, actual background refresh, Apple Home pairing and Siri behavior still need a signed iPhone.
+Tonight includes the same next-alarm card and one-time change, skip and restore controls as the web app. Dates and times use the Pod timezone; native clock input stays independent of the phone timezone. See [alarm behavior](../docs/ALARMS.md) for date boundaries and the four alarm actions available in Shortcuts.
+
+Tests cover connection validation, analytics decoding, Health sample provenance, cancellation and partial failure, Pod/side isolation, reconciliation versions, automatic sync windows, preservation of schedule fields and alarm date/time contracts. HealthKit permissions, actual background refresh, Apple Home pairing and Siri behavior still need a signed iPhone.

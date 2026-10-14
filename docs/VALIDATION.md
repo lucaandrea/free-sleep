@@ -25,7 +25,18 @@ The Health follow-up rendered the independent personal side selector, heart-rate
 
 The shared-design follow-up passed web typecheck/lint, demo and hosted builds, the demo transport test, the native build and all fourteen native tests again. The 402 px web preview and iPhone simulator rendered the shared day/night palettes. Native temperature preview/apply, base preset preview/apply/Stop and navigation were exercised with simulated state. The custom native temperature slider exposed an adjustable Slider with its label, current value and 44-point interaction frame in the accessibility inspector. At the largest accessibility text size, navigation adapts to a readable menu; selecting Sleep from it worked. Text size and appearance were restored after the check. Captures: `parity-web-phone.png`, `parity-web-dark.png`, `parity-ios-tonight.png`, `parity-ios-dark.png`, `parity-ios-base.png` and `parity-ios-large-text.png`. These show the current builds, not complete visual parity; remaining screen differences are listed in [design alignment](DESIGN_PARITY.md).
 
-## Not yet verified
+## Alarm follow-up — 2026-10-14
+
+- Server compilation and all 41 tests passed. Twelve alarm tests cover overnight/afternoon/week boundaries, real recurrence-rule previews, DST gaps and repeated hours, absolute expiry, original vibration profiles, stale edits and restores (including equal-expiry revisions), serialized concurrent settings writes, failed writes and real HTTP persistence/legacy compatibility. HTTP tests mount only the routers against temporary storage; they do not start a scheduler or connect to hardware.
+- Server lint: zero errors, the same 21 legacy warnings. Generated server output is updated with local Sentry debug IDs; no source maps were uploaded.
+- Web typecheck and lint passed with the same nine legacy warnings. Demo and hosted builds passed; Vite still reports large shared chunks. All 15 shared design outputs match their source. The demo transport isolation test passed.
+- All five gateway tests passed, including the new alarm route allowlist and outbound alarm JSON forwarding. The force/test-alarm route stays excluded.
+- Native build and all 18 Swift Testing tests passed on the isolated iOS 27 simulator. Four alarm tests cover Pod timezone formatting, 24-hour values, encoded occurrence/revision identities, Shortcuts input validation, side isolation, stale restores with equal expiry and demo DST/expiry rejection. Xcode generated metadata for sixteen App Intents. iOS 18 runtime testing and signed-device Siri execution remain unverified.
+- The 402 px web demo and native simulator completed change, skip and restore flows. Both display the alarm date and Pod timezone; the native editor uses the system time picker. A final web check exercised the revision-bearing restore request. Final captures: `alarm-web-changed.jpg`, `alarm-web-restored.jpg`, `alarm-ios-editor.jpg`, `alarm-ios-changed.jpg`, and `alarm-ios-restored.jpg` in [screenshots](screenshots). These are labelled simulated states.
+
+No owner Pod, live vibration, Health database or provider account was used for this follow-up. Alarm changes do not move scheduled power-off; the selected side still must be on when the alarm fires. See [alarm behavior and API](ALARMS.md).
+
+## Remaining device and service checks
 
 - Stock Pod access, firmware compatibility, installation/recovery, D-Bus permissions, BLE service discovery and real motion/Stop/calibration.
 - Continuous temperature/biometric operation on the owner's embedded Pod, especially through network loss and reboot.

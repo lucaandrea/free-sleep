@@ -23,12 +23,13 @@ The web theme and native design components consume these values. Both use system
 - Temperature card, selected base presets, head/feet sliders and the bed illustration's geometry.
 - Sleep metrics and the presence chart's twelve-hour scale, missing-value markers and horizontal overflow.
 - Native navigation from “Explore sleep” and the same Coach result wording for sample data.
+- Next-alarm card, timezone/date labels and one-time change, skip and restore actions. iOS uses a native time picker and sheet.
 
 This is not a claim that every screen is visually identical. OS chrome, permission sheets and native accessibility text layout differ. The following product differences remain explicit work:
 
 | Screen | Remaining alignment |
 | --- | --- |
-| Tonight | Native scheduled-alarm override/disable controls and notification presentation |
+| Tonight | Notification presentation; alarm editors retain native sheet/picker chrome |
 | Sleep | Native recorded-episode and raw-vital browsing; matching journal form controls |
 | Coach | Matching selector and outlined text-field presentation |
 | Routines | One common editing layout, day selection, copying days and schedule visualization |

@@ -12,6 +12,8 @@ import { executeFunction } from '../8sleep/deviceApi.js';
 import { getDayIndexForSchedule, logJob } from './utils.js';
 import { connectFranken } from '../8sleep/frankenServer.js';
 import { Settings } from '../db/settingsSchema.js';
+import { alarmRule, overrideOccurrence } from '../alarms/timing.js';
+import { isCurrentOverride, overrideAlarmProfile } from '../alarms/overrides.js';
 
 
 export const executeAlarm = async ({ vibrationIntensity, duration, vibrationPattern, side, force=false }: AlarmJob) => {
@@ -74,42 +76,24 @@ export const executeAlarm = async ({ vibrationIntensity, duration, vibrationPatt
 };
 
 
-/**
- * Next occurrence of HH:mm in tz (today or tomorrow depending on 'now').
- * If the HH:mm is already passed for 'now', schedule for tomorrow.
- */
-function nextOccurrenceHhMm(tz: string, hhmm: string) {
-  const now = moment.tz(tz);
-  const [h, m] = hhmm.split(':').map(Number);
-
-  const candidate = now.clone().hour(h).minute(m).second(0).millisecond(0);
-  if (candidate.isSameOrBefore(now)) {
-    candidate.add(1, 'day');
-  }
-
-  return candidate;
-}
-
 export function scheduleAlarmOverride(settingsData: Settings, side: Side) {
+  if (settingsData[side].awayMode) return null;
   const alarmOverride = settingsData[side]?.scheduleOverrides?.alarm;
-  if (!alarmOverride || alarmOverride.disabled) return null;
-  if (!alarmOverride.timeOverride || !alarmOverride.expiresAt) return null;
-
-  const now = moment.tz(settingsData.timeZone);
-  const expiresAt = moment.tz(alarmOverride.expiresAt, settingsData.timeZone);
-  if (!expiresAt.isAfter(now)) return null;
-  const next = nextOccurrenceHhMm(settingsData.timeZone, alarmOverride.timeOverride);
+  if (!alarmOverride) return null;
+  const occurrence = overrideOccurrence(alarmOverride, settingsData.timeZone, Date.now());
+  if (!occurrence) return null;
+  const next = moment.tz(occurrence, settingsData.timeZone);
   logger.debug(`Alarm override is set! Scheduling alarm for ${next.format()}`);
 
-  schedule.scheduleJob(`${side}-alarm-override-${alarmOverride.timeOverride}`, next.toDate(), async () => {
-    const dayKey = next.tz(settingsData.timeZone).format('dddd').toLowerCase() as DayOfWeek;
-    const daySchedule = schedulesDB.data?.[side]?.[dayKey];
-
-    const { vibrationIntensity, duration, vibrationPattern } = daySchedule?.alarm ?? {
-      vibrationIntensity: 100,
-      duration: 60,
-      vibrationPattern: 'rise',
-    };
+  return schedule.scheduleJob(`${side}-alarm-override-${alarmOverride.timeOverride}`, next.toDate(), async () => {
+    await settingsDB.read();
+    const current = settingsDB.data[side].scheduleOverrides.alarm;
+    // A settings write may arrive before the filesystem watcher cancels this callback.
+    if (!isCurrentOverride(alarmOverride, current, Date.now())) return;
+    await schedulesDB.read();
+    const { vibrationIntensity, duration, vibrationPattern } = overrideAlarmProfile(
+      alarmOverride, schedulesDB.data[side], occurrence, settingsData.timeZone
+    );
 
     await executeAlarm({
       side,
@@ -127,20 +111,13 @@ export const scheduleAlarm = (settingsData: Settings, side: Side, day: DayOfWeek
   if (settingsData[side].awayMode) return;
   if (settingsData.timeZone === null) return;
 
-  const alarmRule = new schedule.RecurrenceRule();
-
+  const recurrence = alarmRule(day, dailySchedule, settingsData.timeZone);
   const dayIndex = getDayIndexForSchedule(day, dailySchedule.alarm.time, dailySchedule.power.on);
-  alarmRule.dayOfWeek = dayIndex;
-
   const { time } = dailySchedule.alarm;
-  const [alarmHour, alarmMinute] = time.split(':').map(Number);
-  alarmRule.hour = alarmHour;
-  alarmRule.minute = alarmMinute;
-  alarmRule.tz = settingsData.timeZone;
 
   logJob('Scheduling alarm job', side, day, dayIndex, time);
 
-  schedule.scheduleJob(`${side}-${day}-${time}-alarm`, alarmRule, async () => {
+  schedule.scheduleJob(`${side}-${day}-${time}-alarm`, recurrence, async () => {
     try {
       logJob('Executing alarm job', side, day, dayIndex, time);
       await settingsDB.read();

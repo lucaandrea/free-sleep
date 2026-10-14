@@ -1,5 +1,5 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="e04ed3df-4335-5b56-b872-dbdcff97d46a")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="3dfd6454-f6f5-5879-ba7d-0bab2f3221ed")}catch(e){}}();
 import path from 'path';
 import chokidar from 'chokidar';
 import moment from 'moment-timezone';
@@ -14,12 +14,16 @@ import { scheduleAlarm, scheduleAlarmOverride } from './alarmScheduler.js';
 import { schedulePowerOffAndSleepAnalysis, schedulePowerOn } from './powerScheduler.js';
 import { schedulePrimingRebootAndCalibration } from './primeScheduler.js';
 import { scheduleTemperatures } from './temperatureScheduler.js';
+let settingUp = false;
+let refreshRequested = false;
 async function setupJobs() {
+    // A file change during setup must refresh again, otherwise a saved alarm can retain an old timer.
+    if (settingUp) {
+        refreshRequested = true;
+        return;
+    }
+    settingUp = true;
     try {
-        if (serverStatus.status.jobs.status === 'started') {
-            logger.debug('Job setup already running, skipping duplicate execution.');
-            return;
-        }
         serverStatus.status.jobs.status = 'started';
         // Clear existing jobs
         logger.info('Canceling old jobs...');
@@ -57,6 +61,13 @@ async function setupJobs() {
         const message = error instanceof Error ? error.message : String(error);
         logger.error(error);
         serverStatus.status.jobs.message = message;
+    }
+    finally {
+        settingUp = false;
+        if (refreshRequested) {
+            refreshRequested = false;
+            void setupJobs();
+        }
     }
 }
 let RETRY_COUNT = 0;
@@ -102,4 +113,4 @@ chokidar.watch(config.lowDbFolder).on('change', (changedPath) => {
 // Initial job setup
 waitForValidDateAndSetupJobs();
 //# sourceMappingURL=jobScheduler.js.map
-//# debugId=e04ed3df-4335-5b56-b872-dbdcff97d46a
+//# debugId=3dfd6454-f6f5-5879-ba7d-0bab2f3221ed

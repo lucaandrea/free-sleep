@@ -1,6 +1,7 @@
 import { http, HttpResponse } from 'msw/http';
 import { delay } from 'msw/utils/delay';
 import { sse } from 'msw/sse';
+import { alarmHandlers } from './alarmHandlers';
 import type { SleepRecord } from '@api/sleepSchema.ts';
 import type { Jobs } from '@api/jobs.ts';
 import {
@@ -45,6 +46,7 @@ const toFilters = (request: Request): Filters => {
 const notFound = (message: string) => HttpResponse.json({ message }, { status: 404 });
 
 export const handlers = [
+  ...alarmHandlers,
   http.get('/api/services', async () => {
     await delay(120);
     return HttpResponse.json(deepClone(getServices()));

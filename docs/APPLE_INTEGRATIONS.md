@@ -36,10 +36,14 @@ The comparison card reads the past twenty-four hours from other Health sources, 
 | Set Away mode | Side, away/home |
 | Prime the Pod | Starts a whole-Pod priming cycle |
 | Dismiss bed alarm | Side |
+| Get next bed alarm | Side; returns time, date and Pod timezone, or the current paused/away/unset state |
+| Change next bed alarm | Side, `HH:mm` in the Pod timezone; changes one occurrence on its existing date |
+| Skip next bed alarm | Side; skips one occurrence |
+| Restore bed alarm routine | Side; removes the current one-time change or skip |
 | Get sleep routine summary | Side; returns presence summary text |
 | Sync Apple Health | Saved personal Health setup; returns written/updated sample count |
 
-Ten actions have discoverable App Shortcut phrases. All twelve App Intents are available to compose in Shortcuts. Health sync and the personal routine summary require local device authentication. Network errors are returned to Shortcuts, not reported as completed actions. A successful control response acknowledges the command, not physical movement or temperature convergence. Debug demo mode blocks system actions and Health access. Release builds ignore the demo launch argument.
+Ten actions have discoverable App Shortcut phrases. All sixteen App Intents are available to compose in Shortcuts; the four next-alarm actions were added on 2026-10-14. Health sync and the personal routine summary require local device authentication. Network errors are returned to Shortcuts, not reported as completed actions. A successful control response acknowledges the command, not physical movement or temperature convergence. Debug demo mode blocks system actions and Health access. Release builds ignore the demo launch argument. See [alarm behavior](ALARMS.md) for one-time changes, stale edits and DST handling.
 
 ## Apple Home
 

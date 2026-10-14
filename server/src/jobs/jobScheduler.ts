@@ -16,12 +16,14 @@ import { schedulePrimingRebootAndCalibration } from './primeScheduler.js';
 import { scheduleTemperatures } from './temperatureScheduler.js';
 
 
+let settingUp = false;
+let refreshRequested = false;
+
 async function setupJobs() {
+  // A file change during setup must refresh again, otherwise a saved alarm can retain an old timer.
+  if (settingUp) { refreshRequested = true; return; }
+  settingUp = true;
   try {
-    if (serverStatus.status.jobs.status === 'started') {
-      logger.debug('Job setup already running, skipping duplicate execution.');
-      return;
-    }
     serverStatus.status.jobs.status = 'started';
 
 
@@ -65,6 +67,9 @@ async function setupJobs() {
     const message = error instanceof Error ? error.message : String(error);
     logger.error(error);
     serverStatus.status.jobs.message = message;
+  } finally {
+    settingUp = false;
+    if (refreshRequested) { refreshRequested = false; void setupJobs(); }
   }
 }
 

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { TIME_ZONES } from './timeZones.js';
-import { TimeSchema } from './schedulesSchema.js';
+import { TimeSchema, SideScheduleSchema } from './schedulesSchema.js';
 
 export const TEMPERATURES = ['celsius', 'fahrenheit'] as const;
 const Temperatures = z.enum(TEMPERATURES);
@@ -37,6 +37,10 @@ const SideSettingsSchema = z.object({
     alarm: z.object({
       disabled: z.boolean(),
       timeOverride: z.string(),
+      scheduledAt: z.string().datetime({ offset: true }).optional(),
+      replacedAt: z.string().datetime({ offset: true }).optional(),
+      scheduleDay: SideScheduleSchema.keyof().optional(),
+      revision: z.string().uuid().optional(),
       expiresAt: z.string(),
     })
   }),

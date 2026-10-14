@@ -19,6 +19,7 @@ final class AppModel {
     private var analyticsKey = ""
     private var analyticsRefreshedAt = Date.distantPast
     let demo: Bool
+    let demoAlarms = DemoAlarms()
     var connected: Bool { device != nil }
 
     init() {

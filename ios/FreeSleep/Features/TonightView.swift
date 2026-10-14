@@ -9,6 +9,7 @@ struct TonightView: View {
             badge: model.connected ? "Pod connected" : "Pod unavailable", badgeTone: model.connected ? .success : .neutral, badgeDot: true) {
             SidePicker().frame(maxWidth: 350)
             PodNotifications()
+            AlarmCard(side: model.side).id("\(model.side.rawValue):\(model.settings?.id ?? "demo")")
             if let message = model.message { Text(message).sleepText(.body).foregroundStyle(SleepTheme.secondary) }
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 20, alignment: .top), count: wide && !typeSize.isAccessibilitySize ? 2 : 1), spacing: 20) {
                 TemperatureCard().id(model.side)

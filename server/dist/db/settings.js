@@ -1,10 +1,11 @@
 // LowDB, stores the schedules in /persistent/free-sleep-data/lowdb/settingsDB.json
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="3abe3420-793f-5f0f-9e3b-adec5590b8b6")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="b536b356-42b3-57ef-b529-d0033d0ac911")}catch(e){}}();
 import _ from 'lodash';
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import config from '../config.js';
+import { createSettingsUpdater } from './settingsUpdater.js';
 const defaultSideSettings = {
     name: 'Side',
     awayMode: false,
@@ -63,5 +64,6 @@ await settingsDB.read();
 settingsDB.data = _.merge({}, defaultData, settingsDB.data);
 await settingsDB.write();
 export default settingsDB;
+export const updateSettings = createSettingsUpdater(settingsDB);
 //# sourceMappingURL=settings.js.map
-//# debugId=3abe3420-793f-5f0f-9e3b-adec5590b8b6
+//# debugId=b536b356-42b3-57ef-b529-d0033d0ac911

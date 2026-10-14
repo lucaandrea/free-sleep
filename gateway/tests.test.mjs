@@ -19,6 +19,10 @@ test('allowlist excludes maintenance, encoded paths and origin escapes', () => {
   assert.equal(allowedRequest('GET', '/api/comfort?side=left'), true);
   assert.equal(allowedRequest('POST', '/api/comfort'), true);
   assert.equal(allowedRequest('DELETE', '/api/comfort'), false);
+  assert.equal(allowedRequest('GET', '/api/alarm/next?side=left'), true);
+  assert.equal(allowedRequest('POST', '/api/alarm/override'), true);
+  assert.equal(allowedRequest('POST', '/api/alarm'), false);
+  assert.equal(allowedRequest('GET', '/api/alarm/override'), false);
   assert.equal(authorized(accessToken, accessToken), false);
   assert.equal(authorized(`Bearer ${accessToken}x`, accessToken), false);
   assert.throws(() => createGateway({ accessToken, tunnelToken: accessToken }));
@@ -49,6 +53,11 @@ test('outbound agent preserves queries, method, JSON and uses only the local tok
   assert.equal(response.status, 200); assert.equal(response.headers.get('cache-control'), 'no-store');
   assert.deepEqual(await response.json(), { accepted: true });
   assert.deepEqual(received, [{ route: '/api/base/position?side=left', method: 'POST', authorization: 'Bearer local-secret', body: '{"head":10,"feet":5}' }]);
+  const alarm = { side: 'right', action: 'disable', expectedAt: '2026-10-15T07:00:00.000Z' };
+  const changed = await fetch(`${origin}/api/alarm/override`, { method: 'POST', headers, body: JSON.stringify(alarm) });
+  assert.equal(changed.status, 200);
+  assert.equal(received.at(-1).route, '/api/alarm/override');
+  assert.deepEqual(JSON.parse(received.at(-1).body), alarm);
 });
 
 test('disconnected commands fail promptly and are never replayed to a new agent', async context => {

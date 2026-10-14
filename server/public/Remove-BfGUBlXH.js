@@ -1,2 +1,0 @@
-import{E as e,jt as t}from"./ErrorBoundary-0fjZO3L9.js";var n=t(),r=e((0,n.jsx)(`path`,{d:`M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z`}),`Add`),i=e((0,n.jsx)(`path`,{d:`M19 13H5v-2h14z`}),`Remove`);export{r as n,i as t};
-//# sourceMappingURL=Remove-BfGUBlXH.js.map

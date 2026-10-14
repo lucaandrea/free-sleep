@@ -46,6 +46,9 @@ struct PodClient: Sendable {
     func post<Body: Encodable & Sendable>(_ route: String, body: Body) async throws {
         _ = try await request(route, method: "POST", body: JSONEncoder().encode(body))
     }
+    func postReturning<Result: Decodable & Sendable, Body: Encodable & Sendable>(_ route: String, body: Body) async throws -> Result {
+        try JSONDecoder().decode(Result.self, from: await request(route, method: "POST", body: JSONEncoder().encode(body)))
+    }
     func action(_ route: String) async throws { _ = try await request(route, method: "POST", body: Data("{}".utf8)) }
     func coach(side: BedSide, provider: String, share: Bool, question: String) async throws -> Coaching {
         struct Body: Encodable { var side: String; var provider: String; var shareSummary: Bool; var question: String; var days = 30 }
