@@ -2,14 +2,20 @@ import Foundation
 
 extension PodActions {
     static func nextAlarm(side: BedSide) async throws -> AlarmPreview {
-        try await client().get("alarm/next", query: [URLQueryItem(name: "side", value: side.rawValue)])
+        let preview: AlarmPreview = try await client().get("alarm/next", query: [URLQueryItem(name: "side", value: side.rawValue)])
+        return try matching(preview, side: side)
     }
 
     static func changeAlarm(side: BedSide, action: AlarmChange.Action, time: String? = nil) async throws -> AlarmPreview {
         let client = try client()
         let preview: AlarmPreview = try await client.get("alarm/next", query: [URLQueryItem(name: "side", value: side.rawValue)])
-        let change = try AlarmChange.validated(preview: preview, action: action, time: time)
-        return try await client.postReturning("alarm/override", body: change)
+        let change = try AlarmChange.validated(preview: matching(preview, side: side), action: action, time: time)
+        let saved: AlarmPreview = try await client.postReturning("alarm/override", body: change)
+        return try matching(saved, side: side)
+    }
+    private static func matching(_ preview: AlarmPreview, side: BedSide) throws -> AlarmPreview {
+        guard preview.side == side else { throw PodError.message("The Pod returned an alarm for a different side. Check the connection and try again.") }
+        return preview
     }
 }
 

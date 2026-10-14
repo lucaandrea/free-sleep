@@ -199,3 +199,32 @@ test('adaptive dispatch carries a deadline and server shutdown drops pending cor
   stopped.controller.stop(); await stopped.tick();
   assert.equal(stopped.sent.length, 0);
 });
+
+test('mode-only changes use the latest queued limits and retain learning, manual pause and partner state', async () => {
+  const sample = harness();
+  await sample.controller.configure('left', active);
+  await sample.tick();
+  await sample.controller.execute({ left: { targetTemperatureF: 84 } }, 'manual', sample.apply);
+  const before = await sample.store.read();
+  const limits = { mode: 'off' as const, minimumF: 75, maximumF: 88 };
+  await Promise.all([sample.controller.configure('left', limits), sample.controller.setMode('left', 'preview')]);
+  const after = await sample.store.read();
+  assert.deepEqual(after.left.config, { ...limits, mode: 'preview' });
+  for (const key of ['offsetF', 'feedbackThrough', 'learnedSession', 'pausedUntil', 'lastAppliedAt', 'lastTargetF', 'lastSegment'] as const) {
+    assert.equal(after.left[key], before.left[key], key);
+  }
+  assert.deepEqual(after.right, before.right);
+  assert.equal(sample.sent.length, 2); // Only the earlier adaptive and manual controls sent hardware commands.
+  assert.match(after.left.history[0].message, /preview.*75–88/);
+});
+
+test('mode-only changes preserve the controller suspension after failed persistence', async () => {
+  const sample = harness();
+  await sample.controller.configure('left', active);
+  sample.failSaves();
+  await assert.rejects(sample.controller.setMode('left', 'preview'), /disk full/);
+  await assert.rejects(sample.controller.setMode('left', 'active'), /suspended/);
+  await sample.tick();
+  assert.equal(sample.sent.length, 0);
+  assert.match((await sample.controller.status('left')).decision.reason, /could not be saved/);
+});

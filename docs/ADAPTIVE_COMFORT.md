@@ -38,8 +38,9 @@ Commands use a current socket and carry an expiry checked inside the existing so
 
 - `GET /api/comfort?side=left`: configuration, offset, proposal/withholding reason, pause and activity.
 - `POST /api/comfort`: `{ "side": "left", "config": { "mode": "preview", "minimumF": 70, "maximumF": 95 }, "reset": false }`.
+- `POST /api/comfort/mode`: `{ "side": "left", "mode": "preview" }`. Returns 204 after saving. Used by Shortcuts to change only the mode; the latest limits, learning and manual pause remain intact. Requests cannot include limits or reset learning.
 
-The authenticated Replit gateway allows these two routes. A proposal or requested-target activity entry is not physical confirmation. Observe actual Pod targets and water temperatures during qualification.
+The authenticated Replit gateway allows these routes. Mode changes and full configuration edits share the same serialized controller queue. A Shortcut therefore cannot restore limits from a stale read. Update the server and gateway before using the mode-only Shortcut; older deployments reject it without a fallback write. A proposal or requested-target activity entry is not physical confirmation. Observe actual Pod targets and water temperatures during qualification.
 
 ## Qualification still needed
 

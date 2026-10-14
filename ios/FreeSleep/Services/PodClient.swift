@@ -4,13 +4,17 @@ struct PodClient: Sendable {
     private static let session = URLSession(configuration: .ephemeral, delegate: RejectRedirects(), delegateQueue: nil)
     let baseURL: URL
     let token: String
+    private let transport: URLSession
 
     static func configured() throws -> PodClient {
         let address = UserDefaults.standard.string(forKey: "podURL") ?? ""
         return try PodClient(address: address, token: TokenStore.read(for: address))
     }
     init(address: String, token: String) throws {
-        baseURL = try ConnectionEndpoint.url(address); self.token = token
+        try self.init(address: address, token: token, session: Self.session)
+    }
+    init(address: String, token: String, session: URLSession) throws {
+        baseURL = try ConnectionEndpoint.url(address); self.token = token; transport = session
     }
 
     private func request(_ route: String, method: String, query: [URLQueryItem] = [], body: Data? = nil) async throws -> Data {
@@ -20,7 +24,7 @@ struct PodClient: Sendable {
         request.httpMethod = method; request.httpBody = body; request.timeoutInterval = route == "ai/coach" ? 50 : 15
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         if !token.isEmpty { request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization") }
-        let (data, response) = try await Self.session.data(for: request)
+        let (data, response) = try await transport.data(for: request)
         guard let response = response as? HTTPURLResponse else { throw PodError.message("No response from the Pod.") }
         guard (200..<300).contains(response.statusCode) else {
             if response.statusCode == 401 || response.statusCode == 403 { throw PodError.message("The connection token was not accepted.") }

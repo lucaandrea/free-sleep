@@ -116,6 +116,15 @@ Captures in [screenshots](screenshots): `connections-web-saved.jpg`, `connection
 
 See [record editing and API compatibility](EPISODES.md#correct-or-remove-a-record). No owner history, Health records, provider account, real Pod or deployment was used. Health reconciliation is limited to a subsequent sync's date window and requires signed-device qualification.
 
+## Shortcuts request follow-up — 2026-10-14
+
+- Native build and all 45 Swift Testing tests passed on the isolated iOS 27 simulator. Seven new tests invoke all fifteen API-backed App Intents through their actual `perform()` implementations, `PodClient` request encoding and isolated ephemeral URLSession transports. They cover exact methods/routes/bodies, selected side, returned temperature/summary values, rejected targets, one-time alarm identity, mismatched-side responses, server/offline/timeout/cancellation failures, no automatic command retry and concurrent client/token isolation. All network requests are intercepted; the fixtures do not read saved credentials. Health sync retains its separate engine/store tests.
+- Inspected the generated `Metadata.appintents/extract.actionsdata`: sixteen actions and ten App Shortcut entries are present. Every action has a parameter summary containing all of its parameters. The final test-target build passes without warnings after changing test-only bindings to constants. This is compiled metadata and in-process execution evidence; it does not prove Siri discovery, the Shortcuts editor's rendering, system authentication or out-of-process execution on a signed iPhone.
+- All 91 server tests passed on Node 24. Three new tests check mode-only updates against concurrent queued configuration edits, retention of limits/learning/manual pauses/partner state, storage-failure suspension and the actual Express HTTP contract. The mode endpoint does not call hardware. All six gateway tests pass, including forwarding its mode-only payload and rejecting unsupported route/method combinations.
+- Server compilation and local source-map injection passed, and generated distribution files were updated without uploads. Server lint has zero errors and the same 19 legacy warnings. The web typecheck passes; web UI source and its hosted bundle are unchanged.
+
+The iPhone adaptive-comfort Shortcut now requires the updated server and gateway's `POST /api/comfort/mode` route. Older versions reject it; there is no read-and-rewrite fallback. See [Apple integrations](APPLE_INTEGRATIONS.md#shortcuts-and-siri) and [comfort API](ADAPTIVE_COMFORT.md#storage-and-api). No owner's Pod, Health/Home records, real provider or deployment was used.
+
 ## Remaining device and service checks
 
 - Stock Pod access, firmware compatibility, installation/recovery, D-Bus permissions, BLE service discovery and real motion/Stop/calibration.

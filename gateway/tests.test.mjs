@@ -60,6 +60,9 @@ test('allowlist excludes maintenance, encoded paths and origin escapes', () => {
   assert.equal(allowedRequest('POST', '/api/base/stop'), true);
   assert.equal(allowedRequest('GET', '/api/comfort?side=left'), true);
   assert.equal(allowedRequest('POST', '/api/comfort'), true);
+  assert.equal(allowedRequest('POST', '/api/comfort/mode'), true);
+  assert.equal(allowedRequest('GET', '/api/comfort/mode'), false);
+  assert.equal(allowedRequest('POST', '/api/comfort/mode/other'), false);
   assert.equal(allowedRequest('POST', '/api/schedules/routine'), true);
   assert.equal(allowedRequest('GET', '/api/schedules/routine'), false);
   assert.equal(allowedRequest('POST', '/api/schedules/routine/other'), false);
@@ -103,6 +106,10 @@ test('outbound agent preserves queries, method, JSON and uses only the local tok
   assert.equal(changed.status, 200);
   assert.equal(received.at(-1).route, '/api/alarm/override');
   assert.deepEqual(JSON.parse(received.at(-1).body), alarm);
+  const mode = { side: 'right', mode: 'preview' };
+  assert.equal((await fetch(`${origin}/api/comfort/mode`, { method: 'POST', headers, body: JSON.stringify(mode) })).status, 200);
+  assert.equal(received.at(-1).route, '/api/comfort/mode');
+  assert.deepEqual(JSON.parse(received.at(-1).body), mode);
   const routine = { side: 'left', days: ['monday', 'friday'], schedule: { temperatures: {} }, expected: { monday: {}, friday: {} } };
   const saved = await fetch(`${origin}/api/schedules/routine`, { method: 'POST', headers, body: JSON.stringify(routine) });
   assert.equal(saved.status, 200);
