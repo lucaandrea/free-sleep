@@ -11,6 +11,7 @@ import { comfortStore } from './store.js';
 import { comfortRoutes } from './routes.js';
 import { presenceMonitor } from './presence.js';
 import { registerComfortController } from './coordinator.js';
+import { readAutopilotSignals } from '../autopilot/readSignals.js';
 
 export const comfortController = new ComfortController(comfortStore(path.join(config.dbFolder, 'analytics', 'comfort.json')), async () => {
   const connection = connectedFranken();
@@ -18,9 +19,12 @@ export const comfortController = new ComfortController(comfortStore(path.join(co
   await settingsDB.read();
   await schedulesDB.read();
   const journal = await journalStore.list();
+  const [left, right] = await Promise.all([
+    readAutopilotSignals('left').catch(() => undefined), readAutopilotSignals('right').catch(() => undefined),
+  ]);
   const device = await connection.getDeviceStatus();
   return { settings: structuredClone(settingsDB.data), schedules: structuredClone(schedulesDB.data), journal, device,
-    observedAt: Date.now(), presence: presenceMonitor.read() };
+    observedAt: Date.now(), presence: presenceMonitor.read(), signals: { left, right } };
 });
 let timer: NodeJS.Timeout | undefined;
 let checking = false;

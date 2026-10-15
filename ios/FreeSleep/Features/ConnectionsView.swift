@@ -15,6 +15,10 @@ struct ConnectionsView: View {
             }
             HomeConnectionCard()
             HealthConnectionCard()
+            SleepCard(title: "AI & personal history", eyebrow: "YOUR MODELS") {
+                Text("Choose Apple Intelligence, OpenAI, Gemini, Claude or your local Gemma server. Save your own API keys privately on this device.").foregroundStyle(SleepTheme.secondary)
+                NavigationLink("Model settings & Health history") { IntelligenceView() }.buttonStyle(SleepButtonStyle())
+            }
             SleepCard(title: "Shortcuts & Siri", eyebrow: "EVERYDAY ACTIONS") {
                 Text("Find Free Sleep in Shortcuts on your iPhone to control temperature, power, bed position, adaptive comfort and Away mode; change or skip your next alarm, sync Health, or read your latest summary.")
                     .foregroundStyle(SleepTheme.secondary)

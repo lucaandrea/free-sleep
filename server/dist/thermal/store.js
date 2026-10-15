@@ -1,5 +1,5 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="918049a1-81e9-531e-8a90-de06221722a9")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="ed5b80c3-c48b-5316-8037-01b3d2aa83cd")}catch(e){}}();
 import { mkdir, readFile, rename, writeFile, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
@@ -9,6 +9,7 @@ const stateSchema = z.object({
     config: comfortConfigSchema, offsetF: z.number().int().min(-3).max(3), feedbackThrough: z.string(), learnedSession: z.string(),
     pausedUntil: z.number().nonnegative(), lastAppliedAt: z.number().nonnegative(), lastTargetF: z.number().min(55).max(110).nullable(),
     lastSegment: z.string(), history: z.array(z.object({ at: z.number(), message: z.string(), targetF: z.number().nullable() })).max(60),
+    timingSession: z.string().optional(), phaseShiftMinutes: z.number().int().min(-30).max(30).optional(),
 }).strict();
 const documentSchema = z.object({ left: stateSchema, right: stateSchema }).strict();
 // The controller serializes access. Atomic replacement preserves the previous file if a write fails.
@@ -39,4 +40,4 @@ export function comfortStore(filename) {
     };
 }
 //# sourceMappingURL=store.js.map
-//# debugId=918049a1-81e9-531e-8a90-de06221722a9
+//# debugId=ed5b80c3-c48b-5316-8037-01b3d2aa83cd

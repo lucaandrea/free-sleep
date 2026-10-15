@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert, Box, Button, Chip, MenuItem, Stack, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, Checkbox, Chip, FormControlLabel, MenuItem, Stack, TextField, Typography } from '@mui/material';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from '@api/api';
 import { errorMessage } from '@api/platform';
@@ -29,9 +29,9 @@ export default function ComfortCard({ side }: { side: 'left' | 'right' }) {
   const edit = (changes: Partial<ComfortConfig>) => setDraft({ ...config!, ...changes });
   return <Surface
     title="Comfort that learns"
-    eyebrow="ADAPTIVE COMFORT"
+    eyebrow="FREE SLEEP AUTOPILOT"
     action={ <Chip label={ status?.config.mode === 'active' ? 'Active' : status?.config.mode === 'preview' ? 'Preview' : 'Off' } /> }>
-    <Typography color="text.secondary">Small temperature adjustments guided by your morning check-ins.</Typography>
+    <Typography color="text.secondary">Local learning from your check-ins, bed presence and Pod vital estimates.</Typography>
     { state.isError && <Alert severity="error" sx={ { mt: 2 } }>Comfort settings are unavailable. Check your Pod connection.</Alert> }
     { !status && !state.isError && <Typography sx={ { mt: 2 } }>Loading comfort settings…</Typography> }
     { status && config && <Stack spacing={ 2 } sx={ { mt: 2 } }>
@@ -43,6 +43,30 @@ export default function ComfortCard({ side }: { side: 'left' | 'right' }) {
         <Box><Typography variant="caption" color="text.secondary">Proposed target</Typography>
           <Typography variant="h3" sx={ { mt: 0.5 } }>{ temperature(status.decision.proposedF) }</Typography></Box>
       </Box>
+      <FormControlLabel
+        label="Use sensor-aware Autopilot"
+        control={ <Checkbox
+          checked={ config.sensorAware ?? false }
+          disabled={ save.isPending }
+          onChange={ (_, checked) => edit({ sensorAware: checked, ...(!checked ? { followBedtime: false } : {}) }) } /> } />
+      { config.sensorAware && <>
+        <FormControlLabel
+          label="Follow earlier or later bed entry"
+          control={ <Checkbox
+            checked={ config.followBedtime ?? false }
+            disabled={ save.isPending }
+            onChange={ (_, checked) => edit({ followBedtime: checked }) } /> } />
+        <Typography variant="caption" color="text.secondary">
+          Needs seven days of Pod estimates and two fresh five-minute windows. Unusual estimates hold extra adjustments.
+          A heart-rate change never directly triggers cooling or movement. Intermediate temperature phases may shift up to 30 minutes
+          after stable bed entry; power and wake time stay fixed. Changes are limited to 1°F per 30 minutes and ±3°F from your routine.
+        </Typography>
+        { status.signals && <Typography variant="body2">{ status.signals.baselineDays } baseline days · { status.signals.reason }</Typography> }
+      </> }
+      <Typography variant="caption" color="text.secondary">
+        Snoring elevation is unavailable: no validated Pod snoring detector is connected. Bed presence is not sleep staging.
+        Pod heart-rate estimates are limited to 30–90 bpm and cannot rule out abnormal readings.
+      </Typography>
       <Typography variant="body2" color="text.secondary">{ status.decision.reason }</Typography>
       { status.pausedUntil != null && status.pausedUntil > Date.now() && <Typography variant="caption" color="text.secondary">
         Paused until { new Date(status.pausedUntil).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) }.

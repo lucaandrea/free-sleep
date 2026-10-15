@@ -4,7 +4,9 @@ struct CoachView: View {
     @Environment(AppModel.self) private var model
     @AppStorage("podURL") private var address = ""
     var body: some View {
+        NavigationStack {
         CoachForm(side: model.side, demo: model.demo).id("\(address)|\(model.settings?.id ?? "")|\(model.side.rawValue)|\(model.recordRevision)")
+        }
     }
 }
 private struct CoachForm: View {
@@ -25,6 +27,10 @@ private struct CoachForm: View {
     var body: some View {
         SleepPage(title: "A little perspective.", subtitle: "Thoughtful insights, grounded in your own routine.", narrow: true) {
             SidePicker()
+            SleepCard(title: "Your models. Your whole history.", eyebrow: "PERSONAL INTELLIGENCE") {
+                Text("Add your OpenAI or Gemini key, use Apple’s on-device model, and explore your complete Apple Health sleep history.").foregroundStyle(SleepTheme.secondary)
+                NavigationLink("Open personal intelligence") { IntelligenceView() }.buttonStyle(SleepButtonStyle(kind: .primary))
+            }
             SleepCard(title: "What would you like to explore?", eyebrow: "YOUR SLEEP COACH") {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("History range").sleepText(.small).foregroundStyle(SleepTheme.secondary)

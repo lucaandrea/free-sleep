@@ -1,5 +1,5 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="1561bb78-5c42-51d5-9867-7688be18e20d")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="9f82c90c-3fd9-55d4-8aff-81c936250fe0")}catch(e){}}();
 import path from 'node:path';
 import config from '../config.js';
 import logger from '../logger.js';
@@ -13,6 +13,7 @@ import { comfortStore } from './store.js';
 import { comfortRoutes } from './routes.js';
 import { presenceMonitor } from './presence.js';
 import { registerComfortController } from './coordinator.js';
+import { readAutopilotSignals } from '../autopilot/readSignals.js';
 export const comfortController = new ComfortController(comfortStore(path.join(config.dbFolder, 'analytics', 'comfort.json')), async () => {
     const connection = connectedFranken();
     if (!connection)
@@ -20,9 +21,12 @@ export const comfortController = new ComfortController(comfortStore(path.join(co
     await settingsDB.read();
     await schedulesDB.read();
     const journal = await journalStore.list();
+    const [left, right] = await Promise.all([
+        readAutopilotSignals('left').catch(() => undefined), readAutopilotSignals('right').catch(() => undefined),
+    ]);
     const device = await connection.getDeviceStatus();
     return { settings: structuredClone(settingsDB.data), schedules: structuredClone(schedulesDB.data), journal, device,
-        observedAt: Date.now(), presence: presenceMonitor.read() };
+        observedAt: Date.now(), presence: presenceMonitor.read(), signals: { left, right } };
 });
 let timer;
 let checking = false;
@@ -43,4 +47,4 @@ export function stopComfort() { comfortController.stop(); if (timer)
     clearInterval(timer); timer = undefined; }
 export default comfortRoutes(comfortController);
 //# sourceMappingURL=runtime.js.map
-//# debugId=1561bb78-5c42-51d5-9867-7688be18e20d
+//# debugId=9f82c90c-3fd9-55d4-8aff-81c936250fe0

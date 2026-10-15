@@ -1,12 +1,15 @@
 import { z } from 'zod';
 import type { DeepPartial } from 'ts-essentials';
 import type { DeviceStatus } from '../routes/deviceStatus/deviceStatusSchema.js';
+import type { AutopilotSignals } from '../autopilot/signals.js';
 
 export const comfortModeSchema = z.enum(['off', 'preview', 'active']);
 export const comfortConfigSchema = z.object({
   mode: comfortModeSchema,
   minimumF: z.number().int().min(55).max(110),
   maximumF: z.number().int().min(55).max(110),
+  sensorAware: z.boolean().optional(),
+  followBedtime: z.boolean().optional(),
 }).strict().refine(value => value.minimumF <= value.maximumF, 'Minimum must not exceed maximum');
 export type ComfortConfig = z.infer<typeof comfortConfigSchema>;
 export type ControlSource = 'manual' | 'schedule' | 'adaptive';
@@ -21,6 +24,8 @@ export type ComfortState = {
   lastAppliedAt: number;
   lastTargetF: number | null;
   lastSegment: string;
+  timingSession?: string;
+  phaseShiftMinutes?: number;
   history: ComfortEvent[];
 };
 export type ComfortDecision = {
@@ -36,6 +41,8 @@ export type ComfortStatus = {
   feedbackThrough: string | null;
   decision: ComfortDecision;
   history: ComfortEvent[];
+  signals?: AutopilotSignals;
+  phaseShiftMinutes?: number;
 };
 export const defaultComfortState = (): ComfortState => ({
   config: { mode: 'off', minimumF: 70, maximumF: 95 }, offsetF: 0, feedbackThrough: '', learnedSession: '',

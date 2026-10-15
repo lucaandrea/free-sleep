@@ -8,11 +8,29 @@ settings:
     SWIFT_VERSION: '6.0'
     SWIFT_STRICT_CONCURRENCY: complete
     MARKETING_VERSION: '0.1.0'
-    CURRENT_PROJECT_VERSION: '1'
+    CURRENT_PROJECT_VERSION: '3'
+    DEVELOPMENT_TEAM: 9FNNQ6J269
+packages:
+  AIProxy:
+    url: https://github.com/AIProxyTeam/AIProxySwift.git
+    revision: b9375912d21ad2e5a50d4ea47607af0c3af140a1
 targets:
   FreeSleep:
     type: application
     platform: iOS
+    dependencies:
+      - package: AIProxy
+    postBuildScripts:
+      - name: Apply direct-provider privacy declarations
+        script: |
+          set -eu
+          # The pinned SDK's default manifest describes its unused proxy service with non-Apple enum values.
+          # Our direct-only integration uses the app's actual Health/content declarations, with no tracking.
+          SDK_MANIFEST="${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AIProxy_AIProxy.bundle/PrivacyInfo.xcprivacy"
+          test -f "$SDK_MANIFEST"
+          cp "${SRCROOT}/FreeSleep/Resources/PrivacyInfo.xcprivacy" "$SDK_MANIFEST"
+          plutil -lint "$SDK_MANIFEST"
+        basedOnDependencyAnalysis: false
     sources:
       - FreeSleep
       - path: ../shared/fixtures/routines-demo.json
@@ -33,9 +51,22 @@ targets:
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         TARGETED_DEVICE_FAMILY: '1,2'
+      configs:
+        Release:
+          CODE_SIGN_STYLE: Manual
+          CODE_SIGN_IDENTITY: Apple Distribution
+          PROVISIONING_PROFILE_SPECIFIER: Free Sleep App Store 2026
     info:
       path: FreeSleep/Resources/Info.plist
       properties:
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        ITSAppUsesNonExemptEncryption: false
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
         NSLocalNetworkUsageDescription: Connect to your Free Sleep Pod on your home network.
         NSHealthShareUsageDescription: Compare your Apple Health sleep and vitals with your Pod routine on this iPhone.
         NSHealthUpdateUsageDescription: Save your selected bed side's time in bed and heart rate to Apple Health.

@@ -43,6 +43,64 @@ function harness() {
 }
 const active = { mode: 'active' as const, minimumF: 70, maximumF: 95 };
 
+test('Sensor-aware Autopilot holds stale or unusual readings and advances by only one degree', async () => {
+  const sample = harness();
+  await sample.controller.configure('left', { ...active, sensorAware: true });
+  await sample.tick(); assert.equal(sample.sent.length, 0);
+  sample.context.signals = { left: { state: 'review', reason: 'Review unusual estimate', latestHeartRate: 80,
+    baselineHeartRate: 60, baselineDays: 8, sampleAt: start, snoring: 'unavailable' } };
+  await sample.tick(); assert.equal(sample.sent.length, 0);
+  assert.equal((await sample.controller.status('left')).decision.reason, 'Review unusual estimate');
+  sample.context.signals.left!.state = 'ready';
+  await sample.tick(); assert.equal(sample.sent[0]?.left?.targetTemperatureF, 79);
+  await sample.tick(); assert.equal(sample.sent.length, 1);
+  await sample.controller.execute({ left: { targetTemperatureF: 85 } }, 'manual', sample.apply);
+  sample.advance(31 * 60_000); await sample.tick();
+  assert.equal(sample.sent.length, 2); assert.equal(sample.context.device.left.targetTemperatureF, 85);
+});
+
+test('Sensor-aware preview records proposals but never issues a device write', async () => {
+  const sample = harness();
+  sample.context.signals = { left: { state: 'ready', reason: 'Ready', latestHeartRate: 60,
+    baselineHeartRate: 60, baselineDays: 8, sampleAt: start, snoring: 'unavailable' } };
+  await sample.controller.configure('left', { ...active, mode: 'preview', sensorAware: true });
+  await sample.tick(); assert.equal(sample.sent.length, 0);
+  assert.equal((await sample.controller.status('left')).decision.proposedF, 79);
+});
+
+test('A delayed phase rejoins the routine after cooldown without mistaking its own target for a manual change', async () => {
+  const sample = harness();
+  sample.context.journal = [];
+  sample.context.presence.left.presentSince = '2026-10-13T22:30:00Z';
+  sample.context.signals = { left: { state: 'ready', reason: 'Ready', latestHeartRate: 60,
+    baselineHeartRate: 60, baselineDays: 8, sampleAt: start, snoring: 'unavailable' } };
+  await sample.controller.configure('left', { ...active, sensorAware: true, followBedtime: true });
+  await sample.tick();
+  assert.equal((await sample.controller.status('left')).phaseShiftMinutes, 30);
+  sample.advance(130 * 60_000);
+  sample.context.signals.left!.sampleAt = sample.context.observedAt;
+  await sample.controller.execute({ left: { targetTemperatureF: 78 } }, 'schedule', sample.apply);
+  assert.equal(sample.context.device.left.targetTemperatureF, 79);
+  sample.advance(31 * 60_000);
+  sample.context.signals.left!.sampleAt = sample.context.observedAt;
+  await sample.tick();
+  assert.equal(sample.context.device.left.targetTemperatureF, 78);
+  assert.equal((await sample.controller.status('left')).pausedUntil, null);
+  assert.equal(sample.sent.length, 2);
+});
+
+test('Sensor readiness is rechecked after a slow context read or clock rollback', async () => {
+  for (const sampleAt of [start - 361_000, start + 1, NaN, null]) {
+    const sample = harness();
+    sample.context.signals = { left: { state: 'ready', reason: 'Ready when read', latestHeartRate: 60,
+      baselineHeartRate: 60, baselineDays: 8, sampleAt, snoring: 'unavailable' } };
+    await sample.controller.configure('left', { ...active, sensorAware: true });
+    await sample.tick();
+    assert.equal(sample.sent.length, 0);
+    assert.match((await sample.controller.status('left')).decision.reason, /expired/);
+  }
+});
+
 test('Cancelled manual requests cannot pause adaptive comfort after waiting in its queue or loading state', async () => {
   const sample = harness();
   await sample.controller.configure('left', active);
