@@ -6,10 +6,13 @@ import type { ComfortDocument, ComfortStore } from './store.js';
 import { comfortConfigSchema } from './types.js';
 import type { ComfortConfig, ComfortDecision, ComfortStatus, ControlSource, DeviceUpdate } from './types.js';
 import { decideComfort, learnComfort, MANUAL_PAUSE_MS, routineAt, type PresenceReading } from './policy.js';
+import type { AutopilotSignals } from '../autopilot/signals.js';
+import { entryShift, phaseAdjustedWindow } from '../autopilot/timing.js';
 
 export type ComfortContext = {
   settings: Settings; schedules: Schedules; device: DeviceStatus; observedAt: number;
   presence: Record<Side, PresenceReading>; journal: JournalEntry[];
+  signals?: Partial<Record<Side, AutopilotSignals>>;
 };
 type Apply = (command: DeviceUpdate, notAfter?: number) => Promise<void>;
 const sides: Side[] = ['left', 'right'];
@@ -20,6 +23,7 @@ export class ComfortController {
   private document: ComfortDocument | null = null;
   private fault: string | null = null;
   private stopped = false;
+  private signals: Partial<Record<Side, AutopilotSignals>> = {};
   private decisions: Record<Side, ComfortDecision> = { left: waiting(), right: waiting() };
   constructor(private store: ComfortStore, private context: () => Promise<ComfortContext>, private clock = Date.now) {}
   stop() { this.stopped = true; }
@@ -49,7 +53,8 @@ export class ComfortController {
       const decision = this.fault ? { ...waiting(), reason: this.fault } : state.config.mode === 'off'
         ? { ...waiting(), reason: 'Adaptive comfort is off.' } : this.decisions[side];
       return structuredClone({ config: state.config, offsetF: state.offsetF, pausedUntil: state.pausedUntil || null,
-        feedbackThrough: state.feedbackThrough || null, decision, history: state.history });
+        feedbackThrough: state.feedbackThrough || null, decision, history: state.history,
+        signals: this.signals[side], phaseShiftMinutes: state.phaseShiftMinutes ?? 0 });
     });
   }
   configure(side: Side, config: ComfortConfig, reset = false) {
@@ -133,10 +138,25 @@ export class ComfortController {
       return;
     }
     const outgoing = structuredClone(command);
+    this.signals = snapshot.signals ?? {};
     const before = JSON.stringify(document);
     for (const side of sides) {
       const state = document[side];
-      const window = routineAt(snapshot.schedules[side], snapshot.settings.timeZone, now);
+      const original = routineAt(snapshot.schedules[side], snapshot.settings.timeZone, now);
+      let window = original;
+      const signals = snapshot.signals?.[side];
+      if (original && state.config.sensorAware && state.config.followBedtime && state.config.mode !== 'off') {
+        if (state.timingSession !== original.session && signals?.state === 'ready') {
+          const shift = entryShift(original, snapshot.presence[side], now);
+          if (shift !== null) {
+            state.timingSession = original.session; state.phaseShiftMinutes = shift;
+            this.event(side, `Observed stable bed entry. Intermediate temperature phases shifted ${shift} minutes; wake time stays fixed.`);
+          }
+        }
+        if (state.timingSession === original.session) {
+          window = phaseAdjustedWindow(original, snapshot.schedules[side], snapshot.settings.timeZone, now, state.phaseShiftMinutes ?? 0);
+        }
+      }
       if (window && state.config.mode !== 'off') {
         const feedback = snapshot.journal.filter(entry => entry.side === side);
         const learned = learnComfort(state, feedback, window, snapshot.settings.timeZone, now);
@@ -144,10 +164,31 @@ export class ComfortController {
       }
       const decision = decideComfort({ state, window, now, device: snapshot.device, presence: snapshot.presence[side], side,
         preferences: snapshot.settings[side], eitherAway: snapshot.settings.left.awayMode || snapshot.settings.right.awayMode });
+      if (state.config.sensorAware && decision.eligible) {
+        if (signals?.state !== 'ready') {
+          decision.eligible = false; decision.reason = signals?.reason ?? 'Waiting for Pod vital estimates and a personal baseline.';
+        } else if (decision.proposedF !== null && original) {
+          // Sensor-aware control moves one degree per check and never exceeds ±3°F from the unchanged routine.
+          const reference = source === 'schedule' ? command[side]?.targetTemperatureF ?? snapshot.device[side].targetTemperatureF
+            : snapshot.device[side].targetTemperatureF;
+          decision.proposedF = Math.max(state.config.minimumF, original.baselineF - 3,
+            Math.min(state.config.maximumF, original.baselineF + 3, decision.proposedF));
+          decision.proposedF = Math.max(reference - 1, Math.min(reference + 1, decision.proposedF));
+          if (decision.proposedF < state.config.minimumF || decision.proposedF > state.config.maximumF
+            || Math.abs(decision.proposedF - original.baselineF) > 3) {
+            decision.eligible = false; decision.reason = 'Waiting for the routine target to enter your Autopilot limits.';
+          }
+        }
+      }
+      if (state.config.sensorAware && state.config.mode !== 'off' && this.decisions[side].reason !== decision.reason) {
+        this.event(side, decision.reason);
+      }
       this.decisions[side] = decision;
       const currentTarget = snapshot.device[side].targetTemperatureF;
-      const targetIsKnown = currentTarget === window?.baselineF
-        || (state.lastSegment === window?.segment && currentTarget === state.lastTargetF);
+      const targetIsKnown = currentTarget === original?.baselineF || currentTarget === window?.baselineF
+        || (state.lastSegment === window?.segment && currentTarget === state.lastTargetF)
+        || (state.config.sensorAware && original && state.lastSegment.startsWith(`${original.start}:${original.end}:`)
+          && currentTarget === state.lastTargetF);
       if (source === 'adaptive' && decision.eligible && !targetIsKnown) {
         state.pausedUntil = now + MANUAL_PAUSE_MS;
         this.decisions[side] = { ...decision, eligible: false,
@@ -157,13 +198,14 @@ export class ComfortController {
       }
       const scheduledTarget = command[side]?.targetTemperatureF;
       const mayAdjust = decision.eligible && state.config.mode === 'active' && decision.proposedF !== null;
-      const adjustsSchedule = source === 'schedule' && scheduledTarget === window?.baselineF && mayAdjust;
+      const adjustsSchedule = source === 'schedule' && scheduledTarget === original?.baselineF && mayAdjust;
       const adjustsNow = source === 'adaptive' && mayAdjust && currentTarget !== decision.proposedF;
       if (adjustsSchedule || adjustsNow) {
         outgoing[side] = { ...outgoing[side], targetTemperatureF: decision.proposedF! };
         state.lastAppliedAt = now;
         const adjustment = `${state.offsetF > 0 ? '+' : ''}${state.offsetF}°F`;
-        const message = `Requested ${decision.proposedF}°F from a ${decision.baselineF}°F routine (${adjustment} learned).`;
+        const guards = state.config.sensorAware ? ', sensor guards passed' : '';
+        const message = `Requested ${decision.proposedF}°F from a ${decision.baselineF}°F phase (${adjustment} learned${guards}).`;
         this.event(side, message, decision.proposedF);
       }
       if (window && outgoing[side]?.targetTemperatureF !== undefined) {

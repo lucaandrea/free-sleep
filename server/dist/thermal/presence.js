@@ -1,5 +1,5 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="73e4efce-fb8e-5769-9e3b-41687bf104ae")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="3fa45fdf-be29-5032-8a1b-596ae0388fc5")}catch(e){}}();
 import { z } from 'zod';
 const sideSchema = z.object({ present: z.boolean(), lastUpdatedAt: z.string().optional() }).strict();
 export const presenceSchema = z.object({ left: sideSchema.optional(), right: sideSchema.optional() }).strict()
@@ -14,12 +14,19 @@ export class PresenceMonitor {
     update(input) {
         const readings = presenceSchema.parse(input);
         for (const side of ['left', 'right']) {
-            if (readings[side])
-                this.readings[side] = { present: readings[side].present, lastUpdatedAt: new Date(this.clock()).toISOString() };
+            if (readings[side]) {
+                const now = this.clock();
+                const previous = this.readings[side];
+                const fresh = now >= Date.parse(previous.lastUpdatedAt ?? '') && now - Date.parse(previous.lastUpdatedAt ?? '') <= 90_000;
+                const present = readings[side].present;
+                this.readings[side] = { present, lastUpdatedAt: new Date(now).toISOString(),
+                    ...(present ? { presentSince: fresh && previous.present && previous.presentSince
+                            ? previous.presentSince : new Date(now).toISOString() } : {}) };
+            }
         }
         return this.read();
     }
 }
 export const presenceMonitor = new PresenceMonitor();
 //# sourceMappingURL=presence.js.map
-//# debugId=73e4efce-fb8e-5769-9e3b-41687bf104ae
+//# debugId=3fa45fdf-be29-5032-8a1b-596ae0388fc5

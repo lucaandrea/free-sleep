@@ -13,7 +13,15 @@ export class PresenceMonitor {
   update(input: unknown) {
     const readings = presenceSchema.parse(input);
     for (const side of ['left', 'right'] as const) {
-      if (readings[side]) this.readings[side] = { present: readings[side]!.present, lastUpdatedAt: new Date(this.clock()).toISOString() };
+      if (readings[side]) {
+        const now = this.clock();
+        const previous = this.readings[side];
+        const fresh = now >= Date.parse(previous.lastUpdatedAt ?? '') && now - Date.parse(previous.lastUpdatedAt ?? '') <= 90_000;
+        const present = readings[side]!.present;
+        this.readings[side] = { present, lastUpdatedAt: new Date(now).toISOString(),
+          ...(present ? { presentSince: fresh && previous.present && previous.presentSince
+            ? previous.presentSince : new Date(now).toISOString() } : {}) };
+      }
     }
     return this.read();
   }

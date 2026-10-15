@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		017F80C85D4509D7F8E38538 /* PresenceChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5114683C048DA12F9EEAB6B /* PresenceChart.swift */; };
 		01F9BBFC6C94AFF82328D6E2 /* PodClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 185D26C9C0A9601AB05B8424 /* PodClient.swift */; };
+		03B3AD144AB724C61B85F53A /* ModelReply.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12E41C96DF3037F24BAE6EFF /* ModelReply.swift */; };
 		04E6C99EF6A3FB222E72EF88 /* RoutinesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79660A534946AD8CDD7CC316 /* RoutinesView.swift */; };
 		060BFF38D535538C740864D3 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3D27F9E94EAB257B5041682 /* RootView.swift */; };
 		08900C0E8C9189CCDF09CA4F /* HealthKitSampleStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6144001797DDE01B6813729F /* HealthKitSampleStore.swift */; };
@@ -42,20 +43,26 @@
 		33816C0EB6FF320C67DEC556 /* sleep-demo.json in Resources */ = {isa = PBXBuildFile; fileRef = 0F6DE3A6CE5538E64CC98700 /* sleep-demo.json */; };
 		3412D0C6CBB7996CEAC39A78 /* SidePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F3203DA318344F7D5C818C /* SidePicker.swift */; };
 		3472A87A8CA5D99A23FD9C08 /* HealthSyncEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD18952D0C902EEC7792851 /* HealthSyncEngine.swift */; };
+		356913347A2A54F7633B6812 /* IntelligenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C068CD1ADB186ECD8BF2C73 /* IntelligenceView.swift */; };
 		367FD5936BD2003E2D5AB3CE /* EpisodeReadings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BB00636BC12D6ACF08EFB28 /* EpisodeReadings.swift */; };
 		3808CFF7DF2FD0EA97429B38 /* PodError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2192C3EA801DC513182CEDA3 /* PodError.swift */; };
+		39574C52759F513466EAA0D0 /* PersonalReportCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53D8F3737FC0F411D4F27B /* PersonalReportCard.swift */; };
 		3C8955DC44016B52D1D0F499 /* DailySchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F84326021EA05E2A4164BB9 /* DailySchedule.swift */; };
 		3D10552C8EF3352074A9E770 /* EpisodeBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAD895E147359407AFF10A3 /* EpisodeBrowser.swift */; };
+		3DCC6AFA61AF1EF18B28C3FA /* PersonalIntelligenceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F9FC7E254BA3B102D080813 /* PersonalIntelligenceStore.swift */; };
 		3E768D57DB582C10309A24BD /* SleepTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD93AEA93A122E35C6732F /* SleepTab.swift */; };
 		3F718E620DD34D344867E6FB /* HealthSampleBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35EE62D0C8CC36A7524A35FD /* HealthSampleBuilder.swift */; };
 		40323F90CCABBCB2912FC225 /* PreferencesWorkspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9179425ED3277F212E0F8C88 /* PreferencesWorkspace.swift */; };
 		4059D00C9D4C6E3FFA3B91A9 /* InsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 416300BE6F0878E58CCF20A3 /* InsightsView.swift */; };
 		451744E3E6C643669BF803F8 /* Coaching.swift in Sources */ = {isa = PBXBuildFile; fileRef = E31D10A3B1E836D462A4C925 /* Coaching.swift */; };
+		493513EA80DA5257C69426DC /* IntelligenceWorkspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADF8CDF8E0D7869DCF0546D /* IntelligenceWorkspace.swift */; };
 		495AF68281188C3482E18422 /* BaseStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E5F975F9CE3BFF376794221 /* BaseStatus.swift */; };
 		495B9B78505E07D60FC9D6EB /* ConnectionSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5074638DEE76D33FA36F5C1A /* ConnectionSetup.swift */; };
 		4A36E709DD29EE7B381D10FD /* BedPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3B08B5237483CA0A94740A4 /* BedPreview.swift */; };
 		4A45C9F4028D68DDC053A3B2 /* DataCoverageCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB564195FE61AC215810434 /* DataCoverageCard.swift */; };
+		4BD46BAB27E89E044C973CD6 /* HealthHistoryCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 628FD10C4B9AFDBB65CB6009 /* HealthHistoryCard.swift */; };
 		4DF9D8887B761A7A21E7B22F /* AlarmActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62A3BB7C7EA33A217D1E379 /* AlarmActions.swift */; };
+		507B95D5995A728656D08E2C /* AppleIntelligenceClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13910FA9F9EB17FAE609FF92 /* AppleIntelligenceClient.swift */; };
 		522867315FE73ACEF48049C3 /* JournalCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D837912B5318EFBA7679C2D /* JournalCard.swift */; };
 		597A621AFE43DA1F191239FD /* HomeBridgeStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C827114BAFC416386E848B5 /* HomeBridgeStatus.swift */; };
 		5BAD3F53F3C8C9EAAAB71E87 /* HealthComparisonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A921869060FDA09943CFD766 /* HealthComparisonView.swift */; };
@@ -66,21 +73,27 @@
 		5E5ADB36BBE9A29744AD5F76 /* PodActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74FF25557FDBF4A9B73A959A /* PodActions.swift */; };
 		62CB7FBAA4570B57176F8EE8 /* SleepTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3110A5184F12C0AB0D2B0D47 /* SleepTheme.swift */; };
 		63B8408DE1FADFD9E7ED6AC8 /* GetTemperatureIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39FCE8C6A1053A49D789BF6A /* GetTemperatureIntent.swift */; };
+		63D82F45BB92774D508FF554 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 4794F5C53143E0E3387E42B3 /* PrivacyInfo.xcprivacy */; };
 		643973B402481D1151CA5E12 /* HealthBackgroundScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA72E8FB1D9CB175CAEBFEF9 /* HealthBackgroundScheduler.swift */; };
 		66CC1207DE5E3617CBA34099 /* SyncHealthIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 317399959D9A82326072891F /* SyncHealthIntent.swift */; };
 		67C01B558F78516D58B67310 /* PodHealthExportSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54531F951BF8EA69ECA60C76 /* PodHealthExportSource.swift */; };
 		68DF2B5E07E39BB8C9680C0B /* usage-demo.json in Resources */ = {isa = PBXBuildFile; fileRef = A861A9E29FBDEBA247CDE8A0 /* usage-demo.json */; };
 		6ABB464E5381CB9B2CE25D18 /* DemoDataCoverage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BE6C88FAAC2487C7A9A6188 /* DemoDataCoverage.swift */; };
+		6CAFC871637E50FF1B3A09F6 /* AIProxy in Frameworks */ = {isa = PBXBuildFile; productRef = E4D1E355B2E0C06B0D881AB6 /* AIProxy */; };
 		6E7326B6DD3A15C6D0896A14 /* JournalWorkspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42DDA1FE8BAFA23B6C296F31 /* JournalWorkspace.swift */; };
 		70075B44F795F69DF999594B /* SleepRecordEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 201DF731375DB85F146A7E32 /* SleepRecordEditor.swift */; };
+		7160955A6D27D1A4DB10A94F /* ModelSettingsCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64303F0B8871B07EF2816B20 /* ModelSettingsCard.swift */; };
 		72A83D8D9DFC88B66312D6D3 /* SleepTypography.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1C6B1086F2D823D225A76D7 /* SleepTypography.swift */; };
 		75DAE1A080F8A0575D025257 /* RecordEditingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182EC4C9834CC289CA5AF429 /* RecordEditingTests.swift */; };
+		7650617887080C3325124847 /* AIProxy-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5CAD4527B900251C77907B2E /* AIProxy-LICENSE.txt */; };
 		77732FF82EC7CE5062881261 /* SleepLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF7F6B4B440B86847CD3A42 /* SleepLayout.swift */; };
 		78BD6970C33B0E7776253BDF /* EpisodePlot.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7515B2825042FF0DFE0BE41 /* EpisodePlot.swift */; };
 		7A4F66ADB7BBBE47C7DA4598 /* DataCoverage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FE696D000F0F884BBFB2AA8 /* DataCoverage.swift */; };
 		7A9EF7AAB17FDC570ECAB644 /* AlarmIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = D13914B56045667104CE85FB /* AlarmIntents.swift */; };
+		7C9A37303830DD3EFD69945B /* HealthHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC8C989488D5E70E3E8EC540 /* HealthHistory.swift */; };
 		7DCACCF284D71440B5CEEFC9 /* CoachEvidenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1523BBF52241AF1EB0E92AA7 /* CoachEvidenceView.swift */; };
 		7ED29A0D13AD221E1339BE0E /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF663FAD40FED19ABAB4163A /* AppModel.swift */; };
+		849DE5F4D941AF5355DF02B5 /* IntelligenceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DBD5492307251AEED02E56F /* IntelligenceProvider.swift */; };
 		869A7F97AE3A6D767E5B6C76 /* SleepTextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 537416ABAC6533D311AE5CC4 /* SleepTextStyle.swift */; };
 		86D47720D066B452F7C817CA /* TemperatureReading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 125C4385747EB9BE958A2223 /* TemperatureReading.swift */; };
 		899846CF0CE03A4F1B429785 /* SleepAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D263428D988BC577E3824E5 /* SleepAnalytics.swift */; };
@@ -90,6 +103,7 @@
 		8EA934B045F9C4BE8EF2EB33 /* DataCoverageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880671567172E33DB2FFFFA0 /* DataCoverageTests.swift */; };
 		927B656A0DCE3E69D90CB123 /* SleepButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E6EB3C310A9694841F19A4 /* SleepButtonStyle.swift */; };
 		968A121FDA74D103F1C28DFB /* SetBaseAnglesIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB4CF20C1EE868FE52C5EDEF /* SetBaseAnglesIntent.swift */; };
+		971322556510654D722A98AC /* HealthHistoryAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A192905D2354444843FFEA8 /* HealthHistoryAnalyzer.swift */; };
 		99294EA04AAE71F9AF438DC9 /* SleepRecordChange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27C6274466DCA055A70D776F /* SleepRecordChange.swift */; };
 		9982B134A3F6702110DA997B /* HealthExportRecords.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8335933BCCBA6FA9F23624C /* HealthExportRecords.swift */; };
 		99F3403AF74EA4A5E58D62DE /* routines-demo.json in Resources */ = {isa = PBXBuildFile; fileRef = 00663357277F1DA037307EFB /* routines-demo.json */; };
@@ -97,6 +111,7 @@
 		A2CB8294309DE331F25B345A /* PodSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB40835335F90972773AC065 /* PodSettings.swift */; };
 		A57F7DF8DBB03BD52D69318A /* RoutineFields.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D90781AB382F8305ED4CFD4 /* RoutineFields.swift */; };
 		A63F700F76E4B2EF7864B24D /* HealthComparisonReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D3EA55481EE09359D8DE04D /* HealthComparisonReader.swift */; };
+		A6AE310A4606FF2DA143E6AE /* NativeModelClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAE1740B751780AB9666E297 /* NativeModelClient.swift */; };
 		A6D5E6E2186D802F42CCD176 /* DismissAlarmIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80D26D92DCD56CFD376444C /* DismissAlarmIntent.swift */; };
 		A78BB4422D2C06DD0BAEB4F0 /* SleepSegmentedPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D74E8CD0D0758A513F12FB6 /* SleepSegmentedPicker.swift */; };
 		A83019F12DC7E55488E33923 /* PodNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = B455CABD3A4CFBE772871391 /* PodNotifications.swift */; };
@@ -105,13 +120,17 @@
 		B098F2AB4F5420A851A926CE /* SleepBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59094F2E9C4ED185A255D200 /* SleepBadge.swift */; };
 		B0F1275229CFB334902B8BC4 /* BedSide.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA0D136E471C9D603A5E51E /* BedSide.swift */; };
 		B448E8D7D22F899B0C47E4EA /* BasePreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4393FC79F303779AE14BDF51 /* BasePreset.swift */; };
+		B75ED620FBC48B74C92FF10C /* HealthHistoryReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D9295FDD1152C2393CB226 /* HealthHistoryReader.swift */; };
 		B9CB539A554A38459A6DEA49 /* CoachView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C34950CCFD7C1D84321B33B6 /* CoachView.swift */; };
 		BC5EC1C0FBF6DA104AB14221 /* FreeSleepApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42077EF2507B78E9D502DD36 /* FreeSleepApp.swift */; };
+		BDBD3439C0B0BE7009DFF7BD /* LocalModelClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA2504F73032E4126B8DAC7 /* LocalModelClient.swift */; };
 		BF1E79F0874DF3C0FE8B353C /* IntentHTTPFixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F9CB1D897C8D4E00F9E4126 /* IntentHTTPFixture.swift */; };
 		C27677694B9EF5A0226B9343 /* SleepPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC3532B532CDCD29707F8A29 /* SleepPage.swift */; };
+		C35260BF3446BA77B2A0B444 /* PersonalSleepReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E8EBC76E3A6FEC3CC238DAC /* PersonalSleepReport.swift */; };
 		C36E8BF06F3053FBC4D6AF01 /* InputText.swift in Sources */ = {isa = PBXBuildFile; fileRef = A33486CA83F6C3B6BC98D253 /* InputText.swift */; };
 		C36F0B2B752F5124B76CF4D6 /* BaseCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76B632833DFE5D7F11C7C416 /* BaseCard.swift */; };
 		C38C24C9D504BF616112E917 /* ComfortStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6ECC43B02F1D8D340BAF39CD /* ComfortStatus.swift */; };
+		C5D6B14043680777C9E5077F /* SleepFact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17BFDD5069854F903B256510 /* SleepFact.swift */; };
 		CA024741F4DBDFF6B7FAD51C /* SetComfortIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC41D7A7911A024FE6346E22 /* SetComfortIntent.swift */; };
 		CABDAC972E96AB4505790E95 /* AlarmEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A109631846D57902B809C4 /* AlarmEditor.swift */; };
 		CC0248CFC4692A6BA53E8D6C /* coverage-cases.json in Resources */ = {isa = PBXBuildFile; fileRef = DE76575C0E99EA19A51B45B5 /* coverage-cases.json */; };
@@ -120,6 +139,7 @@
 		CF6F6B6D3230DD37BE92CE5C /* ConnectionHomeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE228EE37A843584FF193C3 /* ConnectionHomeTests.swift */; };
 		D0B76F7601CF1B1EFDED3185 /* ConnectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6F21131DB91A9BE07747C42 /* ConnectionsView.swift */; };
 		D31AD8DA15C00D3FA3000ACA /* device-demo.json in Resources */ = {isa = PBXBuildFile; fileRef = 24AE761275533187330C850C /* device-demo.json */; };
+		D41BCB9D925C066123FDD209 /* PersonalReportPrompt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BFFE58C8A5E712828723951 /* PersonalReportPrompt.swift */; };
 		D5D9B0F7E05B865DE551EFD4 /* DemoCoachFacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3E68D6CF9FCB98692E0910 /* DemoCoachFacts.swift */; };
 		D75348FA152364B406AD21DE /* RoutineWorkspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C43856B491067E53CCEC3D1 /* RoutineWorkspace.swift */; };
 		D8994C54053A0B27BD4367B3 /* TokenStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D400DC1BAE6D1428DDA45CC /* TokenStore.swift */; };
@@ -127,14 +147,17 @@
 		D9B318C5EE39EA7C2415E736 /* TonightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 338BB87387707E7A57B3DA47 /* TonightView.swift */; };
 		DCEC11962D0311D55B2103CC /* RoutineTimeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4FA87E13E9AA6BAB4F6C58A /* RoutineTimeline.swift */; };
 		DD64EEEE91FBB73D9448B59F /* SetBasePresetIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3D02AACB0FE5D1F4B5311D7 /* SetBasePresetIntent.swift */; };
+		DDFEF43F37F79B40970E278A /* ProviderKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1EE86B92BAC7226B3D0F15 /* ProviderKeyStore.swift */; };
 		DE0C68ED343488293EF56600 /* CoachUsageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF64868F3F5ECC503634009 /* CoachUsageView.swift */; };
 		DE8EBC0BDA24D65639C299AD /* HealthSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48B8B14A19A7C36160605782 /* HealthSyncService.swift */; };
 		EA1E2976342341B669B80993 /* DemoAlarms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085269097410BA6973B5A300 /* DemoAlarms.swift */; };
 		EA5DEC54DA9FC22D7A5A40CC /* HealthConnectionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9A49285C542651DDEB4A01 /* HealthConnectionCard.swift */; };
+		EC01D9810427E70F059F7C7C /* PersonalIntelligenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 454D5FB35F9B68A9A7430441 /* PersonalIntelligenceTests.swift */; };
 		ED08A899320226584B7E5543 /* DemoCoachUsage.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAC03AE44253AEDC6E72EFBE /* DemoCoachUsage.swift */; };
 		ED7437E193752FCFDE8708C0 /* ComfortMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8365135801A8783FD942A8E1 /* ComfortMode.swift */; };
 		F1795A6589F51BA4F9C2237B /* AppMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0991303A914A4827E07108C5 /* AppMode.swift */; };
 		F1B935177D572AF4DB4E0285 /* PrimePodIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F32580F5E9EAB954A03B060 /* PrimePodIntent.swift */; };
+		F63DFAB6F4673CE76B11B574 /* ProviderCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69D15912D7686A7C8ADC22F5 /* ProviderCatalog.swift */; };
 		F656D79916DD9FA94A3EF3F5 /* HealthSyncPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F834B5A3BB5803B15406FFE /* HealthSyncPlan.swift */; };
 		F71B5049444A4021F7D95C4F /* RoutineCopyFields.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62D65AB21B856695216E52F3 /* RoutineCopyFields.swift */; };
 		F774844E5938A878C4F55FD9 /* SleepFormField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B560160555266BEF57A999C /* SleepFormField.swift */; };
@@ -162,15 +185,22 @@
 		0843AB6AD38D374CCD4446FE /* CoachProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoachProvider.swift; sourceTree = "<group>"; };
 		085269097410BA6973B5A300 /* DemoAlarms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoAlarms.swift; sourceTree = "<group>"; };
 		0991303A914A4827E07108C5 /* AppMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMode.swift; sourceTree = "<group>"; };
+		0A53D8F3737FC0F411D4F27B /* PersonalReportCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalReportCard.swift; sourceTree = "<group>"; };
 		0AAD895E147359407AFF10A3 /* EpisodeBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeBrowser.swift; sourceTree = "<group>"; };
+		0C068CD1ADB186ECD8BF2C73 /* IntelligenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntelligenceView.swift; sourceTree = "<group>"; };
 		0C43856B491067E53CCEC3D1 /* RoutineWorkspace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutineWorkspace.swift; sourceTree = "<group>"; };
 		0CF64868F3F5ECC503634009 /* CoachUsageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoachUsageView.swift; sourceTree = "<group>"; };
+		0DBD5492307251AEED02E56F /* IntelligenceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntelligenceProvider.swift; sourceTree = "<group>"; };
 		0E3E68D6CF9FCB98692E0910 /* DemoCoachFacts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoCoachFacts.swift; sourceTree = "<group>"; };
 		0F6DE3A6CE5538E64CC98700 /* sleep-demo.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "sleep-demo.json"; sourceTree = "<group>"; };
+		0F9FC7E254BA3B102D080813 /* PersonalIntelligenceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalIntelligenceStore.swift; sourceTree = "<group>"; };
 		125C4385747EB9BE958A2223 /* TemperatureReading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemperatureReading.swift; sourceTree = "<group>"; };
 		12DE85BB1A83EBB38B992ECF /* DemoSleepHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoSleepHistory.swift; sourceTree = "<group>"; };
+		12E41C96DF3037F24BAE6EFF /* ModelReply.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelReply.swift; sourceTree = "<group>"; };
+		13910FA9F9EB17FAE609FF92 /* AppleIntelligenceClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleIntelligenceClient.swift; sourceTree = "<group>"; };
 		1523BBF52241AF1EB0E92AA7 /* CoachEvidenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoachEvidenceView.swift; sourceTree = "<group>"; };
 		165E937B26B9E1B23729BC1E /* PodConnectionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodConnectionCard.swift; sourceTree = "<group>"; };
+		17BFDD5069854F903B256510 /* SleepFact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepFact.swift; sourceTree = "<group>"; };
 		182EC4C9834CC289CA5AF429 /* RecordEditingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordEditingTests.swift; sourceTree = "<group>"; };
 		185D26C9C0A9601AB05B8424 /* PodClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodClient.swift; sourceTree = "<group>"; };
 		198E86863DA012DED35AEFD1 /* Journal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Journal.swift; sourceTree = "<group>"; };
@@ -199,10 +229,14 @@
 		42077EF2507B78E9D502DD36 /* FreeSleepApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeSleepApp.swift; sourceTree = "<group>"; };
 		42DDA1FE8BAFA23B6C296F31 /* JournalWorkspace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalWorkspace.swift; sourceTree = "<group>"; };
 		4393FC79F303779AE14BDF51 /* BasePreset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasePreset.swift; sourceTree = "<group>"; };
+		454D5FB35F9B68A9A7430441 /* PersonalIntelligenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalIntelligenceTests.swift; sourceTree = "<group>"; };
 		45E6EB3C310A9694841F19A4 /* SleepButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepButtonStyle.swift; sourceTree = "<group>"; };
+		4794F5C53143E0E3387E42B3 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		47F3203DA318344F7D5C818C /* SidePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidePicker.swift; sourceTree = "<group>"; };
 		48B8B14A19A7C36160605782 /* HealthSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthSyncService.swift; sourceTree = "<group>"; };
 		48D5438F6B0AB226B4E58E1F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		4ADF8CDF8E0D7869DCF0546D /* IntelligenceWorkspace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntelligenceWorkspace.swift; sourceTree = "<group>"; };
+		4BFFE58C8A5E712828723951 /* PersonalReportPrompt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalReportPrompt.swift; sourceTree = "<group>"; };
 		4C71C91122AEF839AFD4791F /* HealthSyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthSyncTests.swift; sourceTree = "<group>"; };
 		4C827114BAFC416386E848B5 /* HomeBridgeStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeBridgeStatus.swift; sourceTree = "<group>"; };
 		4CB564195FE61AC215810434 /* DataCoverageCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataCoverageCard.swift; sourceTree = "<group>"; };
@@ -215,14 +249,18 @@
 		59094F2E9C4ED185A255D200 /* SleepBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepBadge.swift; sourceTree = "<group>"; };
 		59555AB47FBAE7C43765908E /* FreeSleepShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeSleepShortcuts.swift; sourceTree = "<group>"; };
 		5BB00636BC12D6ACF08EFB28 /* EpisodeReadings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeReadings.swift; sourceTree = "<group>"; };
+		5CAD4527B900251C77907B2E /* AIProxy-LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "AIProxy-LICENSE.txt"; sourceTree = "<group>"; };
 		5F84326021EA05E2A4164BB9 /* DailySchedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailySchedule.swift; sourceTree = "<group>"; };
 		6076D048AE54F451EB03AC14 /* SleepCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepCard.swift; sourceTree = "<group>"; };
 		6144001797DDE01B6813729F /* HealthKitSampleStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitSampleStore.swift; sourceTree = "<group>"; };
+		628FD10C4B9AFDBB65CB6009 /* HealthHistoryCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthHistoryCard.swift; sourceTree = "<group>"; };
 		62B6F0A8BB553DA1629343A9 /* PreferencesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesTests.swift; sourceTree = "<group>"; };
 		62D65AB21B856695216E52F3 /* RoutineCopyFields.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutineCopyFields.swift; sourceTree = "<group>"; };
 		6307DCE5EBF606B56C8D3BFF /* FreeSleep.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = FreeSleep.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		63CC344D4D3528E90AF0E98B /* AppleHomeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleHomeService.swift; sourceTree = "<group>"; };
 		63CEE115B2348D3F1B08087B /* SetPowerIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetPowerIntent.swift; sourceTree = "<group>"; };
+		64303F0B8871B07EF2816B20 /* ModelSettingsCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelSettingsCard.swift; sourceTree = "<group>"; };
+		69D15912D7686A7C8ADC22F5 /* ProviderCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderCatalog.swift; sourceTree = "<group>"; };
 		6D400DC1BAE6D1428DDA45CC /* TokenStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenStore.swift; sourceTree = "<group>"; };
 		6ECC43B02F1D8D340BAF39CD /* ComfortStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComfortStatus.swift; sourceTree = "<group>"; };
 		6F9CB1D897C8D4E00F9E4126 /* IntentHTTPFixture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentHTTPFixture.swift; sourceTree = "<group>"; };
@@ -230,6 +268,7 @@
 		76B632833DFE5D7F11C7C416 /* BaseCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCard.swift; sourceTree = "<group>"; };
 		791048C6BC1F1FA4ADA81279 /* SetAwayModeIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetAwayModeIntent.swift; sourceTree = "<group>"; };
 		79660A534946AD8CDD7CC316 /* RoutinesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutinesView.swift; sourceTree = "<group>"; };
+		7A192905D2354444843FFEA8 /* HealthHistoryAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthHistoryAnalyzer.swift; sourceTree = "<group>"; };
 		7D4FB937F7EE0859FF799CE9 /* SystemHealthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemHealthView.swift; sourceTree = "<group>"; };
 		7D74E8CD0D0758A513F12FB6 /* SleepSegmentedPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepSegmentedPicker.swift; sourceTree = "<group>"; };
 		80A109631846D57902B809C4 /* AlarmEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmEditor.swift; sourceTree = "<group>"; };
@@ -239,6 +278,7 @@
 		8875FCAC7F0D585A001FF13C /* ShortcutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutTests.swift; sourceTree = "<group>"; };
 		8B560160555266BEF57A999C /* SleepFormField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepFormField.swift; sourceTree = "<group>"; };
 		8D3EA55481EE09359D8DE04D /* HealthComparisonReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthComparisonReader.swift; sourceTree = "<group>"; };
+		8E8EBC76E3A6FEC3CC238DAC /* PersonalSleepReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalSleepReport.swift; sourceTree = "<group>"; };
 		8FE696D000F0F884BBFB2AA8 /* DataCoverage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataCoverage.swift; sourceTree = "<group>"; };
 		9179425ED3277F212E0F8C88 /* PreferencesWorkspace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWorkspace.swift; sourceTree = "<group>"; };
 		9686B8DBB2CC3893DEEB30DA /* FreeSleep.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FreeSleep.entitlements; sourceTree = "<group>"; };
@@ -257,10 +297,12 @@
 		AB40835335F90972773AC065 /* PodSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodSettings.swift; sourceTree = "<group>"; };
 		ACCF203176910984E343CED2 /* SleepSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepSlider.swift; sourceTree = "<group>"; };
 		B3BD93AEA93A122E35C6732F /* SleepTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepTab.swift; sourceTree = "<group>"; };
+		B3D9295FDD1152C2393CB226 /* HealthHistoryReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthHistoryReader.swift; sourceTree = "<group>"; };
 		B434EC9AD7EB7F2714336FB6 /* StopBaseIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopBaseIntent.swift; sourceTree = "<group>"; };
 		B455CABD3A4CFBE772871391 /* PodNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodNotifications.swift; sourceTree = "<group>"; };
 		B62A3BB7C7EA33A217D1E379 /* AlarmActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmActions.swift; sourceTree = "<group>"; };
 		B9DEE81CCD1A560DDD923C93 /* EpisodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeTests.swift; sourceTree = "<group>"; };
+		BB1EE86B92BAC7226B3D0F15 /* ProviderKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderKeyStore.swift; sourceTree = "<group>"; };
 		BEA0D136E471C9D603A5E51E /* BedSide.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BedSide.swift; sourceTree = "<group>"; };
 		BFE64767D8B091E7948ED742 /* HealthSampleStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthSampleStore.swift; sourceTree = "<group>"; };
 		C20D358A1A8D513CCA647C34 /* FreeSleepTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeSleepTests.swift; sourceTree = "<group>"; };
@@ -278,6 +320,7 @@
 		D4FA87E13E9AA6BAB4F6C58A /* RoutineTimeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutineTimeline.swift; sourceTree = "<group>"; };
 		DA72E8FB1D9CB175CAEBFEF9 /* HealthBackgroundScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthBackgroundScheduler.swift; sourceTree = "<group>"; };
 		DAD18952D0C902EEC7792851 /* HealthSyncEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthSyncEngine.swift; sourceTree = "<group>"; };
+		DBA2504F73032E4126B8DAC7 /* LocalModelClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalModelClient.swift; sourceTree = "<group>"; };
 		DDA4098C56EFFC56D237FE05 /* CoachSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoachSession.swift; sourceTree = "<group>"; };
 		DE76575C0E99EA19A51B45B5 /* coverage-cases.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "coverage-cases.json"; sourceTree = "<group>"; };
 		E31D10A3B1E836D462A4C925 /* Coaching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coaching.swift; sourceTree = "<group>"; };
@@ -295,10 +338,23 @@
 		F5D51DA9EBF30F72278AE285 /* DemoSleepSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoSleepSummary.swift; sourceTree = "<group>"; };
 		F80D26D92DCD56CFD376444C /* DismissAlarmIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DismissAlarmIntent.swift; sourceTree = "<group>"; };
 		F9F252A421DE0AA1A3F7EDE6 /* AlarmCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmCard.swift; sourceTree = "<group>"; };
+		FAE1740B751780AB9666E297 /* NativeModelClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeModelClient.swift; sourceTree = "<group>"; };
 		FB4CF20C1EE868FE52C5EDEF /* SetBaseAnglesIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetBaseAnglesIntent.swift; sourceTree = "<group>"; };
+		FC8C989488D5E70E3E8EC540 /* HealthHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthHistory.swift; sourceTree = "<group>"; };
 		FCBEA48F01B231C0DD3164BE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FE86E584FCAFA122565AB0EE /* RoutineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutineTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		19448F6C567A9CF6A028FEA7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6CAFC871637E50FF1B3A09F6 /* AIProxy in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		000BE9E5D10FF36BDED2C83B /* Design */ = {
@@ -318,6 +374,17 @@
 				F1C6B1086F2D823D225A76D7 /* SleepTypography.swift */,
 			);
 			path = Design;
+			sourceTree = "<group>";
+		};
+		003D1BB03E9DEA29FCE84D68 /* Intelligence */ = {
+			isa = PBXGroup;
+			children = (
+				628FD10C4B9AFDBB65CB6009 /* HealthHistoryCard.swift */,
+				0C068CD1ADB186ECD8BF2C73 /* IntelligenceView.swift */,
+				64303F0B8871B07EF2816B20 /* ModelSettingsCard.swift */,
+				0A53D8F3737FC0F411D4F27B /* PersonalReportCard.swift */,
+			);
+			path = Intelligence;
 			sourceTree = "<group>";
 		};
 		09970537CFCE151012669498 /* fixtures */ = {
@@ -384,6 +451,7 @@
 				93BF4ED45BC8900E841D3C0A /* App */,
 				000BE9E5D10FF36BDED2C83B /* Design */,
 				A608BC316A6F1378FD94B901 /* Features */,
+				C1D49DAADE8102F834EDB832 /* Intelligence */,
 				BAB34D7BC3539B964A0B1761 /* Intents */,
 				4E315EFC6EFC5768B19BD737 /* Models */,
 				8E2F8621D3BD29D49BB4764A /* Resources */,
@@ -404,6 +472,7 @@
 				4C71C91122AEF839AFD4791F /* HealthSyncTests.swift */,
 				6F9CB1D897C8D4E00F9E4126 /* IntentHTTPFixture.swift */,
 				D4D332E771DA99E1BF307712 /* JournalCoachTests.swift */,
+				454D5FB35F9B68A9A7430441 /* PersonalIntelligenceTests.swift */,
 				62B6F0A8BB553DA1629343A9 /* PreferencesTests.swift */,
 				182EC4C9834CC289CA5AF429 /* RecordEditingTests.swift */,
 				FE86E584FCAFA122565AB0EE /* RoutineTests.swift */,
@@ -459,9 +528,11 @@
 		8E2F8621D3BD29D49BB4764A /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				5CAD4527B900251C77907B2E /* AIProxy-LICENSE.txt */,
 				FCBEA48F01B231C0DD3164BE /* Assets.xcassets */,
 				9686B8DBB2CC3893DEEB30DA /* FreeSleep.entitlements */,
 				48D5438F6B0AB226B4E58E1F /* Info.plist */,
+				4794F5C53143E0E3387E42B3 /* PrivacyInfo.xcprivacy */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -512,6 +583,7 @@
 				7D4FB937F7EE0859FF799CE9 /* SystemHealthView.swift */,
 				97DC74FD2969EF4E087A1801 /* TemperatureCard.swift */,
 				338BB87387707E7A57B3DA47 /* TonightView.swift */,
+				003D1BB03E9DEA29FCE84D68 /* Intelligence */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -535,6 +607,28 @@
 				317399959D9A82326072891F /* SyncHealthIntent.swift */,
 			);
 			path = Intents;
+			sourceTree = "<group>";
+		};
+		C1D49DAADE8102F834EDB832 /* Intelligence */ = {
+			isa = PBXGroup;
+			children = (
+				13910FA9F9EB17FAE609FF92 /* AppleIntelligenceClient.swift */,
+				FC8C989488D5E70E3E8EC540 /* HealthHistory.swift */,
+				7A192905D2354444843FFEA8 /* HealthHistoryAnalyzer.swift */,
+				B3D9295FDD1152C2393CB226 /* HealthHistoryReader.swift */,
+				0DBD5492307251AEED02E56F /* IntelligenceProvider.swift */,
+				4ADF8CDF8E0D7869DCF0546D /* IntelligenceWorkspace.swift */,
+				DBA2504F73032E4126B8DAC7 /* LocalModelClient.swift */,
+				12E41C96DF3037F24BAE6EFF /* ModelReply.swift */,
+				FAE1740B751780AB9666E297 /* NativeModelClient.swift */,
+				0F9FC7E254BA3B102D080813 /* PersonalIntelligenceStore.swift */,
+				4BFFE58C8A5E712828723951 /* PersonalReportPrompt.swift */,
+				8E8EBC76E3A6FEC3CC238DAC /* PersonalSleepReport.swift */,
+				69D15912D7686A7C8ADC22F5 /* ProviderCatalog.swift */,
+				BB1EE86B92BAC7226B3D0F15 /* ProviderKeyStore.swift */,
+				17BFDD5069854F903B256510 /* SleepFact.swift */,
+			);
+			path = Intelligence;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -565,6 +659,8 @@
 			buildPhases = (
 				3A6A648CBB514FBD8FA5B291 /* Sources */,
 				1E01A9143C508652EFBFE4D2 /* Resources */,
+				19448F6C567A9CF6A028FEA7 /* Frameworks */,
+				2D81827564B6D1EE8F7DEDCC /* Apply direct-provider privacy declarations */,
 			);
 			buildRules = (
 			);
@@ -572,6 +668,7 @@
 			);
 			name = FreeSleep;
 			packageProductDependencies = (
+				E4D1E355B2E0C06B0D881AB6 /* AIProxy */,
 			);
 			productName = FreeSleep;
 			productReference = 6307DCE5EBF606B56C8D3BFF /* FreeSleep.app */;
@@ -586,8 +683,11 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					3D494A2B952A20E5B3C49426 = {
+						DevelopmentTeam = 9FNNQ6J269;
+					};
 					CDC417546330B2F8C42B5A58 = {
-						ProvisioningStyle = Automatic;
+						DevelopmentTeam = 9FNNQ6J269;
 					};
 				};
 			};
@@ -600,6 +700,9 @@
 			);
 			mainGroup = 63C8FFFB854CBD4F6B795EE7;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				0880A534E9180059CFB26B5F /* XCRemoteSwiftPackageReference "AIProxySwift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 837B7E8DA1CD74494676C35C /* Products */;
 			projectDirPath = "";
@@ -616,7 +719,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7650617887080C3325124847 /* AIProxy-LICENSE.txt in Resources */,
 				8BA9BA1F7C8334CB6A8ED05D /* Assets.xcassets in Resources */,
+				63D82F45BB92774D508FF554 /* PrivacyInfo.xcprivacy in Resources */,
 				D31AD8DA15C00D3FA3000ACA /* device-demo.json in Resources */,
 				99F3403AF74EA4A5E58D62DE /* routines-demo.json in Resources */,
 				33816C0EB6FF320C67DEC556 /* sleep-demo.json in Resources */,
@@ -634,6 +739,28 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		2D81827564B6D1EE8F7DEDCC /* Apply direct-provider privacy declarations */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Apply direct-provider privacy declarations";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -eu\n# The pinned SDK's default manifest describes its unused proxy service with non-Apple enum values.\n# Our direct-only integration uses the app's actual Health/content declarations, with no tracking.\nSDK_MANIFEST=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AIProxy_AIProxy.bundle/PrivacyInfo.xcprivacy\"\ntest -f \"$SDK_MANIFEST\"\ncp \"${SRCROOT}/FreeSleep/Resources/PrivacyInfo.xcprivacy\" \"$SDK_MANIFEST\"\nplutil -lint \"$SDK_MANIFEST\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		2A3F2C7DFFDB2F9BB55EC3ED /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -648,6 +775,7 @@
 				28609C820462C9543BE192B9 /* HealthSyncTests.swift in Sources */,
 				BF1E79F0874DF3C0FE8B353C /* IntentHTTPFixture.swift in Sources */,
 				5BB0A9A54F036C27059B85A9 /* JournalCoachTests.swift in Sources */,
+				EC01D9810427E70F059F7C7C /* PersonalIntelligenceTests.swift in Sources */,
 				24281B45F7F733917ED24363 /* PreferencesTests.swift in Sources */,
 				75DAE1A080F8A0575D025257 /* RecordEditingTests.swift in Sources */,
 				0C918C6BBA284C90DBD11D4C /* RoutineTests.swift in Sources */,
@@ -667,6 +795,7 @@
 				F1795A6589F51BA4F9C2237B /* AppMode.swift in Sources */,
 				7ED29A0D13AD221E1339BE0E /* AppModel.swift in Sources */,
 				11573FA8259FC980E0CF1824 /* AppleHomeService.swift in Sources */,
+				507B95D5995A728656D08E2C /* AppleIntelligenceClient.swift in Sources */,
 				C36F0B2B752F5124B76CF4D6 /* BaseCard.swift in Sources */,
 				B448E8D7D22F899B0C47E4EA /* BasePreset.swift in Sources */,
 				495AF68281188C3482E18422 /* BaseStatus.swift in Sources */,
@@ -714,6 +843,10 @@
 				EA5DEC54DA9FC22D7A5A40CC /* HealthConnectionCard.swift in Sources */,
 				9982B134A3F6702110DA997B /* HealthExportRecords.swift in Sources */,
 				A9CA7D0B3D4914AFE8EAA4BE /* HealthExportSource.swift in Sources */,
+				7C9A37303830DD3EFD69945B /* HealthHistory.swift in Sources */,
+				971322556510654D722A98AC /* HealthHistoryAnalyzer.swift in Sources */,
+				4BD46BAB27E89E044C973CD6 /* HealthHistoryCard.swift in Sources */,
+				B75ED620FBC48B74C92FF10C /* HealthHistoryReader.swift in Sources */,
 				08900C0E8C9189CCDF09CA4F /* HealthKitSampleStore.swift in Sources */,
 				3F718E620DD34D344867E6FB /* HealthSampleBuilder.swift in Sources */,
 				D8D3F20C2B6C2ECA6349DD79 /* HealthSampleStore.swift in Sources */,
@@ -725,9 +858,20 @@
 				26559DE7D0DF7B51614BA7ED /* HomeConnectionCard.swift in Sources */,
 				C36E8BF06F3053FBC4D6AF01 /* InputText.swift in Sources */,
 				4059D00C9D4C6E3FFA3B91A9 /* InsightsView.swift in Sources */,
+				849DE5F4D941AF5355DF02B5 /* IntelligenceProvider.swift in Sources */,
+				356913347A2A54F7633B6812 /* IntelligenceView.swift in Sources */,
+				493513EA80DA5257C69426DC /* IntelligenceWorkspace.swift in Sources */,
 				A15E4521DDDCC6C2F9194D43 /* Journal.swift in Sources */,
 				522867315FE73ACEF48049C3 /* JournalCard.swift in Sources */,
 				6E7326B6DD3A15C6D0896A14 /* JournalWorkspace.swift in Sources */,
+				BDBD3439C0B0BE7009DFF7BD /* LocalModelClient.swift in Sources */,
+				03B3AD144AB724C61B85F53A /* ModelReply.swift in Sources */,
+				7160955A6D27D1A4DB10A94F /* ModelSettingsCard.swift in Sources */,
+				A6AE310A4606FF2DA143E6AE /* NativeModelClient.swift in Sources */,
+				3DCC6AFA61AF1EF18B28C3FA /* PersonalIntelligenceStore.swift in Sources */,
+				39574C52759F513466EAA0D0 /* PersonalReportCard.swift in Sources */,
+				D41BCB9D925C066123FDD209 /* PersonalReportPrompt.swift in Sources */,
+				C35260BF3446BA77B2A0B444 /* PersonalSleepReport.swift in Sources */,
 				5E5ADB36BBE9A29744AD5F76 /* PodActions.swift in Sources */,
 				01F9BBFC6C94AFF82328D6E2 /* PodClient.swift in Sources */,
 				229FBC2EECDEFF41284EF220 /* PodConnectionCard.swift in Sources */,
@@ -739,6 +883,8 @@
 				40323F90CCABBCB2912FC225 /* PreferencesWorkspace.swift in Sources */,
 				017F80C85D4509D7F8E38538 /* PresenceChart.swift in Sources */,
 				F1B935177D572AF4DB4E0285 /* PrimePodIntent.swift in Sources */,
+				F63DFAB6F4673CE76B11B574 /* ProviderCatalog.swift in Sources */,
+				DDFEF43F37F79B40970E278A /* ProviderKeyStore.swift in Sources */,
 				060BFF38D535538C740864D3 /* RootView.swift in Sources */,
 				F71B5049444A4021F7D95C4F /* RoutineCopyFields.swift in Sources */,
 				A57F7DF8DBB03BD52D69318A /* RoutineFields.swift in Sources */,
@@ -757,6 +903,7 @@
 				B098F2AB4F5420A851A926CE /* SleepBadge.swift in Sources */,
 				927B656A0DCE3E69D90CB123 /* SleepButtonStyle.swift in Sources */,
 				1E6C3A469B2FC1CDB8FD7853 /* SleepCard.swift in Sources */,
+				C5D6B14043680777C9E5077F /* SleepFact.swift in Sources */,
 				F774844E5938A878C4F55FD9 /* SleepFormField.swift in Sources */,
 				77732FF82EC7CE5062881261 /* SleepLayout.swift in Sources */,
 				C27677694B9EF5A0226B9343 /* SleepPage.swift in Sources */,
@@ -881,8 +1028,9 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 9FNNQ6J269;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -911,8 +1059,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = FreeSleep/Resources/FreeSleep.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				CODE_SIGN_STYLE = Manual;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FreeSleep/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Free Sleep";
@@ -923,6 +1071,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.lucaandrea.freesleep;
+				PROVISIONING_PROFILE_SPECIFIER = "Free Sleep App Store 2026";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -962,8 +1111,9 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 9FNNQ6J269;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1025,6 +1175,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		0880A534E9180059CFB26B5F /* XCRemoteSwiftPackageReference "AIProxySwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AIProxyTeam/AIProxySwift.git";
+			requirement = {
+				kind = revision;
+				revision = b9375912d21ad2e5a50d4ea47607af0c3af140a1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E4D1E355B2E0C06B0D881AB6 /* AIProxy */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0880A534E9180059CFB26B5F /* XCRemoteSwiftPackageReference "AIProxySwift" */;
+			productName = AIProxy;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F38613BFA8C2E174BCE3C26A /* Project object */;
 }

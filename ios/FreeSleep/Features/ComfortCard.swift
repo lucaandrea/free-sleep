@@ -11,9 +11,9 @@ struct ComfortCard: View {
     private var celsius: Bool { model.settings?.temperatureFormat == "celsius" }
 
     var body: some View {
-        SleepCard(title: "Comfort that learns", eyebrow: "ADAPTIVE COMFORT") {
+        SleepCard(title: "Comfort that learns", eyebrow: "FREE SLEEP AUTOPILOT") {
             HStack {
-                Text("Small temperature adjustments guided by your morning check-ins.").foregroundStyle(SleepTheme.secondary)
+                Text("Local learning from your check-ins, bed presence and Pod vital estimates.").foregroundStyle(SleepTheme.secondary)
                 Spacer()
                 Text(status?.config.mode.capitalized ?? "Off").sleepText(.caption).padding(.horizontal, 12).padding(.vertical, 6)
                     .background(.primary.opacity(0.06), in: Capsule())
@@ -36,6 +36,24 @@ struct ComfortCard: View {
                 }.disabled(busy)
                 Stepper("Minimum: \(config.minimumF)°F", value: Binding(get: { config.minimumF }, set: { value in edit { $0.minimumF = value } }), in: 55...110).disabled(busy)
                 Stepper("Maximum: \(config.maximumF)°F", value: Binding(get: { config.maximumF }, set: { value in edit { $0.maximumF = value } }), in: 55...110).disabled(busy)
+                Toggle("Use sensor-aware Autopilot", isOn: Binding(get: { config.sensorAware ?? false }, set: { value in edit { $0.sensorAware = value; if !value { $0.followBedtime = false } } }))
+                    .toggleStyle(SleepCheckboxStyle()).disabled(busy)
+                if config.sensorAware == true {
+                    Toggle("Follow earlier or later bed entry", isOn: Binding(get: { config.followBedtime ?? false }, set: { value in edit { $0.followBedtime = value } }))
+                        .toggleStyle(SleepCheckboxStyle()).disabled(busy)
+                    Text("Needs seven days of Pod estimates and two fresh five-minute windows. Unusual estimates hold extra adjustments. A heart-rate change never directly triggers cooling or movement.")
+                        .sleepText(.caption).foregroundStyle(SleepTheme.secondary)
+                    Text("Intermediate temperature phases can shift up to 30 minutes after stable bed entry. Power and wake time stay fixed. Temperature changes are limited to 1°F per 30 minutes and ±3°F from your routine.")
+                        .sleepText(.caption).foregroundStyle(SleepTheme.secondary)
+                    if let signals = status.signals {
+                        Text("\(signals.baselineDays) baseline days · \(signals.reason)").sleepText(.small)
+                        if let rate = signals.latestHeartRate, let baseline = signals.baselineHeartRate {
+                            Text("Latest estimate \(Int(rate)) bpm · personal baseline \(Int(baseline)) bpm").sleepText(.caption)
+                        }
+                    }
+                }
+                Text("Snoring elevation is unavailable: no validated Pod snoring detector is connected. Bed presence is not sleep staging. Pod heart-rate estimates are limited to 30–90 bpm and cannot rule out abnormal readings.")
+                    .sleepText(.caption).foregroundStyle(SleepTheme.secondary)
                 Text("Learns at most 1°F from three new check-ins, up to ±3°F from your routine. Needs fresh presence. Manual controls pause it for six hours; your routine continues. Preview never changes the Pod.")
                     .sleepText(.caption).foregroundStyle(SleepTheme.secondary)
                 ViewThatFits(in: .horizontal) {

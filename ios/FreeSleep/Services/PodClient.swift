@@ -78,7 +78,7 @@ struct PodClient: Sendable {
 
 private struct HealthExportPage<Record: Decodable & Sendable>: Decodable, Sendable { var records: [Record]; var nextCursor: Int? }
 
-private final class RejectRedirects: NSObject, URLSessionTaskDelegate {
+final class RejectRedirects: NSObject, URLSessionTaskDelegate {
     func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse,
                     newRequest request: URLRequest, completionHandler: @escaping @Sendable (URLRequest?) -> Void) {
         completionHandler(nil)

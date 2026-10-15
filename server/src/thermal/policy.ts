@@ -9,7 +9,7 @@ export const MANUAL_PAUSE_MS = 6 * 60 * 60 * 1000;
 export const ADJUSTMENT_INTERVAL_MS = 30 * 60 * 1000;
 export const PRESENCE_MAX_AGE_MS = 90_000;
 export type RoutineWindow = { session: string; segment: string; start: number; end: number; baselineF: number; alarmAt: number | null };
-export type PresenceReading = { present: boolean; lastUpdatedAt?: string };
+export type PresenceReading = { present: boolean; lastUpdatedAt?: string; presentSince?: string };
 
 // Anchor wall-clock times to the routine's start date, including overnight and DST transitions.
 function occurrence(date: string, time: string, startTime: string, zone: string) {

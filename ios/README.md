@@ -2,6 +2,8 @@
 
 SwiftUI, iOS 18+, Xcode 27 used for validation. Generate the checked-in project using `xcodegen generate`. Main navigation, colors, cards and content follow the responsive web app; HealthKit, HomeKit and Shortcuts use native frameworks.
 
+Release signing uses Luca Andrea Collins's team `9FNNQ6J269` and the `Free Sleep App Store 2026` distribution profile. Debug signing remains automatic. The project and `ExportOptions.plist` contain identifiers only; install the matching certificate/private key and profile through your Apple account. See [TestFlight release](../docs/TESTFLIGHT_RELEASE.md) for the archive/export procedure and verified release status.
+
 Shared colors, typography and dimensions are generated from `design/tokens.json`. After changing those values, run `node scripts/generate-design.mjs` from the repository root, then `xcodegen generate` here if files were added. Generated Swift and color assets are committed, so Xcode builds do not require Node. See [design alignment](../docs/DESIGN_PARITY.md) for the shared components and remaining screen differences.
 
 See [platform setup](../docs/PLATFORM_SETUP.md) for signing and connection, and [Apple integrations](../docs/APPLE_INTEGRATIONS.md) for personal Health setup, automatic sync, privacy, Shortcuts and device acceptance checks. Launch a Debug build with `--demo` for labelled sample data and simulated controls. Release builds ignore that argument. Debug demo mode blocks Health access and system actions; live Shortcuts use the saved authenticated API connection.
@@ -21,3 +23,7 @@ Tests cover connection validation, analytics decoding, Health sample provenance,
 All sixteen App Intents include parameter summaries. Request tests invoke the fifteen API-backed actions with isolated URLSession transports, covering side selection, exact payloads, returned values and errors without saved credentials or network access. Adaptive-comfort Shortcuts need the server and gateway's `POST /api/comfort/mode` route, which changes the mode while preserving the latest limits. There is no fallback to the old read-and-rewrite behavior.
 
 Device settings and System health now match the web’s common controls and section order. Preference saves compare the original fields to current server state and retain unrelated changes; install the updated server/gateway with `GET/POST /api/settings/preferences`. Shared demo preferences and health come from `device-demo.json`. Advanced maintenance and logs remain in the local web app. See [device preferences](../docs/DEVICE_PREFERENCES.md).
+
+## Personal AI and Autopilot
+
+Coach → Open personal intelligence supports direct OpenAI, Gemini and Anthropic API keys, Apple Foundation Models, and an Ollama server. See [setup, SDK provenance, Health history and research](../docs/NATIVE_INTELLIGENCE.md). Sensor-aware Autopilot settings are shared with the web app; the overnight controller runs on the Pod.

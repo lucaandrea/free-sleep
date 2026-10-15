@@ -44,6 +44,18 @@ The authenticated Replit gateway allows these routes. Mode changes and full conf
 
 ## Qualification still needed
 
+### Sensor-aware Autopilot follow-up — 14 October 2026
+
+Web and iOS now expose optional **Use sensor-aware Autopilot** and **Follow earlier or later bed entry** settings. Existing configurations remain compatible; these options default to false. Off/Preview/Active, manual pause and all preceding guards still apply.
+
+The server forms an equal-weight median baseline from previous daily heart-rate medians, excluding the latest 24 hours and retaining up to 29 days. It requires seven days with at least twelve five-minute records each. Two consecutive, complete five-minute windows must be fresh (latest window ends within six minutes). Both windows departing in the same direction by at least the larger of 10 bpm or 20% of baseline hold extra adjustments. This engineering comparison is not a diagnostic threshold. Missing, invalid or stale readings also hold them.
+
+The existing processor filters/clamps heart-rate estimates to 30–90 bpm. It cannot establish high/low medical heart-rate events, and a departure is not interpreted as hot/cold. No validated snoring classifier is available; automatic snoring-related base motion remains unavailable.
+
+Sensor-aware eligible corrections move by at most 1°F, retain the 30-minute cooldown, stay inside user limits, and remain within ±3°F of the original scheduled baseline. Stable occupancy for ten minutes, starting within 90 minutes of the routine start, can shift intermediate temperature phases by up to ±30 minutes once per session. Power start/end and alarm times remain unchanged. Sensor readiness is required before learning that shift. Fresh presence is server-timestamped; interruptions reset the stable-entry timer. Personal comfort offsets still learn from journal check-ins, not from an LLM guessing physiology.
+
+Signals and the selected phase shift are returned by `/api/comfort`; configuration adds optional `sensorAware` and `followBedtime` booleans. The local loop runs on the Pod even with the phone closed. The native [personal intelligence](NATIVE_INTELLIGENCE.md) reports are a separate, explicit analysis flow without actuator tools.
+
 First deploy on the Pod with mode Off, confirm normal controls and routines, and verify the new presence heartbeat. Run Preview across actual routine boundaries, sensor interruptions, away mode, taps, alarms and a reboot. Compare recorded proposals against expectations before selecting Active. Physical overnight comfort, thermostat behavior and recovery are not established by the tests in this repository.
 
 ```mermaid

@@ -8,6 +8,7 @@ const stateSchema = z.object({
   config: comfortConfigSchema, offsetF: z.number().int().min(-3).max(3), feedbackThrough: z.string(), learnedSession: z.string(),
   pausedUntil: z.number().nonnegative(), lastAppliedAt: z.number().nonnegative(), lastTargetF: z.number().min(55).max(110).nullable(),
   lastSegment: z.string(), history: z.array(z.object({ at: z.number(), message: z.string(), targetF: z.number().nullable() })).max(60),
+  timingSession: z.string().optional(), phaseShiftMinutes: z.number().int().min(-30).max(30).optional(),
 }).strict();
 const documentSchema = z.object({ left: stateSchema, right: stateSchema }).strict();
 export type ComfortDocument = z.infer<typeof documentSchema>;

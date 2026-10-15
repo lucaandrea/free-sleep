@@ -58,6 +58,8 @@ Model usage starts with a persistent allowance of 100 attempts per UTC month, sh
 
 Use a **Reserved VM**, one instance, for the persistent Pod WebSocket. `.replit` builds the web UI and starts `gateway/server.mjs`; do not run the embedded Pod server in Replit. This follows [Replit's deployment types](https://docs.replit.com/features/publishing/deployment-types).
 
+Autoscale is suitable for a separately published demo, but the current live gateway is not an Autoscale architecture: its Pod connection and pending requests live in one process. A second instance cannot use the first instance's connection, and scale-to-zero interrupts the persistent service. Keep one Reserved VM for remote control. A native iPhone can instead connect directly on the home network; it still requires the Free Sleep API on the Pod. Neither client controls stock Eight Sleep simply by signing in to an Eight Sleep account.
+
 Reproduce the deployment build from a clean checkout with `node scripts/build-hosted.mjs`. Replit and the hosted CI job use this same command. It installs locked web and shared server-schema dependencies, builds `server/public`, then installs and tests the gateway. Server dependencies are needed only because the browser imports those TypeScript contracts; their install hooks are skipped, and no Pod service or database is started. No environment file, provider key or deployment token is needed for this build, and it does not upload source maps. Build tools are installed explicitly even when the hosting environment sets `NODE_ENV=production`.
 
 ```mermaid
@@ -79,7 +81,7 @@ flowchart LR
 
 The gateway forwards app operations through a fixed allowlist and bounded requests. Raw command execution, root maintenance jobs and log streaming stay LAN-only. It holds no sleep database, but authorized API data transits Replit. The hosted UI cannot call a private HTTP Pod directly from HTTPS; use the gateway or the local app.
 
-No Replit project has been created, published, or connected to the owner's Pod. The Git remote is `lucaandrea/free-sleep`; the intended Replit project and published domain still need to be selected.
+The owner selected [free-sleep (1)](https://replit.com/t/replit/repls/free-sleep-1). On 2026-10-14 its Replit preview was verified in Safari as **Demo · sample data and simulated controls**. No live Pod connection or published production endpoint was verified. GitHub `main` at `68a525a` includes the web/gateway implementation; Replit's demo setup has its own changes and must be configured for the live gateway before production control.
 
 ## Native iOS
 
@@ -92,7 +94,7 @@ xcodebuild -project FreeSleep.xcodeproj -scheme FreeSleep \
   -destination 'platform=iOS Simulator,name=Free Sleep QA' CODE_SIGNING_ALLOWED=NO test
 ```
 
-For a device build, select the owner's signing team and a registered bundle ID and enable HealthKit and HomeKit capabilities. The current bundle ID is `com.lucaandrea.freesleep`. No signing team, provisioning profile, App Store Connect record or TestFlight build has been configured by this work. Use Safari when working in Apple's portals.
+Release signing is configured for Luca Andrea Collins, team `9FNNQ6J269`, with bundle ID `com.lucaandrea.freesleep` and HealthKit/HomeKit capabilities. A signed archive and App Store package have been verified and uploaded through Xcode. See [TestFlight release](TESTFLIGHT_RELEASE.md) for the current processing/tester status and reproduction steps. Real-device permission and hardware checks remain separate. Use Safari when working in Apple's portals.
 
 - **Health:** Choose your personal Health side independently of the browsing selector, choose permissions, and link it to the current Pod before syncing. Presence becomes `inBed`; optional range-filtered heart rate keeps its Pod provenance. Repeat exports use stable IDs and update versions; obsolete exports are removed only from this app's matching Pod/side/date window after replacements save. Unvalidated Pod HRV/breathing and fabricated sleep stages are never exported. Apple Health sleep, heart rate, SDNN HRV and respiration comparisons stay on the iPhone. Read denial is intentionally indistinguishable from empty data in HealthKit. Opt-in automatic sync runs on app activation and requests background time from iOS after a successful initial sync; execution timing is not guaranteed. Settings and Shortcuts can manually reconcile thirty days. See [Apple integrations](APPLE_INTEGRATIONS.md) for cancellation, identity checks and retry behavior.
 - **Home:** Enable the local HAP bridge, connect the base in the app, and use the pairing code in Settings to add it to Apple Home. Thermostats expose both sides; named switches expose positions, Stop and priming. The bridge is not an Apple-certified accessory. Native Settings can also list and run the user's existing Home scenes after permission. Remote Apple Home automations require a supported home hub. Base actions need a connected, qualified base; the bridge does not silently reconnect and move after a restart.

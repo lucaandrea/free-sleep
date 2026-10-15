@@ -174,3 +174,15 @@ Captures in [screenshots](screenshots): `usage-web-saved.jpg` and `usage-ios.jpg
 - Proprietary sleep stages, snoring/apnea/readiness models and sleep-stage-driven thermal Autopilot. Those features are not implemented or claimed. The new feedback-based adaptive controller requires actual Pod and overnight qualification.
 
 No physical-device, live-deployment, clinical, or subscription-equivalence claim follows from these checks.
+
+## Personal intelligence and sensor-aware Autopilot — 2026-10-14
+
+- Native Xcode 27 build and **70 Swift Testing tests passed** on the isolated iOS 27 simulator. New checks cover source-separated Health interval union, DST/noon boundaries, invalid samples, sparse-history abstention, midnight bedtime statistics, model IDs, sanitized errors, OpenAI/Gemini SDK request encoding, local-provider Keychain bypass, protected report storage and evidence prompts. Provider request tests validate encoding; they do not use personal cloud credentials.
+- Server TypeScript and **125 tests passed**. New checks cover seven-day/equal-weight baselines, sustained departures, stale/incomplete/duplicate/future windows, presence gaps/restarts, bounded phase timing, withheld adjustments, one-degree changes, cooldown/manual precedence, delayed-phase rejoining without a false manual pause, and Preview without writes.
+- Web TypeScript, **6 web tests**, and **6 gateway tests passed**. Shared design generation verified all 15 outputs. Full lint had zero errors (19 existing server warnings, 8 existing web warnings). The local Pod web bundle was rebuilt; Vite still warns about a large shared chunk. Server output includes locally injected Sentry debug IDs; no maps were uploaded.
+- The native screens expose Apple, direct OpenAI/Gemini/Anthropic SDK services and Ollama, with Keychain entry, live model catalogs, custom IDs, synthetic connection tests and evidence sharing. Simulator review found and fixed a local-provider request that unnecessarily read Keychain; a regression test now covers that case.
+- A synthetic Apple Foundation Models request reached the local inference framework, but the simulator failed because its model catalog had no underlying assets (UnifiedAssetFramework error 5000). Generation on a prepared physical iPhone remains unverified; the app now presents a readable recovery message without cloud fallback.
+- The new SDK is pinned in Swift Package Manager and compiles for simulator and signed iOS Release. No personal OpenAI/Gemini/Anthropic key was provided, so account access and real paid model generation remain unverified. No personal Health history was imported or sent to a provider.
+- Pod installation, live sensor quality, physical thermal/base behavior, snoring classification and overnight comfort remain unverified. Snoring elevation is deliberately unavailable. Existing heart-rate filtering to 30–90 bpm prevents medical heart-rate-monitoring claims. This implementation has not demonstrated superiority to Eight Sleep Autopilot.
+
+See [research and usage](NATIVE_INTELLIGENCE.md), [controller limits](ADAPTIVE_COMFORT.md) and [signed release/distribution evidence](TESTFLIGHT_RELEASE.md).

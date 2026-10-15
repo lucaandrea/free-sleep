@@ -1,5 +1,5 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="0e081d7a-da16-5678-aa5b-56ad2c301cb7")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="f536710d-e8fd-549f-8937-8ca866170f42")}catch(e){}}();
 import moment from 'moment-timezone';
 export const MANUAL_PAUSE_MS = 6 * 60 * 60 * 1000;
 export const ADJUSTMENT_INTERVAL_MS = 30 * 60 * 1000;
@@ -100,4 +100,4 @@ export function decideComfort(input) {
             : 'Following your routine with the learned comfort adjustment.' };
 }
 //# sourceMappingURL=policy.js.map
-//# debugId=0e081d7a-da16-5678-aa5b-56ad2c301cb7
+//# debugId=f536710d-e8fd-549f-8937-8ca866170f42
