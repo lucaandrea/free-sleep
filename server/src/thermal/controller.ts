@@ -145,8 +145,10 @@ export class ComfortController {
       const original = routineAt(snapshot.schedules[side], snapshot.settings.timeZone, now);
       let window = original;
       const signals = snapshot.signals?.[side];
+      const sensorReady = signals?.state === 'ready' && signals.sampleAt !== null
+        && Number.isFinite(signals.sampleAt) && now >= signals.sampleAt && now - signals.sampleAt <= 360_000;
       if (original && state.config.sensorAware && state.config.followBedtime && state.config.mode !== 'off') {
-        if (state.timingSession !== original.session && signals?.state === 'ready') {
+        if (state.timingSession !== original.session && sensorReady) {
           const shift = entryShift(original, snapshot.presence[side], now);
           if (shift !== null) {
             state.timingSession = original.session; state.phaseShiftMinutes = shift;
@@ -165,8 +167,10 @@ export class ComfortController {
       const decision = decideComfort({ state, window, now, device: snapshot.device, presence: snapshot.presence[side], side,
         preferences: snapshot.settings[side], eitherAway: snapshot.settings.left.awayMode || snapshot.settings.right.awayMode });
       if (state.config.sensorAware && decision.eligible) {
-        if (signals?.state !== 'ready') {
-          decision.eligible = false; decision.reason = signals?.reason ?? 'Waiting for Pod vital estimates and a personal baseline.';
+        if (!sensorReady) {
+          decision.eligible = false;
+          decision.reason = signals?.state === 'ready' ? 'Pod vital estimates expired before this comfort check completed.'
+            : signals?.reason ?? 'Waiting for Pod vital estimates and a personal baseline.';
         } else if (decision.proposedF !== null && original) {
           // Sensor-aware control moves one degree per check and never exceeds ±3°F from the unchanged routine.
           const reference = source === 'schedule' ? command[side]?.targetTemperatureF ?? snapshot.device[side].targetTemperatureF

@@ -78,13 +78,27 @@ test('A delayed phase rejoins the routine after cooldown without mistaking its o
   await sample.tick();
   assert.equal((await sample.controller.status('left')).phaseShiftMinutes, 30);
   sample.advance(130 * 60_000);
+  sample.context.signals.left!.sampleAt = sample.context.observedAt;
   await sample.controller.execute({ left: { targetTemperatureF: 78 } }, 'schedule', sample.apply);
   assert.equal(sample.context.device.left.targetTemperatureF, 79);
   sample.advance(31 * 60_000);
+  sample.context.signals.left!.sampleAt = sample.context.observedAt;
   await sample.tick();
   assert.equal(sample.context.device.left.targetTemperatureF, 78);
   assert.equal((await sample.controller.status('left')).pausedUntil, null);
   assert.equal(sample.sent.length, 2);
+});
+
+test('Sensor readiness is rechecked after a slow context read or clock rollback', async () => {
+  for (const sampleAt of [start - 361_000, start + 1, NaN, null]) {
+    const sample = harness();
+    sample.context.signals = { left: { state: 'ready', reason: 'Ready when read', latestHeartRate: 60,
+      baselineHeartRate: 60, baselineDays: 8, sampleAt, snoring: 'unavailable' } };
+    await sample.controller.configure('left', { ...active, sensorAware: true });
+    await sample.tick();
+    assert.equal(sample.sent.length, 0);
+    assert.match((await sample.controller.status('left')).decision.reason, /expired/);
+  }
 });
 
 test('Cancelled manual requests cannot pause adaptive comfort after waiting in its queue or loading state', async () => {

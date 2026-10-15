@@ -1,5 +1,5 @@
 
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="c440c3e6-fc56-575e-b117-2fbcd308b34f")}catch(e){}}();
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="1aa84922-bef0-502f-b4e1-a7274e616829")}catch(e){}}();
 import { comfortConfigSchema } from './types.js';
 import { decideComfort, learnComfort, MANUAL_PAUSE_MS, routineAt } from './policy.js';
 import { entryShift, phaseAdjustedWindow } from '../autopilot/timing.js';
@@ -163,8 +163,10 @@ export class ComfortController {
             const original = routineAt(snapshot.schedules[side], snapshot.settings.timeZone, now);
             let window = original;
             const signals = snapshot.signals?.[side];
+            const sensorReady = signals?.state === 'ready' && signals.sampleAt !== null
+                && Number.isFinite(signals.sampleAt) && now >= signals.sampleAt && now - signals.sampleAt <= 360_000;
             if (original && state.config.sensorAware && state.config.followBedtime && state.config.mode !== 'off') {
-                if (state.timingSession !== original.session && signals?.state === 'ready') {
+                if (state.timingSession !== original.session && sensorReady) {
                     const shift = entryShift(original, snapshot.presence[side], now);
                     if (shift !== null) {
                         state.timingSession = original.session;
@@ -185,9 +187,10 @@ export class ComfortController {
             const decision = decideComfort({ state, window, now, device: snapshot.device, presence: snapshot.presence[side], side,
                 preferences: snapshot.settings[side], eitherAway: snapshot.settings.left.awayMode || snapshot.settings.right.awayMode });
             if (state.config.sensorAware && decision.eligible) {
-                if (signals?.state !== 'ready') {
+                if (!sensorReady) {
                     decision.eligible = false;
-                    decision.reason = signals?.reason ?? 'Waiting for Pod vital estimates and a personal baseline.';
+                    decision.reason = signals?.state === 'ready' ? 'Pod vital estimates expired before this comfort check completed.'
+                        : signals?.reason ?? 'Waiting for Pod vital estimates and a personal baseline.';
                 }
                 else if (decision.proposedF !== null && original) {
                     // Sensor-aware control moves one degree per check and never exceeds ±3°F from the unchanged routine.
@@ -265,4 +268,4 @@ export class ComfortController {
     }
 }
 //# sourceMappingURL=controller.js.map
-//# debugId=c440c3e6-fc56-575e-b117-2fbcd308b34f
+//# debugId=1aa84922-bef0-502f-b4e1-a7274e616829

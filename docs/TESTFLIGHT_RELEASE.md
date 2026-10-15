@@ -7,7 +7,9 @@ Release preparation: 14 October 2026, America/Los_Angeles.
 - App Store Connect app: [6822950204](https://appstoreconnect.apple.com/apps/6822950204).
 - Candidate: version `0.1.0`, build `3`, iPhone and iPad, iOS 18 or newer.
 - Internal group: Free Sleep Internal, with the requested owner account added. Builds are assigned explicitly; automatic distribution is off.
-- Status: build 3 signed archive and exported IPA verified. Xcode reported upload success at 17:54 PDT on 14 October 2026; Apple lists build 3 as Processing. Build 2 remains assigned to the internal group until its replacement is available.
+- Build 3 identifier: `38e827ef-ca41-41c0-a700-84361926be23`.
+- The separate external Individual Testers flow remains pending the owner’s beta-review contact phone number and Apple beta review. This does not prevent the existing internal-group assignment.
+- Status: build 3 signed archive and exported IPA verified. Xcode reported upload success at 17:54 PDT on 14 October 2026. Apple completed processing, and Safari confirmed build 3 assigned to Free Sleep Internal with one tester. Build 2 has not yet been expired: the Mac locked before that Safari action could be completed.
 
 ## Signing and packaging
 
