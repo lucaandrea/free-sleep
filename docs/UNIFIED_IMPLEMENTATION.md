@@ -128,7 +128,7 @@ Core `8f5fccd` adds per-alarm snooze duration/taper across the original alarm
 editor, imported bedtime routines, tap gestures and HomeKit. Generated migrations
 and the offline importer preserve configuration and ownership. Older clients
 cannot overwrite a custom bedtime snooze with omitted fields. Capabilities
-advertise snooze support explicitly while the owned curve library stays pending.
+advertise snooze support explicitly with the owned curve library added by the later integration below.
 The [client handoff](CLIENT_INTEGRATION_HANDOFF.md#per-alarm-snooze-reviewed-core-follow-up)
 records units, fallback semantics and software validation.
 
@@ -138,3 +138,37 @@ power routine and zero enabled alarms; both original database hashes remained
 unchanged. The private record is at
 `~/Downloads/SleepyPod-Snooze-Rehearsal-2026-10-25/snooze-verification.json`.
 This does not change the working controller or satisfy attended vibration tests.
+
+
+## Schedule library and Watch references
+
+Core PR #6 (`0389b09`) adds owned calendar curves while refusing to rewrite
+imported overnight routines. Paused rows remain paused and API results distinguish
+saved data from scheduler registration. Its 5,301-test push gate, production
+build and eight browser workflows passed; a private offline upgrade preserved
+all 14 complete routines and claimed no imported sides.
+
+Core PR #7 (`94e35ad`) stores Watch respiratory rate and HRV SDNN as distinct
+reference series, including authenticated bounded queries, explicit unit/source
+handling, import provenance and repeat-export deduplication. Its 5,369-test push
+gate, production build, 57 Python tests and nine browser workflows passed across
+the full run and a corrected locator rerun. Existing Pod measurements and source
+backups stayed unchanged. Details and client caveats are in the
+[handoff](CLIENT_INTEGRATION_HANDOFF.md#apple-watch-respiratory-rate-and-sdnn-references).
+
+Both follow-ups remain software/offline evidence. The working Pod is still on
+Free Sleep; physical qualification, a compatible deployed origin, real Watch
+comparisons and seven Preview nights remain outstanding.
+
+## Main integration and inert runtime verification
+
+The owner requested that completed work merge into `main`. Core PRs #1–#8 and
+Free Sleep installation PR #4 are now merged. The installation merge preserves
+the complete handoff and removes previously tracked generated ESP files under
+the existing ignore rules; source, locks, defaults and documentation remain.
+All 9,864 local generated files were hash-verified unchanged during untracking.
+
+The final offline Core bundle (`0051feb`) passed its actual Pod dependency probe
+using Node 24.22.1, SQLite in memory and image encoding. No controller was started,
+and the three existing control/stream/firmware service process IDs were unchanged.
+The cutover and physical/overnight gates above remain required.
