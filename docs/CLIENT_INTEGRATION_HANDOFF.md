@@ -17,7 +17,9 @@ Native and embedded clients send `Authorization: Bearer <owner connection key>` 
 
 `GET /api/auth/session` returns `{configured: boolean, authenticated: boolean}` without requiring credentials. Missing server key closes protected endpoints with 503; invalid/missing credentials return 401. Browser login is `POST /api/auth/session` with `{token}` and matching Origin; logout is DELETE on the same path. Browser cookies expire after 12 hours.
 
-The raw sensor WebSocket currently listens on port 3001. Its Bearer handshake is authenticated; browser sessions also enforce the configured hostname. Private HTTPS proxying must retain the original Host/Origin. See Core's `docs/OWNER_ACCESS.md`. The actual home HTTPS proxy is still being configured; no public relay is available.
+The raw sensor WebSocket currently listens on port 3001. Its Bearer handshake is authenticated; browser sessions also enforce the configured hostname. Private HTTPS proxying must retain the original Host/Origin. See Core's `docs/OWNER_ACCESS.md`.
+
+The Lenovo's private HTTPS service now reaches **Home Assistant**, with verified TLS, an authenticated API boundary and authenticated WebSocket handshake. It is **not a Core origin**. Core still has no deployed private origin or provisioned physical-device owner key. Keep native and bedside clients visibly unconfigured/offline until a qualified Core deployment supplies those values through protected local provisioning. Do not use the Home Assistant URL or credentials for Pod control. No public relay is available.
 
 | Capability | Implemented Core REST route | Important behavior |
 | --- | --- | --- |

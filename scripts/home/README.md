@@ -90,9 +90,63 @@ Both runtime and hypervisor installations returned 0 with no reboot required.
 No VirtualBox Extension Pack, USB passthrough or Python API component was installed.
 Homebridge and Tailscale services remained running after installation and VM boot.
 
-Still required: owner onboarding, authenticated MQTT, private HTTPS proxy,
-backup/restore, a stable guest address and full Windows restart testing. Do not
-claim those from a successful guest boot or startup-task registration.
+## Private access, broker and recovery
+
+The owner completed Home Assistant onboarding. The official Mosquitto app 7.1.2
+is running with start-on-boot and watchdog enabled. Home Assistant's MQTT
+integration is configured with its generated internal credentials. An anonymous
+MQTT connection was rejected (CONNACK `0x05`). Dedicated Pod credentials and
+topic permissions are still required before connecting the Pod.
+
+`Enable-PrivateHomeAccess.ps1` exposes the managed VM through the Windows host's
+existing Tailscale identity. Run it as administrator after the owner has enabled
+HTTPS certificates in Tailscale's DNS console and acknowledged the certificate
+hostname disclosure. The script refuses conflicting Serve handlers or relays.
+
+```powershell
+.\Enable-PrivateHomeAccess.ps1 -Action Enable
+.\Enable-PrivateHomeAccess.ps1 -Action Status
+# Removes only the service and loopback relay owned by this setup.
+.\Enable-PrivateHomeAccess.ps1 -Action Disable
+# Pure ownership checks; does not require administrator privileges or change services.
+.\Test-PrivateHomeAccess.ps1
+```
+
+```mermaid
+flowchart LR
+  Client[Authorized Tailscale device] -->|TLS 443| Serve[Lenovo Tailscale Serve]
+  Serve -->|Decrypted TCP| Relay[Windows loopback 127.0.0.1:18123]
+  Relay -->|LAN HTTP| HA[homeassistant.local:80]
+  HA --> Login[Home Assistant authentication]
+```
+
+This uses TLS-terminated TCP, retaining Home Assistant login and WebSocket
+authentication without adding trusted-proxy or authentication-bypass settings.
+The Windows relay listens only on loopback and resolves the guest's local
+hostname. No Funnel, router forwarding or tailnet access-rule changes are made.
+The saved Serve configuration persists across restarts; actual Windows reboot
+recovery remains untested. Preserve application authentication and restrict
+Tailscale access to authorized devices.
+
+Verified from the Mac: a valid TLS certificate, HTTP 401 on the unauthenticated
+API, WebSocket upgrade followed by `auth_required`, and no LAN access to the
+Windows loopback relay. The browser reaches Home Assistant's HTTPS login page.
+These checks do not establish a signed-in remote session or Pod connectivity.
+The Windows PowerShell parser, 13 service-ownership cases and an attended-host
+`-WhatIf` check also passed. Ownership checks reject additional ports, handlers,
+Funnel settings and destinations belonging to another setup.
+
+Automatic backups are configured daily, retaining seven copies, including
+Home Assistant settings/history, all installed apps and the shared folder.
+Two completed backups were visible on 2026-10-25. App updates now default to
+backing up first and retain one prior version. The owner saved the recovery key
+privately. Backups currently reside on the VM only: the browser download did
+not complete, so an off-host archive and a restore rehearsal remain pending.
+
+Still required: dedicated Pod MQTT credentials/ACLs, off-host backup and restore
+testing, stable guest addressing for dependent clients, and full Windows reboot
+testing. The setup SSH service is manual and will need an attended restart after
+a Windows reboot. No live Pod or household actuator was changed in this setup.
 
 Sources: [Microsoft OpenSSH installation](https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse),
 [Windows key authentication](https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_keymanagement),
@@ -100,4 +154,8 @@ Sources: [Microsoft OpenSSH installation](https://learn.microsoft.com/en-us/wind
 [Oracle installation](https://docs.oracle.com/en/virtualization/virtualbox/7.2/user/installation.html),
 [Oracle checksums](https://download.virtualbox.org/virtualbox/7.2.22/SHA256SUMS),
 [HAOS release](https://github.com/home-assistant/operating-system/releases/tag/18.3),
-[Home Assistant on Windows](https://www.home-assistant.io/installation/windows/).
+[Home Assistant on Windows](https://www.home-assistant.io/installation/windows/),
+[MQTT integration](https://www.home-assistant.io/integrations/mqtt/),
+[Mosquitto configuration](https://github.com/home-assistant/apps/blob/master/mosquitto/DOCS.md),
+[Tailscale Serve CLI](https://tailscale.com/docs/reference/tailscale-cli/serve),
+[Tailscale HTTPS certificates](https://tailscale.com/docs/how-to/set-up-https-certificates).
