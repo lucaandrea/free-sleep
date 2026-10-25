@@ -1,8 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"/Users/lucaandreacollins/Documents/GitHub/free-sleep/firmware/waveshare-amoled/test-build/preview/cmake_install.cmake",
-		"/Users/lucaandreacollins/Documents/GitHub/free-sleep/firmware/waveshare-amoled/test-build/preview/lvgl/cmake_install.cmake"
-	],
-	"Parallel" : false
-}

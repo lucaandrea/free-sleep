@@ -114,10 +114,27 @@ Its production build, all six isolated browser checks, 16 importer tests and
 4,432 related tests passed. The newer private recovery rehearsal verified all
 14 complete routines, including one enabled power routine and no enabled alarms.
 
-The subsequent `lucas-assistant/control-receipts` branch adds durable manual
+Merged Core PR #4 adds durable manual
 control request IDs and deadlines at the DAC/Bluetooth write boundary. It removes
 implicit write replay after socket failure, keeps acknowledgments separate from
 physical evidence and reports interrupted/partial operations as unknown. Its
 4,564-test push gate, production build and seven browser checks passed. See
 [client handoff](CLIENT_INTEGRATION_HANDOFF.md#immediate-control-receipts-core-follow-up).
 Neither follow-up has replaced the working Pod controller or started Preview nights.
+
+## Alarm snooze integration
+
+Core `8f5fccd` adds per-alarm snooze duration/taper across the original alarm
+editor, imported bedtime routines, tap gestures and HomeKit. Generated migrations
+and the offline importer preserve configuration and ownership. Older clients
+cannot overwrite a custom bedtime snooze with omitted fields. Capabilities
+advertise snooze support explicitly while the owned curve library stays pending.
+The [client handoff](CLIENT_INTEGRATION_HANDOFF.md#per-alarm-snooze-reviewed-core-follow-up)
+records units, fallback semantics and software validation.
+
+An offline upgrade of a separate copy of the saved Pod candidate passed integrity
+and real TypeScript ownership checks for all 14 routines. It retained one enabled
+power routine and zero enabled alarms; both original database hashes remained
+unchanged. The private record is at
+`~/Downloads/SleepyPod-Snooze-Rehearsal-2026-10-25/snooze-verification.json`.
+This does not change the working controller or satisfy attended vibration tests.
