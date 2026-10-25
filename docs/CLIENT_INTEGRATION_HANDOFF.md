@@ -4,8 +4,8 @@ Updated 2026-10-25. This is a coordination note, not a declaration that the Pod 
 
 ## Revisions and ownership
 
-- Core: `../sleepypod-core`, branch `lucas-assistant/unified-sleep`, revision `9ff9cd3` (offline migration and explicit overnight shutdowns; Preview feature `6b51f04`, validation/loading fixes `70e96a0`, signal validity `5767b40`, and demo unavailability `a016342`) (stable v3.4.0 baseline plus reviewed integration changes). Migration follow-up draft PR: https://github.com/lucaandrea/sleepypod-core/pull/2. Foundation PR #1 was merged into Core main at `3c3dccd`.
-- Free Sleep native foundation: branch `lucas-assistant/unified-sleepypod`, with the five-destination interface at `6dd26c5`. Draft PR: https://github.com/lucaandrea/free-sleep/pull/5.
+- Core: `../sleepypod-core`. Foundation PR #1 and migration PR #2 are merged into `main`, currently `50782ab`. Complete bedtime editing follows on `lucas-assistant/bedtime-routines` at `eeb8b49`; its versioned contract is described below. This remains a stable v3.4.0 baseline plus reviewed changes.
+- Free Sleep PR #5 is merged into `lucas-assistant/pod4-installation` at `a727c81`; installation PR #4 remains open against `main`. The current client owner separately maintains `../sleepypod-ios` and `firmware/`. This coordination change touches neither implementation.
 - The physical Pod still runs customized Free Sleep. Core is tested locally and has NOT replaced that controller. The home-host/Core work does not change client signing or App Store distribution.
 - Current Core validation: the personal comfort Preview passed 564 targeted tests, followed by 14 UI/runtime regression tests after browser review (one additional test). TypeScript, full ESLint and both Drizzle checks passed. The complete Preview push gate passed 3,124 tests; the final signal-validity/demo follow-up passed 2,745 related tests in 97 files, plus TypeScript/full ESLint/both Drizzle checks. Its focused runs passed 226 automation tests and 90 demo/contract/runtime tests. Earlier capability gates passed 1,249 and 435 tests. These are software checks, not hardware qualification.
 - Production Preview build passed. Isolated loopback checks verified owner authentication, status, Preview configuration, rejected active mode (412), rejected future check-ins (400), OpenAPI and separate Preview/active capabilities. Desktop and 390px browser checks verified the panel and synthetic check-ins. The local CI-mode server correctly showed no evaluated night and a stopped Preview runtime. The demo transport now returns an explicit live-Pod requirement and rejects comfort writes; 90 demo/contract/runtime tests passed. No real hardware or owner key was used.
@@ -52,6 +52,44 @@ The Lenovo's private HTTPS service now reaches **Home Assistant**, with verified
 | Rules | `/api/automations`, `/automations/status`, `/automations/kill-switch`, `/automations/dry-run` | Rules engine with separate consent; the personal learner currently produces Preview observations only. Missing settings default disabled. |
 
 MCP and raw actuator passthrough remain disabled by default. Embedded controls must use the narrow supported routes, not `/device/execute`.
+
+## Complete bedtime routine contract: Core follow-up
+
+Core commit `eeb8b49` adds authenticated `GET /api/v1/routines?side=left`
+and `POST /api/v1/routines`. Canonical details and the exact draft shape are in
+[Core's bedtime migration contract](https://github.com/lucaandrea/sleepypod-core/blob/eeb8b49/docs/FREE_SLEEP_MIGRATION.md#versioned-bedtime-api).
+
+This is required for imported Free Sleep routines: the selected weekday means
+**the night the routine starts**, and power times are independent of temperature
+phases. Power-only routines are valid. The web editor uses existing SleepyPod
+components; untouched calendar-only sides continue using the original editor.
+
+- GET returns `{version: 1, side, canCreate, routines}`. Each routine has
+  `dayOfWeek`, an opaque `revision`, and a complete `draft` containing `power`,
+  `temperatures`, nullable `alarm`, and `notes`.
+- POST sends `{side, changes}`. Each change supplies `dayOfWeek`,
+  `expectedRevision` (or null for an empty night), and `replacement` (or null to
+  delete). Moving a routine sends both the deletion and destination replacement
+  in **one** request. Every original is checked before any write; conflicts
+  return 409 and retain all prior data.
+- Keep the loaded revision with the unsaved draft. A refetch must not update
+  that baseline and silently authorize overwriting a newer edit.
+- New web routines default paused. Parent enablement gates the phases and alarm
+  without losing their individual preferences. Morning events wrap into the next
+  calendar day, including Saturday to Sunday.
+- `schedulerApplied` acknowledges registration separately from persisted data.
+  False means saved but registration pending; do not retry using old revisions.
+  Neither value proves hardware execution.
+- Older calendar mutation endpoints reject partial changes to managed routines
+  with 412. Read-only calendar APIs remain available. Clients need to adopt the
+  versioned editor before a migrated controller can replace Free Sleep.
+
+Validation at this revision: production build, TypeScript/full ESLint, 106
+focused router/editor tests, 16 synthetic importer tests and all six isolated
+production-browser tests. A private offline rehearsal verified all 14 routines
+against the newer recovery snapshot, preserving its one enabled power routine,
+zero phases and zero enabled alarms. The candidate was not started as a
+controller. Native adoption and physical Pod behavior remain unverified.
 
 ## Legacy Free Sleep comfort contract: compatibility pending
 
