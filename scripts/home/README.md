@@ -140,11 +140,22 @@ Automatic backups are configured daily, retaining seven copies, including
 Home Assistant settings/history, all installed apps and the shared folder.
 Two completed backups were visible on 2026-10-25. App updates now default to
 backing up first and retain one prior version. The owner saved the recovery key
-privately. Backups currently reside on the VM only: the browser download did
-not complete, so an off-host archive and a restore rehearsal remain pending.
+privately. After the in-app browser download failed, the owner downloaded a copy
+through Safari. Its outer archive and all five nested compressed archives passed
+integrity inspection; a checksum record and owner-only copy are saved outside
+Git in `~/Downloads/FreeSleep-Home-Recovery-2026-10-25/`. Home Assistant exported
+this copy decrypted (`protected: false`); the Mac reports FileVault enabled.
+This is an off-host copy and archive inspection, not a completed restore rehearsal.
 
-Still required: dedicated Pod MQTT credentials/ACLs, off-host backup and restore
-testing, stable guest addressing for dependent clients, and full Windows reboot
+The managed VM then passed graceful ACPI shutdown and restart through its SYSTEM
+startup task. MQTT recovered and still rejected anonymous connections. Private
+HTTPS recovered with a valid certificate, API authentication and WebSocket
+`auth_required`. Homebridge and Tailscale remained running. The one-time shutdown
+test task was removed after recording successful stop/start results. A Windows
+host reboot and a changed guest DHCP lease are separate, still-unperformed tests.
+
+Still required: dedicated Pod MQTT credentials/ACLs, restore testing,
+stable guest addressing for dependent clients, and full Windows reboot
 testing. The setup SSH service is manual and will need an attended restart after
 a Windows reboot. No live Pod or household actuator was changed in this setup.
 
