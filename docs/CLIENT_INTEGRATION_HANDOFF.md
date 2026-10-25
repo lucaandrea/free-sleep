@@ -4,8 +4,8 @@ Updated 2026-10-25. This is a coordination note, not a declaration that the Pod 
 
 ## Revisions and ownership
 
-- Core: `../sleepypod-core`. Foundation PR #1, migration PR #2 and complete bedtime PR #3 are merged into `main`, currently `151ba43`. The bedtime implementation is `eeb8b49`; the subsequent control-receipt implementation is `7af9f07`. This remains a stable v3.4.0 baseline plus reviewed changes.
-- Free Sleep PR #5 and bedtime handoff PR #6 are merged into `lucas-assistant/pod4-installation`, currently `0a094e2`; installation PR #4 remains open against `main`. The current client owner separately maintains `../sleepypod-ios` and `firmware/`. This coordination change touches neither implementation.
+- Core: `../sleepypod-core`. Foundation PR #1, migration PR #2, complete bedtime PR #3 and control-receipt PR #4 are merged into `main`, currently `b00cc48`. The bedtime implementation is `eeb8b49`; the subsequent control-receipt implementation is `7af9f07`. This remains a stable v3.4.0 baseline plus reviewed changes.
+- Free Sleep PR #5, bedtime handoff PR #6 and control handoff PR #7 are merged into `lucas-assistant/pod4-installation`, currently `98d7f3b`; installation PR #4 remains open against `main`. The current client owner separately maintains `../sleepypod-ios` and `firmware/`. This coordination change touches neither implementation.
 - The physical Pod still runs customized Free Sleep. Core is tested locally and has NOT replaced that controller. The home-host/Core work does not change client signing or App Store distribution.
 - Current Core validation: the personal comfort Preview passed 564 targeted tests, followed by 14 UI/runtime regression tests after browser review (one additional test). TypeScript, full ESLint and both Drizzle checks passed. The complete Preview push gate passed 3,124 tests; the final signal-validity/demo follow-up passed 2,745 related tests in 97 files, plus TypeScript/full ESLint/both Drizzle checks. Its focused runs passed 226 automation tests and 90 demo/contract/runtime tests. Earlier capability gates passed 1,249 and 435 tests. These are software checks, not hardware qualification.
 - Production Preview build passed. Isolated loopback checks verified owner authentication, status, Preview configuration, rejected active mode (412), rejected future check-ins (400), OpenAPI and separate Preview/active capabilities. Desktop and 390px browser checks verified the panel and synthetic check-ins. The local CI-mode server correctly showed no evaluated night and a stopped Preview runtime. The demo transport now returns an explicit live-Pod requirement and rejects comfort writes; 90 demo/contract/runtime tests passed. No real hardware or owner key was used.
@@ -220,16 +220,46 @@ push gate passed 4,564 tests across 230 files, both Drizzle checks and 16
 offline importer tests. Syncing the merged bedtime base did not change the tree. SQLite and
 transport failure checks used simulated hardware.
 
-Upstream alarm snooze support at `5cb54f2` has been identified for the next
-reviewed integration: `snoozeDuration` 60–1800 seconds (default 300) and
-`snoozeTaper` 0/30/40/50/60 (default 0). Those fields are **not yet supported** by
-this Core revision. The existing bedtime contract must be extended to preserve
-them before support can be advertised to the native client. Upstream also has
-an owned curve-library API (`PUT /curve-templates`, `POST /curve-templates/active`)
-with per-side day claims. It must coexist with complete overnight routine
-ownership without silently deleting imported rows. Both integrations need
-explicit capability flags so empty alarm/template collections are unambiguous;
-legacy fallback remains required until that reviewed integration is published.
+## Per-alarm snooze: reviewed Core follow-up
+
+Core commit `8f5fccd` integrates upstream `5cb54f2` with the imported bedtime
+contract. [Canonical snooze contract](https://github.com/lucaandrea/sleepypod-core/blob/8f5fccd/docs/ALARM_SNOOZE.md).
+
+- `features.alarmSnooze.implemented` explicitly advertises support, including
+  when the controller has no alarms. Use this flag instead of inspecting an
+  empty collection. Its ready state describes software settings, not physical
+  vibration qualification; check `wakeVibration` separately for runtime status.
+- Scheduled alarms and non-null bedtime `draft.alarm` carry `snoozeDuration`
+  in seconds (60–1800, default 300) and `snoozeTaper` (0/30/40/50/60, default 0).
+  Preserve both fields through edits, copies and overnight moves. A custom
+  bedtime alarm replaced by an older client omitting either field returns 412
+  atomically; default-only older clients remain compatible.
+- Tap and HomeKit snooze use the ringing alarm's settings and persisted repeat
+  count. The first snooze is full length; later snoozes shorten by the chosen
+  percentage, with a five-second floor. The explicit-duration manual snooze API
+  is unchanged. The app's explicit five-minute action must not be represented
+  as applying per-alarm taper.
+- Schema upgrade and offline import carry over the first configured snoozing
+  alarm tap for each side. Differing legacy tap lengths are flagged for review.
+  Imported ownership IDs, parent/child enablement and unrelated settings remain
+  intact. The repeat timer rechecks cancellation and lateness after waiting for
+  the shared side lock.
+- `features.curveLibrary.implemented` explicitly remains false. The upstream
+  owned library (`PUT /curve-templates`, `POST /curve-templates/active`) is still
+  a separate integration; legacy fallback remains required.
+
+Validation: the final push gate passed 5,225 tests across 310 files (17 tests and
+one file skipped), TypeScript, full ESLint and both Drizzle checks. Production
+build, 17 importer tests, 221 focused tests and a later
+43-test gesture/settings run passed. All seven production browser scenarios
+passed across the initial run and a corrected routine-locator rerun. A new
+private SQLite backup of the actual saved candidate upgraded all 14 owned
+routines, preserving one enabled power routine and zero enabled alarms. Source
+hashes remained unchanged. No controller was started or hardware commanded.
+
+This feature is published source, not a deployed Core origin. Client adoption,
+physical vibration qualification and seven real Preview nights remain separate
+acceptance steps. Native and ESP32 source files are owned by the other task.
 
 ## Offline migration and overnight schedule contract
 
