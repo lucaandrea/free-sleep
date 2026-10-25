@@ -1,6 +1,6 @@
 # Free Sleep web, iPhone and Pod setup
 
-Free Sleep was installed on the owner's Pod 4 on 2026-10-25. The live web/API, authentication, database and Franken hardware connection were checked with the mattress cover disconnected. Physical temperature control, live biometric accuracy, adjustable-base motion and unattended adaptive comfort still require qualification. Subscription expiry alone does not install Free Sleep or establish access to its hardware.
+Free Sleep was installed on the owner's Pod 4 on 2026-10-25. After reassembly, reboot recovery, authenticated web/API access, the database, Franken hardware connection, live cover sensor stream and both empty-bed calibration baselines were verified. An attended temperature test established a physical difference between the two sides; sustained cooling, biometric accuracy, adjustable-base motion and unattended adaptive comfort still require qualification. Subscription expiry alone does not install Free Sleep or establish access to its hardware.
 
 Adaptive comfort is off by default. Its [configuration and qualification guide](ADAPTIVE_COMFORT.md) describes preview mode, feedback learning, temperature limits, manual pauses and the required presence heartbeat. Update the Python biometrics service alongside the server before evaluating this feature.
 
@@ -23,6 +23,10 @@ For an audited offline deployment, the installer accepts `FREE_SLEEP_ARCHIVE_URL
 Before takeover, confirm the socket in `systemctl show frank.service --property=Environment --value`. Some firmware has no `/opt/eight/bin/frank.sh`; record the verified absolute `DAC_SOCKET` path in `/persistent/free-sleep-data/dac_sock_path.txt` before starting Free Sleep. Keep the `frank` and `capybara` hardware services running. Stop the stock `dac` service when handing the socket to Free Sleep.
 
 The biometrics service launches from the `biometrics` directory using `python -m stream.stream`. Package-qualified imports also preserve the older direct-script launch; `stream.py` must not shadow the `stream` package. Verify the complete processing import graph and the running service, not only that its dependencies import. With the cover disconnected, dependency installation and a live NATS subscription do not establish receipt of usable sensor data. Defer calibration and thermal tests until reassembly and reconnection.
+
+The owner's reconnected cover supplied current piezo and capacitance data with no decoding errors. Both calibration baselines passed the existing stability checks over a five-minute empty-bed window, with 284 distinct seconds of matching data per side, and were saved as the service user. The cover had remained filled, so priming was not requested.
+
+During a four-minute attended test with five-minute firmware timers, the Pod reported the left side warming from 65°F to its 75°F target and the right falling from 65°F to 64°F toward a 60°F target. The owner felt one side warmer and the other cooler, with no leaks or unusual noise. This did not demonstrate sustained cooling to 60°F or full-range performance. After stopping, fresh telemetry confirmed both sides off, zero seconds remaining and the original targets restored; the initial post-command read was still stale. Verify the reported state after every stop rather than treating an HTTP acknowledgement as physical confirmation. Adaptive comfort and automatic schedules remained off.
 
 ## Build and local development
 
