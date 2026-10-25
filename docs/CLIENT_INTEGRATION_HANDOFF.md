@@ -4,11 +4,11 @@ Updated 2026-10-25. This is a coordination note, not a declaration that the Pod 
 
 ## Revisions and ownership
 
-- Core: `../sleepypod-core`, branch `lucas-assistant/unified-sleep`, revision `70e96a0` (Preview feature `6b51f04`, followed by schema/lifecycle and loading-state validation) (stable v3.4.0 baseline plus reviewed integration changes). Draft PR: https://github.com/lucaandrea/sleepypod-core/pull/1.
+- Core: `../sleepypod-core`, branch `lucas-assistant/unified-sleep`, revision `a016342` (Preview feature `6b51f04`, validation/loading fixes `70e96a0`, signal validity `5767b40`, and explicit demo unavailability) (stable v3.4.0 baseline plus reviewed integration changes). Draft PR: https://github.com/lucaandrea/sleepypod-core/pull/1.
 - Free Sleep native foundation: branch `lucas-assistant/unified-sleepypod`, with the five-destination interface at `6dd26c5`. Draft PR: https://github.com/lucaandrea/free-sleep/pull/5.
 - The physical Pod still runs customized Free Sleep. Core is tested locally and has NOT replaced that controller. The home-host/Core work does not change client signing or App Store distribution.
-- Current Core validation: the personal comfort Preview passed 564 targeted tests, followed by 14 UI/runtime regression tests after browser review (one additional test). TypeScript, full ESLint and both Drizzle checks passed. Earlier capability gates passed 1,249 and 435 tests. These are software checks, not hardware qualification.
-- Production Preview build passed. Isolated loopback checks verified owner authentication, status, Preview configuration, rejected active mode (412), rejected future check-ins (400), OpenAPI and separate Preview/active capabilities. Desktop and 390px browser checks verified the panel and synthetic check-ins. The local CI-mode server correctly showed no evaluated night and a stopped Preview runtime. No real hardware or owner key was used.
+- Current Core validation: the personal comfort Preview passed 564 targeted tests, followed by 14 UI/runtime regression tests after browser review (one additional test). TypeScript, full ESLint and both Drizzle checks passed. The complete Preview push gate passed 3,124 tests; the final signal-validity/demo follow-up passed 2,745 related tests in 97 files, plus TypeScript/full ESLint/both Drizzle checks. Its focused runs passed 226 automation tests and 90 demo/contract/runtime tests. Earlier capability gates passed 1,249 and 435 tests. These are software checks, not hardware qualification.
+- Production Preview build passed. Isolated loopback checks verified owner authentication, status, Preview configuration, rejected active mode (412), rejected future check-ins (400), OpenAPI and separate Preview/active capabilities. Desktop and 390px browser checks verified the panel and synthetic check-ins. The local CI-mode server correctly showed no evaluated night and a stopped Preview runtime. The demo transport now returns an explicit live-Pod requirement and rejects comfort writes; 90 demo/contract/runtime tests passed. No real hardware or owner key was used.
 
 ## Implemented Core transport
 
@@ -34,13 +34,13 @@ The Lenovo's private HTTPS service now reaches **Home Assistant**, with verified
 | Base preset/Stop | `POST /api/base/preset`, `POST /api/base/stop` | Presets `flat`, `sleep`, `relax`, `read`; keep Stop prominent. Actual bed movement/Stop is unqualified. |
 | Base reconnect | `POST /api/base/reconnect` | Free Sleep uses a different `/base/connect` route. |
 | Alarm vibration | `POST /api/device/alarm`, `/device/alarm/clear`, `/device/alarm/snooze` | Software routes exist; Pod 4 routing/pattern/intensity/duration remain unqualified. No music capability claim. |
-| Rules | `/api/automations`, `/automations/status`, `/automations/kill-switch`, `/automations/dry-run` | Upstream rule engine, separate from the not-yet-wired personal learner. Missing settings default disabled. |
+| Rules | `/api/automations`, `/automations/status`, `/automations/kill-switch`, `/automations/dry-run` | Rules engine with separate consent; the personal learner currently produces Preview observations only. Missing settings default disabled. |
 
 MCP and raw actuator passthrough remain disabled by default. Embedded controls must use the narrow supported routes, not `/device/execute`.
 
-## Personal comfort: not yet exposed by Core
+## Legacy Free Sleep comfort contract: compatibility pending
 
-Core `src/comfort/policy.ts` now contains the pure bounded learner/decision policy. `TemperatureController.replacePolicy` admits isolated, expiring proposals under the existing side lock. No production producer, settings persistence, schedule-window adapter, acknowledgment store or comfort REST router is connected yet. A client must display this feature as unavailable on this Core revision.
+Core implements a persisted Preview service and a separate v1 API, described below. Active personal comfort and the legacy response adapter remain unavailable. `TemperatureController.replacePolicy` admits isolated, expiring proposals under the existing side lock, but no active producer or durable actuator acknowledgment store is connected yet.
 
 The compatibility implementation should preserve these existing Free Sleep contracts:
 
@@ -66,7 +66,7 @@ type ComfortStatus = {
 // POST comfort/mode: {side, mode} -> HTTP 204
 ```
 
-Defaults: Off, 70–95°F, at most 1°F per correction, 30-minute interval, bounded ±3°F learned offset, persisted six-hour pause after manual changes. Preview records proposals without issuing controls. Missing/stale/future sensors, low/unknown water, unoccupied bed, priming, vibration, base movement and alarm windows withhold correction. The global Autopilot setting must also gate every runtime proposal. Heart rate alone is not a reason to autonomously change posture.
+Defaults: Off, 70–95°F, at most 1°F per correction, 30-minute interval, bounded ±3°F learned offset, persisted six-hour pause after manual changes. Preview records proposals without issuing controls. Missing/stale/future sensors, low/unknown water, unoccupied bed, priming, vibration, base movement and alarm windows withhold correction. The global Autopilot setting must gate future active control as well as its own rules; the separate Preview service cannot issue controls. Heart rate alone is not a reason to autonomously change posture.
 
 ## Core personal comfort Preview: implemented
 
@@ -76,7 +76,7 @@ These are new typed Core contracts, **not** the legacy Free Sleep response shape
 above. Status returns nullable `state`, `decision`, `evaluatedAt`, a `fault`,
 recent `history`, the service `runtime`, `generatedAt`, `timezone`, `deviceDate`
 and explicit unavailable activation/adapter flags. Times use epoch milliseconds.
-Canonical details: [Personal comfort Preview](https://github.com/lucaandrea/sleepypod-core/blob/6b51f04/docs/PERSONAL_COMFORT_PREVIEW.md).
+Canonical details: [Personal comfort Preview](https://github.com/lucaandrea/sleepypod-core/blob/a016342/docs/PERSONAL_COMFORT_PREVIEW.md).
 
 Preview defaults Off, reads fresh Pod/calibrated presence and actual schedule
 events, learns from local-date check-ins, and journals proposals without issuing
@@ -91,6 +91,17 @@ service is running. `features.personalComfort` remains unavailable for active
 control. Do not treat Preview eligibility or a configuration acknowledgment as
 physical control, an observed sleep night, or evidence of sleep improvement.
 No client-facing Core origin has been deployed yet.
+
+## General automation signal validity
+
+Core's rules engine now requires healthy DAC reports under fifteen seconds old,
+non-future finite biometric/environmental readings, and fresh capacitance
+sample and receipt timestamps. Historical windows cannot keep a rule active
+when its current source disappears. Live policy requests withdraw when an
+action or trigger input becomes unavailable, even between trigger times.
+Explicit one-shot holds retain their bounded expiry. These changes do not
+qualify the physical signals or connect room sensors. See Core's
+[signal-validity contract](https://github.com/lucaandrea/sleepypod-core/blob/a016342/docs/AUTOMATION_SIGNAL_VALIDITY.md).
 
 ## Compatibility API: proposed, NOT implemented
 
@@ -109,7 +120,7 @@ The client-side Apple Health, local-model, cloud consent/Keychain and HomeKit/Sh
 
 ## Capability negotiation: v1 implemented
 
-**`GET /api/v1/capabilities`** is authenticated and implemented, also available as tRPC `capabilities.get({})` and in generated OpenAPI. The canonical schema and semantics are in Core's [contract](https://github.com/lucaandrea/sleepypod-core/blob/6b51f04/src/capabilities/contract.ts) and [client documentation](https://github.com/lucaandrea/sleepypod-core/blob/6b51f04/docs/CLIENT_CAPABILITIES.md).
+**`GET /api/v1/capabilities`** is authenticated and implemented, also available as tRPC `capabilities.get({})` and in generated OpenAPI. The canonical schema and semantics are in Core's [contract](https://github.com/lucaandrea/sleepypod-core/blob/a016342/src/capabilities/contract.ts) and [client documentation](https://github.com/lucaandrea/sleepypod-core/blob/a016342/docs/CLIENT_CAPABILITIES.md).
 
 - `apiVersion: 1`; `controller` identifies `sleepypod-core`, upstream baseline and nullable build revision.
 - `endpoints.nativeCompatibility` is a nullable API path, currently **null**. Do not call `/api/native/v1/` yet.
