@@ -10,7 +10,7 @@ Description=Free Sleep Streamer
 After=network.target
 
 [Service]
-ExecStart=/home/dac/venv/bin/python /home/dac/free-sleep/biometrics/stream/stream.py
+ExecStart=/home/dac/venv/bin/python -m stream.stream
 WorkingDirectory=/home/dac/free-sleep/biometrics/
 Restart=always
 User=dac

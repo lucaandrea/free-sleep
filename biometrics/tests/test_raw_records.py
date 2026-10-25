@@ -22,7 +22,7 @@ sys.path.insert(0, str(biometrics_path))
 test_logger = Mock()
 with patch.dict(sys.modules, {
     'get_logger': Mock(get_logger=Mock(return_value=test_logger)),
-    'stream_processor': Mock(),
+    'stream.stream_processor': Mock(),
     'service_health': Mock(),
 }):
     import load_raw_files
@@ -111,6 +111,10 @@ class RawConsumerTests(unittest.TestCase):
         test_logger.reset_mock()
         raw_stream.piezo_record_queue = queue.Queue()
         self.timestamp = int(datetime.now().timestamp())
+        # RAW fixtures must stay independent of any NATS server on the test host.
+        nats_probe = patch.object(load_raw_files, 'is_nats_running', return_value=False)
+        nats_probe.start()
+        self.addCleanup(nats_probe.stop)
 
     def create_handler(self, raw_file):
         handler = raw_stream.LatestRawFileHandler.__new__(raw_stream.LatestRawFileHandler)

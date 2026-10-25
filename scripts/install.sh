@@ -4,7 +4,7 @@ set -euo pipefail
 
 # --------------------------------------------------------------------------------
 # Variables
-REPO_URL="https://github.com/throwaway31265/free-sleep/archive/refs/heads/main.zip"
+REPO_URL="${FREE_SLEEP_ARCHIVE_URL:-https://github.com/lucaandrea/free-sleep/archive/refs/heads/main.zip}"
 ZIP_FILE="free-sleep.zip"
 REPO_DIR="/home/dac/free-sleep"
 SERVER_DIR="$REPO_DIR/server"
@@ -28,11 +28,13 @@ done
 # --------------------------------------------------------------------------------
 # Download the repository
 echo "Downloading the repository..."
-curl -L -o "$ZIP_FILE" "$REPO_URL"
+curl --fail --location --output "$ZIP_FILE" "$REPO_URL"
 
 echo ""
 echo "Unzipping the repository..."
 unzip -o -q "$ZIP_FILE"
+test -f free-sleep-main/server/package.json
+test -f free-sleep-main/server/dist/server.js
 echo "Removing the zip file..."
 rm -f "$ZIP_FILE"
 
@@ -181,16 +183,10 @@ fi
 
 
 
-migration_failed="false"
-
+# Apply checked-in migrations without creating development migrations on the Pod.
 echo "Running Prisma migrations..."
-if sudo -u "$USERNAME" bash -c "cd '$SERVER_DIR' && /home/$USERNAME/.volta/bin/npm run migrate deploy"; then
-  echo "Prisma migrations completed successfully."
-else
-  migration_failed="true"
-  echo -e "\033[33mWARNING: Prisma migrations failed! \033[0m"
-fi
-
+sudo -u "$USERNAME" bash -c "cd '$SERVER_DIR' && /home/$USERNAME/.volta/bin/npm run migrate:deploy"
+echo "Prisma migrations completed successfully."
 
 echo ""
 
@@ -333,7 +329,3 @@ cat /persistent/free-sleep-data/dac_sock_path.txt 2>/dev/null || echo "No dac.so
 
 echo -e "\033[0;32mInstallation complete! The Free Sleep server is running and will start automatically on boot.\033[0m"
 echo -e "\033[0;32mSee logs with: journalctl -u free-sleep --no-pager --output=cat\033[0m"
-
-if [ "$migration_failed" = "true" ]; then
-  echo -e "\033[33mWARNING: Prisma migrations failed! A backup of your database prior to the migration was saved to /persistent/free-sleep-data/free-sleep-copy.db \033[0m"
-fi

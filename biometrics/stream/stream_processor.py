@@ -17,8 +17,8 @@ with new sensor data to continuously track and analyze biometric trends.
 """
 import sys
 from get_logger import get_logger
-from biometric_processor import BiometricProcessor
-from buffer import Buffer
+from stream.biometric_processor import BiometricProcessor
+from stream.buffer import Buffer
 from data_types import *
 import numpy as np
 

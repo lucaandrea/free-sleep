@@ -14,18 +14,17 @@ Key functionalities:
 
 Usage:
 This is set up to run as a systemctl service, but you can manually run it with:
-/home/dac/venv/bin/python /home/dac/free-sleep/biometrics/stream/stream.py
+cd /home/dac/free-sleep/biometrics && /home/dac/venv/bin/python -m stream.stream
 """
 
 import sys
-import platform
+from pathlib import Path
 import cbor2
 from datetime import datetime, timedelta
 import asyncio
 
-if platform.system().lower() == 'linux':
-    sys.path.append('/home/dac/free-sleep/biometrics/')
-    sys.path.append('/home/dac/free-sleep/biometrics/stream/')
+# Preserve direct-script launches without letting stream.py shadow the stream package.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import time
 import os
@@ -41,7 +40,7 @@ if __name__ == '__main__':
     time.sleep(30)
 logger = get_logger('free-sleep-stream')
 
-from stream_processor import StreamProcessor
+from stream.stream_processor import StreamProcessor
 from load_raw_files import load_piezo_row
 from raw_records import read_raw_record
 from service_health import update_health

@@ -1,0 +1,2 @@
+import{At as e,E as t}from"./ErrorBoundary-B1N7Ejfs.js";import{t as n}from"./api-BDjUZcBs.js";import{n as r}from"./Button-lSXejzBG.js";import{n as i}from"./schedulesSchema-Cfk3up4m.js";var a=()=>r({queryKey:[`useSchedules`],queryFn:async()=>{let e=await n.get(`/schedules`);return i.parse(e.data)}}),o=async e=>(await n.post(`/schedules/routine`,e)).data,s=e(),c=t((0,s.jsx)(`path`,{d:`M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z`}),`Add`),l=t((0,s.jsx)(`path`,{d:`M19 13H5v-2h14z`}),`Remove`);export{a as i,c as n,o as r,l as t};
+//# sourceMappingURL=Remove-tSu_7ssl.js.map

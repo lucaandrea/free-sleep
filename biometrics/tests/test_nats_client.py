@@ -34,7 +34,7 @@ class MissingNatsTests(unittest.TestCase):
         self.addCleanup(importer.stop)
         modules = patch.dict(sys.modules, {
             'get_logger': Mock(get_logger=Mock(return_value=Mock())),
-            'stream_processor': Mock(),
+            'stream.stream_processor': Mock(),
             'service_health': Mock(),
         })
         modules.start()
