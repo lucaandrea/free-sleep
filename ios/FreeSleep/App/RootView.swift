@@ -81,9 +81,9 @@ struct RootView: View {
         switch model.tab {
         case .tonight: TonightView()
         case .sleep: InsightsView()
-        case .coach: CoachView()
-        case .routines: RoutinesView()
-        case .settings: ConnectionsView()
+        case .autopilot: AutopilotView()
+        case .home: BedroomHomeView()
+        case .more: ConnectionsView()
         }
     }
     private func navigationButton(_ tab: SleepTab, horizontal: Bool) -> some View {

@@ -3,14 +3,17 @@ import SwiftUI
 struct BaseCard: View {
     @Environment(AppModel.self) private var model
     @Environment(\.colorScheme) private var scheme
+    @AppStorage("simpleBedView") private var simpleBedView = false
     @State private var head = 0.0
     @State private var feet = 0.0
     var body: some View {
         SleepCard(title: "Find your position", eyebrow: "POD ULTRA BASE", badge: "Experimental") {
             VStack(spacing: 0) {
-                BedPreview(head: head, feet: feet)
+                if simpleBedView { BedPreview(head: head, feet: feet) }
+                else { BedSceneView(head: head, feet: feet) }
                 Text("Position preview · moves the whole bed").sleepText(.caption).foregroundStyle(SleepTheme.secondary).frame(maxWidth: .infinity)
             }.padding(.horizontal, 16).padding(.vertical, 8).background(SleepTheme.canvas(scheme), in: .rect(cornerRadius: 12))
+            Toggle("Simple 2D preview", isOn: $simpleBedView).toggleStyle(SleepCheckboxStyle())
             ViewThatFits(in: .horizontal) {
                 HStack(spacing: 8) { presetButtons }
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())]) { presetButtons }

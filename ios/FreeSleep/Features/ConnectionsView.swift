@@ -9,11 +9,13 @@ struct ConnectionsView: View {
             PodConnectionCard(demo: model.demo)
             SleepCard(title: "Appearance", eyebrow: "YOUR SPACE") {
                 SleepFormField(title: "Color theme") {
-                    Picker("Color theme", selection: $appearance) { Text("Warm daylight").tag("light"); Text("Quiet night").tag("dark") }
+                    Picker("Color theme", selection: $appearance) { Text("Daylight").tag("light"); Text("Quiet night").tag("dark") }
                         .pickerStyle(.menu).labelsHidden().tint(SleepTheme.text).accessibilityLabel("Color theme")
                 }
             }
-            HomeConnectionCard()
+            SleepCard(title: "Routines & wake alarms") {
+                NavigationLink("Edit your routines") { RoutinesView() }.buttonStyle(SleepButtonStyle())
+            }
             HealthConnectionCard()
             SleepCard(title: "AI & personal history", eyebrow: "YOUR MODELS") {
                 Text("Choose Apple Intelligence, OpenAI, Gemini, Claude or your local Gemma server. Save your own API keys privately on this device.").foregroundStyle(SleepTheme.secondary)

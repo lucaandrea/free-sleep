@@ -2,28 +2,28 @@
 export const design = {
   colors: {
     accent: {
-      light: '#c6411c',
-      dark: '#ff926e'
+      light: '#2563eb',
+      dark: '#75b0ff'
     },
     canvas: {
-      light: '#faf6f1',
-      dark: '#191817'
+      light: '#f4f6f8',
+      dark: '#0d1420'
     },
     surface: {
       light: '#ffffff',
-      dark: '#252321'
+      dark: '#172132'
     },
     border: {
-      light: '#e8e2da',
-      dark: '#3c3834'
+      light: '#dce2eb',
+      dark: '#2b3a50'
     },
     text: {
-      light: '#181818',
-      dark: '#f6f1eb'
+      light: '#172132',
+      dark: '#eff4fc'
     },
     secondary: {
-      light: '#736a62',
-      dark: '#b3aaa2'
+      light: '#536277',
+      dark: '#a5b5cc'
     },
     success: {
       light: '#27835e',
@@ -42,16 +42,16 @@ export const design = {
       dark: '#ed929b'
     },
     primaryButton: {
-      light: '#c6411c',
-      dark: '#f6f1eb'
+      light: '#2563eb',
+      dark: '#75b0ff'
     },
     primaryButtonText: {
       light: '#ffffff',
-      dark: '#202020'
+      dark: '#0d1420'
     },
     bedLine: {
-      light: '#ed623a',
-      dark: '#ff926e'
+      light: '#3979d6',
+      dark: '#75b0ff'
     }
   },
   layout: {
