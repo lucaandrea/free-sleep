@@ -10,6 +10,21 @@ Updated 2026-10-25. This is a coordination note, not a declaration that the Pod 
 - Current Core validation: the personal comfort Preview passed 564 targeted tests, followed by 14 UI/runtime regression tests after browser review (one additional test). TypeScript, full ESLint and both Drizzle checks passed. The complete Preview push gate passed 3,124 tests; the final signal-validity/demo follow-up passed 2,745 related tests in 97 files, plus TypeScript/full ESLint/both Drizzle checks. Its focused runs passed 226 automation tests and 90 demo/contract/runtime tests. Earlier capability gates passed 1,249 and 435 tests. These are software checks, not hardware qualification.
 - Production Preview build passed. Isolated loopback checks verified owner authentication, status, Preview configuration, rejected active mode (412), rejected future check-ins (400), OpenAPI and separate Preview/active capabilities. Desktop and 390px browser checks verified the panel and synthetic check-ins. The local CI-mode server correctly showed no evaluated night and a stopped Preview runtime. The demo transport now returns an explicit live-Pod requirement and rejects comfort writes; 90 demo/contract/runtime tests passed. No real hardware or owner key was used.
 
+## Current client presentation
+
+The owner superseded the five-destination experiment in **Add SleepyPod iOS and
+ESP32 apps**, requesting SleepyPod's original UI with Free Sleep's added features
+restyled to match. The current native product is `../sleepypod-ios`, whose
+`Integration/VALIDATION.md` records original Temp/Schedule/Sleep tabs and release
+0.2.0 (7). Its local Xcode upload succeeded; the client task separately verified
+TestFlight assignments in Safari. Web parity must follow this current direction.
+The old native implementation in this repository remains a feature/service
+source, not the current product's presentation acceptance target.
+
+The same task owns the Waveshare firmware. The owner confirmed the redesigned
+screen and touch; a compatible LAN Core origin and protected key provisioning
+are still unavailable. Do not present its Preview UI as live Pod control.
+
 ## Implemented Core transport
 
 Use the controller origin plus `/api` for REST, or `/api/trpc` for tRPC. The authenticated `/api/openapi.json` is authoritative for exact request/response schemas; upstream `protect: false` metadata does **not** bypass this fork's route-level authentication.
@@ -161,3 +176,12 @@ history or claim they are Preview nights. Core's alarm temperature warm-up/hold
 also differs from Free Sleep and requires explicit migration review. Candidate
 reports always say `readyForCutover: false`. See [Core migration](https://github.com/lucaandrea/sleepypod-core/blob/9ff9cd3/docs/FREE_SLEEP_MIGRATION.md) for
 the complete translation and remaining gates.
+
+The working Pod now also has verified off-host installation and Bluetooth-state
+archives. All 45,126 installation entries and 70 Bluetooth entries restored into
+isolated private directories, and a fresh data backup passed the same importer.
+The running Free Sleep, sensor, SSH and Bluetooth processes were unchanged.
+This establishes file recovery only: live operational rollback, controller
+cutover and a compatible client origin remain pending. See the
+[recovery runbook](../scripts/migration/RECOVERY.md); do not provision clients
+against Home Assistant or infer physical acceptance from these archives.

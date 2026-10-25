@@ -6,7 +6,7 @@ Approved 25 October 2026. This file tracks implementation evidence; it is not a 
 
 - Core fork: https://github.com/lucaandrea/sleepypod-core, branch `lucas-assistant/unified-sleep`.
 - Upstream baseline: v3.4.0, `f8948b04586542fab1817aadc72b65a9c2988f8c`.
-- Independently implemented native app remains in this repository. No SleepyPod iOS source is imported.
+- The legacy native implementation remains in this repository. The current product client is maintained separately in `../sleepypod-ios`; the owner subsequently requested SleepyPod's original presentation with Free Sleep features added in that style. That client task records separate distribution permission and its release evidence in `Integration/VALIDATION.md`. No upstream native source is imported by this backend branch.
 - Pod owns hardware, scheduled temperature, wake alarms and bounded comfort policies.
 - Lenovo hosts Home Assistant OS, Mosquitto and private Tailscale access. Existing Homebridge/Apple Home pairings stay in place.
 
@@ -23,13 +23,13 @@ flowchart LR
 
 | Gate | Evidence required | State |
 | --- | --- | --- |
-| Recoverable migration | SQLite online backup, separate private configuration, restore rehearsal | Backup and offline candidate verified; full installation rollback and native/editor qualification still pending |
+| Recoverable migration | SQLite online backup, separate private configuration, restore rehearsal | Data candidate and installation/Bluetooth file restoration verified; live operational rollback and native/editor qualification still pending |
 | Core integration | Pod 4 occupancy, authentication, comfort arbitration, native compatibility | In progress |
-| Apps | Matching navigation and 3D controls; accessibility; real unavailable states | Five destinations and shared palette implemented; native 3D overview built and inspected in Simulator; full layout parity still pending |
+| Apps | Matching presentation and 3D controls; accessibility; real unavailable states | Earlier five-destination experiment superseded by owner direction in the client chat: original SleepyPod presentation. Separate native build 7 is recorded; corresponding web alignment and controller acceptance remain pending |
 | Home host | Windows/hypervisor/storage preflight, VM startup, broker and private access | VM running; owner onboarding complete; MQTT and private HTTPS verified; daily backups and an off-host archive verified; graceful VM stop/start recovered HTTPS/MQTT; Pod MQTT credentials, restore rehearsal and Windows reboot tests pending |
 | Physical controls | Attended base/Stop, vibration/cancel, presence and temperature checks | Pending |
 | Preview | At least seven actual nights, Apple Watch comparison, proposal review | Not started |
-| Active / TestFlight | All applicable gates; explicit evidence and release record | Not released |
+| Active / TestFlight | All applicable gates; explicit evidence and release record | Separate native UI build 0.2.0 (7) is reported in internal TestFlight; unified Core activation and hardware acceptance remain pending |
 
 Adaptive control, autonomous base movement and music remain disabled until their qualification gates pass. Simulated evidence cannot mark these gates complete. Keep the current Free Sleep installation and dedicated SSH service until the new controller has passed migration and recovery checks.
 
@@ -59,11 +59,47 @@ Adaptive control, autonomous base movement and music remain disabled until their
 - The offline Core importer at `9ff9cd3` now verifies archive hashes/membership, stages generated SQLite schemas and retains original metrics/journal/history privately. It preserves overnight event weekdays through an explicit next-day power-off field; existing Core rows retain their calendar-day default. Personal comfort starts Off, learning cursors/manual pauses are preserved, and imported capacitance profiles remain pending until their different threshold semantics are qualified. Fourteen importer tests and 398 focused scheduler/API/Preview/schema tests passed; the final 3,832-test push gate (182 files), TypeScript, full ESLint, both Drizzle checks and isolated production build also passed. Foundation Core PR #1 was merged separately at `3c3dccd`; migration work is in follow-up PR #2. A real-backup rehearsal created 14 disabled power rows, 14 disabled alarms, six gestures and two default-Off comfort states; that snapshot had no biometric rows or check-ins. It changed no Pod services. The candidate and source archives remain outside Git. See [Core migration](https://github.com/lucaandrea/sleepypod-core/blob/9ff9cd3/docs/FREE_SLEEP_MIGRATION.md) for alarm warm-up, overnight editor, historical API and full-installation rollback gates.
 
 
+## Installation recovery evidence
+
+The reviewed live inventory captured 45,126 installation entries and 70 separate
+Bluetooth-state entries. Both archives were downloaded and fully restored into
+isolated private directories on the FileVault-enabled Mac. A fresh transactional
+data backup also passed the offline Core importer, preserving the same disabled
+schedule/Off comfort defaults. All 40 local script tests passed, including 12 new
+recovery tests. The tool refuses existing destinations and archive traversal,
+verifies contents and metadata, and deliberately has no live restore-to-`/` mode.
+
+The aggregate private verification record confirms unchanged process IDs for
+Free Sleep, its sensor service, SSH and Bluetooth, plus a 401 response to an
+unauthenticated API request after capture. No controller or hardware state was
+changed. This is file-restoration evidence, not a boot image or proof of runtime
+rollback; original Linux permissions are recorded but not applied on the Mac.
+The [recovery runbook](../scripts/migration/RECOVERY.md) records inventory scope,
+artifact locations and the remaining attended rollback procedure.
+
+## Current client direction and separately owned release
+
+The owner's later instruction in **Add SleepyPod iOS and ESP32 apps** asks for
+SleepyPod's original iOS presentation, with no Free Sleep UI and the added
+features restyled to match. This supersedes the earlier five-destination visual
+experiment for client alignment. The sibling `sleepypod-ios/Integration/VALIDATION.md`
+records original Temp/Schedule/Sleep tabs, 270 unit and eight UI tests, signed
+0.2.0 (7), and Safari verification of the internal group/individual tester.
+The local upload log independently contains `Upload succeeded` and
+`EXPORT SUCCEEDED` at 13:09 PDT. Apple portal assignments were verified by the
+client task, not repeated by this backend task.
+
+The owner also confirmed that the redesigned Waveshare display fits its circle
+and touch works. That firmware remains owned by the client task and is visibly
+unconfigured until compatible Core access is provisioned. Neither a UI release
+nor this touch confirmation qualifies Pod movement, vibration, Apple permissions
+or overnight adaptation. Keep the physical-control and Preview gates open.
+
 ## Still required before controller migration
 
 1. Complete personal comfort vital-window/artifact and bedtime-phase adapters, then shared-authority application receipts and activation gates. The persisted Preview runtime and manual pause wiring are implemented.
 2. Add versioned measurements/control receipts and the native app's compatibility endpoints.
-3. Complete cutover and full-installation rollback around the tested offline importer. Qualify overnight editing, resolve changed alarm warm-up behavior and temporary overrides, and expose historical data without changing its metric definitions.
+3. Complete cutover and attended operational rollback around the tested offline importer and installation file-recovery rehearsal. Qualify overnight editing, resolve changed alarm warm-up behavior and temporary overrides, and expose historical data without changing its metric definitions.
 4. Add dedicated Pod MQTT credentials/ACLs, connect room context and notification delivery, and finish off-host restore and Windows recovery testing.
 5. Qualify actual presence, base movement/Stop and vibration/cancel with the owner. No hardware qualification is implied by demo screenshots.
 6. Record seven real Preview nights and review them before bounded activation and a new TestFlight release.
