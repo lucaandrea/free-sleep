@@ -4,6 +4,15 @@ on:
   pull_request:
 
 jobs:
+  private-access:
+    name: Windows private-access ownership
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Check Windows PowerShell syntax and service ownership
+        shell: powershell
+        run: ./scripts/home/Test-PrivateHomeAccess.ps1
+
   hosted:
     name: Replit build and gateway transport
     runs-on: ubuntu-latest
