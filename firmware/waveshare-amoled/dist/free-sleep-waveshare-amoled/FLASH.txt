@@ -1,6 +1,0 @@
-Verify the board and USB port first. Bed controls require attended hardware verification.
-Run from this extracted directory with ESP-IDF 5.5.5 activated:
-
-python -m esptool --chip esp32s3 --port YOUR_PORT write_flash --flash_mode dio --flash_size 16MB --flash_freq 80m 0x0 bootloader.bin 0x10000 free_sleep_bedside.bin 0x8000 partition-table.bin
-
-Do not erase flash on an update; NVS contains your connection settings.
