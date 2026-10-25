@@ -42,6 +42,21 @@ function Assert-NativeSuccess([string]$Operation) {
     if ($LASTEXITCODE -ne 0) { throw "$Operation failed with exit code $LASTEXITCODE." }
 }
 
+function Protect-HostPrivateKey([string]$Filename) {
+    # ssh-keygen run by an admin creates a user-owned key. The SYSTEM service
+    # rejects that ownership even when the same configuration works interactively.
+    $administrators = New-Object Security.Principal.SecurityIdentifier('S-1-5-32-544')
+    $system = New-Object Security.Principal.SecurityIdentifier('S-1-5-18')
+    $permissions = New-Object Security.AccessControl.FileSecurity
+    $permissions.SetOwner($administrators)
+    $permissions.SetAccessRuleProtection($true, $false)
+    foreach ($principal in @($system, $administrators)) {
+        $rule = New-Object Security.AccessControl.FileSystemAccessRule($principal, 'FullControl', 'Allow')
+        $permissions.AddAccessRule($rule)
+    }
+    Set-Acl -LiteralPath $Filename -AclObject $permissions
+}
+
 $existingConfiguration = if (Test-Path -LiteralPath $configurationPath) {
     [System.IO.File]::ReadAllText($configurationPath)
 } else { '' }
@@ -124,6 +139,7 @@ try {
     New-Item -ItemType Directory -Force -Path (Split-Path $configurationPath) | Out-Null
     & $keygenExecutable -A
     Assert-NativeSuccess 'Generate missing SSH host keys'
+    Protect-HostPrivateKey (Join-Path $env:ProgramData 'ssh\ssh_host_ed25519_key')
     $unixAuthorizedKeysPath = $authorizedKeysPath.Replace('\', '/')
     $hostKeyPath = (Join-Path $env:ProgramData 'ssh\ssh_host_ed25519_key').Replace('\', '/')
     $configuration = @"
