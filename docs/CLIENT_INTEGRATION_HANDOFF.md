@@ -93,7 +93,7 @@ controller. Native adoption and physical Pod behavior remain unverified.
 
 ## Legacy Free Sleep comfort contract: compatibility pending
 
-Core implements a persisted Preview service and a separate v1 API, described below. Active personal comfort and the legacy response adapter remain unavailable. `TemperatureController.replacePolicy` admits isolated, expiring proposals under the existing side lock, but no active producer or durable actuator acknowledgment store is connected yet.
+Core implements a persisted Preview service and a separate v1 API, described below. Active personal comfort and the legacy response adapter remain unavailable. `TemperatureController.replacePolicy` admits isolated, expiring proposals under the existing side lock, but no active personal-comfort producer is connected yet. The separate versioned manual-control receipt service described below does not activate that learner.
 
 The compatibility implementation should preserve these existing Free Sleep contracts:
 
@@ -181,23 +181,67 @@ The client-side Apple Health, local-model, cloud consent/Keychain and HomeKit/Sh
 - `observations.device` and `.base` carry `freshness`, `observedAt` and `expiresAt` as UTC ISO timestamps. Device reports expire after 15 seconds; base reports after 10 seconds. Future/malformed data never becomes fresh. Do not reuse a response after expiry or disconnection.
 - `baseScope` is `whole_bed`. `features.baseStop` remains separate from `baseMovement`; keep Stop visible even with stale positions or uncertain movement.
 - `personalComfortPreview` is implemented; its readiness describes the observation service only. `personalComfort`, `nativeCompatibility`, `homeContext` and `musicVibration` currently have `implemented: false`. MQTT connection does not imply room-context integration.
-- `controlSemantics` explicitly reports acceptance without physical verification; `durableCommandReceipts` and `commandExpiry` are booleans currently **false**. Do not retry an uncertain actuator request or replay it after reconnect.
+- `controlSemantics` reports acceptance without physical verification. The control-receipt follow-up advertises `durableCommandReceipts: true`, `commandExpiry: true`, `receiptScope: "versioned_controls_only"`, and `maxLifetimeMs: 60000`. Earlier controller revisions report false. Discover the actual controller; these guarantees never apply to legacy device/base routes.
 
-The endpoint observes existing state without starting DAC, Bluetooth or MQTT. Versioned measurement/control envelopes with durable deduplication, expiry and unknown-outcome reconciliation remain separate pending work. No client-facing Core origin or real owner key has been provisioned on the physical Pod. A Wi-Fi device without Tailscale also needs a separately qualified LAN connection; the Lenovo's private Home Assistant URL is not a substitute.
+The endpoint observes existing state without starting DAC, Bluetooth or MQTT. The versioned manual-control envelope now provides durable duplicate protection and expiry in the follow-up below. Versioned measurements, client adoption and physical reconciliation remain separate work. No client-facing Core origin or real owner key has been provisioned on the physical Pod. A Wi-Fi device without Tailscale also needs a separately qualified LAN connection; the Lenovo's private Home Assistant URL is not a substitute.
 
 Base automation, configurable vibration/music and active personal comfort remain gated on their own qualification and seven actual Preview nights. Acknowledgment is never evidence that the bed physically moved or vibrated.
+
+## Immediate control receipts: Core follow-up
+
+Core commit `7af9f07` on `lucas-assistant/control-receipts` adds authenticated
+`POST /api/v1/controls` and `GET /api/v1/controls/{requestId}`;
+`endpoints.controls` advertises the new path. See
+[Core control receipt contract](https://github.com/lucaandrea/sleepypod-core/blob/7af9f07/docs/CONTROL_RECEIPTS.md)
+for exact action fields and lifecycle semantics.
+
+- Submit `{requestId, issuedAt, expiresAt, action}`. Use a UUID and epoch
+  milliseconds with a positive lifetime of at most 60 seconds. Accepted action
+  kinds are `temperature`, `power`, `vibration`, `vibration.clear`,
+  `base.position` (whole bed) and `base.stop`.
+- Identical repeated submissions return the saved receipt without re-executing.
+  Changed payload/timestamps with the same ID return 409. Do not generate a new
+  ID or extend expiry automatically after a connection failure.
+- Receipts distinguish `executing`, `acknowledged`, `not_dispatched`, `rejected`,
+  `expired` and `unknown`. Poll the existing ID after a timeout. Partial actions
+  and interrupted execution remain unknown; they are never automatically replayed.
+- `physicalVerification` stays `unverified`, and `replayAllowed` stays false.
+  Dispatch counts are durable attempts, not proof of motion, temperature change
+  or vibration. A superseded dial update can finish without any hardware write.
+- The transport rechecks expiry after queue waits and before each DAC/GATT
+  write. Legacy write callbacks also stop automatically retrying socket failures.
+- This is not deployed on the Pod and does not activate adaptive control.
+  Native/ESP32 adoption, hardware qualification and seven Preview nights remain
+  outstanding. The existing Stop route remains independently callable.
+
+Validation: 250 focused controller tests, TypeScript, full ESLint, production
+build and all seven isolated production browser/API checks passed. SQLite and
+transport failure checks used simulated hardware.
+
+Upstream alarm snooze support at `5cb54f2` has been identified for the next
+reviewed integration: `snoozeDuration` 60–1800 seconds (default 300) and
+`snoozeTaper` 0/30/40/50/60 (default 0). Those fields are **not yet supported** by
+this Core revision. The existing bedtime contract must be extended to preserve
+them before support can be advertised to the native client. Upstream also has
+an owned curve-library API (`PUT /curve-templates`, `POST /curve-templates/active`)
+with per-side day claims. It must coexist with complete overnight routine
+ownership without silently deleting imported rows. Both integrations need
+explicit capability flags so empty alarm/template collections are unambiguous;
+legacy fallback remains required until that reviewed integration is published.
 
 ## Offline migration and overnight schedule contract
 
 Revision `9ff9cd3` passed 14 importer tests, 398 focused tests and the full
 3,832-test related push gate (182 files), TypeScript, full ESLint, both Drizzle
-checks and an isolated production build. The new follow-up PR is #2; merged
-foundation PR #1 does not include this importer.
+checks and an isolated production build. Importer PR #2 is now merged into Core main; bedtime PR #3 adds the complete
+versioned editor described above.
 
 The Core importer now stages `free-sleep-migration/1` backups into a new review
 candidate. It does not deploy a controller or create a Core origin/key. The
-real saved backup passed an offline rehearsal; all 14 power and 14 alarm rows
-remained disabled. Both legacy baselines are pending physical qualification.
+older saved snapshot produced 14 disabled power rows and 14 disabled alarms.
+The newer installation-recovery snapshot preserves one enabled power routine
+and zero enabled alarms; the latest complete-bedtime rehearsal verified all 14
+normalized routines against that source. Both are offline evidence only.
 
 Core power responses now include `offDayOffset` (`0` for the same calendar
 weekday, `1` for the following weekday). Creates default to `0`; individual and
