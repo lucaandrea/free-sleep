@@ -4,7 +4,7 @@ Updated 2026-10-25. This is a coordination note, not a declaration that the Pod 
 
 ## Revisions and ownership
 
-- Core: `../sleepypod-core`. Foundation, migration, bedtime, control receipts, snooze, schedule library, Watch references and web shell PRs #1–#8 are merged into `main` (web shell merge `64143f4`). This is the stable v3.4.0 baseline plus reviewed changes.
+- Core: `../sleepypod-core`. PRs #1–#11 are merged into `main`, most recently `fa34fed`. This includes the foundation, migration, bedtime, control receipts, snooze, schedule library, Watch references, web shell, offline runtime, personal stage models and production sensor dependencies. This is the stable v3.4.0 baseline plus reviewed changes.
 - Free Sleep installation PR #4 is merged into `main` (`b0680140`), including private home setup and recovery tooling. This handoff targets `main`. The client owner separately maintains `../sleepypod-ios` and `firmware/`; this documentation does not modify their source.
 - The physical Pod still runs customized Free Sleep. Core is tested locally and has NOT replaced that controller. The home-host/Core work does not change client signing or App Store distribution.
 - Current Core validation: the personal comfort Preview passed 564 targeted tests, followed by 14 UI/runtime regression tests after browser review (one additional test). TypeScript, full ESLint and both Drizzle checks passed. The complete Preview push gate passed 3,124 tests; the final signal-validity/demo follow-up passed 2,745 related tests in 97 files, plus TypeScript/full ESLint/both Drizzle checks. Its focused runs passed 226 automation tests and 90 demo/contract/runtime tests. Earlier capability gates passed 1,249 and 435 tests. These are software checks, not hardware qualification.
@@ -24,6 +24,73 @@ source, not the current product's presentation acceptance target.
 The same task owns the Waveshare firmware. The owner confirmed the redesigned
 screen and touch; a compatible LAN Core origin and protected key provisioning
 are still unavailable. Do not present its Preview UI as live Pod control.
+
+The client task subsequently reported successful Wi-Fi-only provisioning of the
+physical Waveshare: `preview=false`, `wifi=true`, `controllerConfigured=false`.
+Its source and flash verification remain that task's responsibility. Joining
+Wi-Fi does not establish Core connectivity or qualify bed commands.
+
+## Personal stage models: merged Core contract
+
+Core PR #10 is merged at `c24e70c`. The following authenticated routes are
+available in source; the physical Pod is still running Free Sleep:
+
+| Method and route | Behavior |
+| --- | --- |
+| `GET /api/sleep-stages/models?side=left` | List that side's saved candidates and selection. |
+| `POST /api/sleep-stages/models` | Validate and save `{side, model}` as an inactive candidate. |
+| `PUT /api/sleep-stages/models/selected` | Explicitly select `{side, id, active}`; candidates cannot cross sides. |
+| `GET /api/sleep-stages/model?side=left` | Read the legacy-compatible selected document and enabled state. |
+| `PUT /api/sleep-stages/model` | `{side, model}` selects a validated replacement **inactive**; null clears selection. |
+| `PUT /api/sleep-stages/model/active` | Explicitly enable/disable `{side, active}`. |
+| `POST /api/sleep-stages/model/preview` | Preview `{side, model?, modelId?, sleepRecordId?, nights?}` without changing selection. |
+
+The canonical document/upload limit is **4 MiB**, including arbitrary metadata;
+native import size checks and error copy should use that limit. Inline `model`
+and `modelId` are mutually exclusive. Preview accepts 1–30 nights and otherwise
+uses the selected document. See [the exact Core contract](https://github.com/lucaandrea/sleepypod-core/blob/fa34fed/docs/PERSONAL_STAGE_MODELS.md).
+
+`biometrics.getSleepStages` adds `stagedBy` with the actual engine, version,
+model hash and fallback reason. Preserve the existing `stageView`: it describes
+the sensor/rules profile, not model selection. Invalid stored JSON, unsupported
+documents, failed self-tests and failed/empty inference fall back to rules.
+Activation is independent per side and never occurs just because an upload
+succeeded. Metadata scores are uploader claims; they are not verified Watch
+agreement, medical accuracy or proof of better sleep. This retrospective
+classifier does not control temperature or posture.
+
+The full local suite passed 7,796 tests (19 skipped); the subsequent corrupted
+storage regression passed all 11 model-route cases. The final production build
+and 12 browser workflows passed, including authenticated upload, preview,
+selection and mobile layout. PR CI passed before merge. An offline upgrade of
+the real backup preserved all 14 routines and every existing row; the two new
+model tables started empty and source database hashes were unchanged. These
+remain software/offline checks, not deployed personal-model acceptance.
+
+## Pod runtime preparation: merged, not activated
+
+Core PR #9 merged at `4191919`; PR #11 merged at `fa34fed`. A private ARM64
+runtime bundle passed Node 24.22.1, in-memory SQLite and image-encoding probes
+on the actual Pod. The five Python module environments then passed real import
+and numerical probes with exact project/lock hashes. This exposed and fixed
+HeartPy's undeclared `pkg_resources` provider through locked setuptools 81.0.0;
+the numerical dependencies were retained.
+
+A separate 90-second trial ran the four NATS-capable processors against live
+sensor input and fresh isolated databases. All four stayed alive, produced
+sensor rows and stopped cleanly; both databases passed integrity checks. The
+Free Sleep, Free Sleep stream and firmware process IDs stayed unchanged.
+This verifies a running data pipeline, not the accuracy of its occupancy or
+vital estimates. The RAW-only cover-buttons observer was not claimed to work
+on NATS. Runtime/reader receipts are private and outside Git.
+
+The next deployment step is a bounded controller-handoff rehearsal with
+automatic Free Sleep restoration and no boot-default change. Core still has
+**no live client origin or provisioned owner connection key**. Keep ESP32/native
+Core controls unconfigured until a fresh authenticated Core capability response
+confirms the intended deployed revision. The Home Assistant URL is not that
+endpoint. The earlier inert Node bundle is not the final release artifact and
+must be rebuilt from the final clean merged revision before cutover.
 
 ## Implemented Core transport
 

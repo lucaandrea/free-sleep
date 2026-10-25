@@ -172,3 +172,32 @@ The final offline Core bundle (`0051feb`) passed its actual Pod dependency probe
 using Node 24.22.1, SQLite in memory and image encoding. No controller was started,
 and the three existing control/stream/firmware service process IDs were unchanged.
 The cutover and physical/overnight gates above remain required.
+
+## Personal models and actual sensor runtime
+
+Core PRs #9–#11 are now merged into `main` (`fa34fed`). The model library uses
+side-owned candidates, explicit selection/activation, validated portable model
+documents, retrospective preview and a reported rules fallback. It does not
+give an LLM or model authority over hardware. The client contract and **4 MiB**
+limit are recorded in [the handoff](CLIENT_INTEGRATION_HANDOFF.md#personal-stage-models-merged-core-contract).
+The full local suite passed 7,796 tests with 19 skipped; the later malformed
+storage regression passed all 11 route tests. The production build and 12
+browser workflows passed. A real-backup migration rehearsal retained all 14
+routines and existing rows with source hashes unchanged; new model tables were
+empty. CI passed before merging.
+
+All five actual Pod Python environments passed their locked dependency probes.
+A separate 90-second live NATS trial kept four sensor processors running and
+wrote results to isolated databases, then stopped them cleanly. Both databases
+passed integrity checks, and the original Free Sleep, stream and firmware
+process IDs remained unchanged. This is running sensor-pipeline evidence, not
+validated sleep accuracy or a controller migration. The dependency probe caught
+and fixed HeartPy's undeclared setuptools requirement without changing the
+numerical package versions.
+
+The bounded controller handoff is being prepared with separate runtime/data
+paths, a recovery journal and automatic return to Free Sleep. The original boot
+selection remains the default during qualification. No Core connection URL/key
+is yet available for physical clients; the client task's successful ESP32 Wi-Fi
+provisioning is separate from Core connectivity. Final cutover, owner-attended
+qualification, room context and the seven actual Preview nights remain open.
