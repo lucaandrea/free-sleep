@@ -1,0 +1,2 @@
+import{At as e,i as t}from"./ErrorBoundary-B1N7Ejfs.js";import{t as n}from"./Stack-BQLv5f52.js";var r=e();function i({title:e,children:i}){return(0,r.jsxs)(n,{spacing:1,children:[(0,r.jsx)(t,{variant:`body2`,color:`text.secondary`,children:e}),i]})}export{i as t};
+//# sourceMappingURL=FormField-oorRt0TQ.js.map
