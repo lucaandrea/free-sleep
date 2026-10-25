@@ -195,9 +195,20 @@ validated sleep accuracy or a controller migration. The dependency probe caught
 and fixed HeartPy's undeclared setuptools requirement without changing the
 numerical package versions.
 
-The bounded controller handoff is being prepared with separate runtime/data
-paths, a recovery journal and automatic return to Free Sleep. The original boot
-selection remains the default during qualification. No Core connection URL/key
-is yet available for physical clients; the client task's successful ESP32 Wi-Fi
-provisioning is separate from Core connectivity. Final cutover, owner-attended
-qualification, room context and the seven actual Preview nights remain open.
+The first bounded controller handoff ran from merged `38a501c5` with separate
+runtime/data paths and automatic return to Free Sleep. Core authenticated and
+read fresh firmware/NATS data. The follow-up power check caught an unintended
+left-side restart caused by a retained target with a zero countdown. The left
+side was restored to off and both sides verified off. This trial is not accepted
+as an operational migration. The session-evidence fix passes 400 focused tests;
+merge, rebuild and another live trial are required.
+
+The import also exposed missing IANA timezone files on the Pod. A separate
+hash-verified Python timezone environment enabled a fresh consistent import;
+all 14 routines and both comfort profiles were preserved. The off-host archives
+were downloaded and their hashes verified. Credentials remain private.
+
+Free Sleep remains the active controller and boot default. No accepted Core
+connection is available for physical clients; successful ESP32 Wi-Fi provisioning
+is separate from Core connectivity. Final cutover, owner-attended qualification,
+room context and the seven actual Preview nights remain open.

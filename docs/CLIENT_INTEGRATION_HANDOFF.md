@@ -4,7 +4,7 @@ Updated 2026-10-25. This is a coordination note, not a declaration that the Pod 
 
 ## Revisions and ownership
 
-- Core: `../sleepypod-core`. PRs #1–#11 are merged into `main`, most recently `fa34fed`. This includes the foundation, migration, bedtime, control receipts, snooze, schedule library, Watch references, web shell, offline runtime, personal stage models and production sensor dependencies. This is the stable v3.4.0 baseline plus reviewed changes.
+- Core: `../sleepypod-core`. PRs #1–#12 are merged into `main`, most recently `38a501c5`. This includes the foundation, migration, bedtime, control receipts, snooze, schedule library, Watch references, web shell, offline runtime, personal stage models, production sensor dependencies and bounded controller handoff. This is the stable v3.4.0 baseline plus reviewed changes.
 - Free Sleep installation PR #4 is merged into `main` (`b0680140`), including private home setup and recovery tooling. This handoff targets `main`. The client owner separately maintains `../sleepypod-ios` and `firmware/`; this documentation does not modify their source.
 - The physical Pod still runs customized Free Sleep. Core is tested locally and has NOT replaced that controller. The home-host/Core work does not change client signing or App Store distribution.
 - Current Core validation: the personal comfort Preview passed 564 targeted tests, followed by 14 UI/runtime regression tests after browser review (one additional test). TypeScript, full ESLint and both Drizzle checks passed. The complete Preview push gate passed 3,124 tests; the final signal-validity/demo follow-up passed 2,745 related tests in 97 files, plus TypeScript/full ESLint/both Drizzle checks. Its focused runs passed 226 automation tests and 90 demo/contract/runtime tests. Earlier capability gates passed 1,249 and 435 tests. These are software checks, not hardware qualification.
@@ -84,13 +84,25 @@ This verifies a running data pipeline, not the accuracy of its occupancy or
 vital estimates. The RAW-only cover-buttons observer was not claimed to work
 on NATS. Runtime/reader receipts are private and outside Git.
 
-The next deployment step is a bounded controller-handoff rehearsal with
-automatic Free Sleep restoration and no boot-default change. Core still has
-**no live client origin or provisioned owner connection key**. Keep ESP32/native
-Core controls unconfigured until a fresh authenticated Core capability response
-confirms the intended deployed revision. The Home Assistant URL is not that
-endpoint. The earlier inert Node bundle is not the final release artifact and
-must be rebuilt from the final clean merged revision before cutover.
+The first bounded controller trial used a verified `38a501c5` bundle and fresh
+quiesced import. The Pod lacked Python timezone data; an isolated, hash-verified
+`tzdata` environment fixed the import. All 14 routines and both comfort profiles
+were preserved, with a verified off-host backup. Core reached authenticated
+capabilities, a fresh firmware report and live NATS frames, then restored Free
+Sleep without changing boot selection.
+
+**That trial is not accepted for deployment.** The post-restoration check found
+the left side had started an eight-hour session. Core had treated a retained
+temperature target with zero countdown as active. The side was explicitly
+returned to off, and both sides were verified off. The correction requires
+per-side heating-session evidence before passive writes; its focused tests pass,
+but a rebuilt release and another live trial are required.
+
+Core still has **no accepted live client origin or provisioned client connection
+key**. A private owner key exists only for deployment diagnostics. Keep ESP32
+and native Core controls unconfigured until the corrected release passes the
+handoff and its intended connection is documented here. The Home Assistant URL
+is not that endpoint. Do not reuse the first trial's release.
 
 ## Implemented Core transport
 
