@@ -1,0 +1,14 @@
+/Users/lucaandreacollins/Documents/GitHub/free-sleep/firmware/waveshare-amoled/test-build/preview/CMakeFiles/preview.dir
+/Users/lucaandreacollins/Documents/GitHub/free-sleep/firmware/waveshare-amoled/test-build/preview/CMakeFiles/edit_cache.dir
+/Users/lucaandreacollins/Documents/GitHub/free-sleep/firmware/waveshare-amoled/test-build/preview/CMakeFiles/rebuild_cache.dir
+/Users/lucaandreacollins/Documents/GitHub/free-sleep/firmware/waveshare-amoled/test-build/preview/CMakeFiles/list_install_components.dir
+/Users/lucaandreacollins/Documents/GitHub/free-sleep/firmware/waveshare-amoled/test-build/preview/CMakeFiles/install.dir
+/Users/lucaandreacollins/Documents/GitHub/free-sleep/firmware/waveshare-amoled/test-build/preview/CMakeFiles/install/local.dir
+/Users/lucaandreacollins/Documents/GitHub/free-sleep/firmware/waveshare-amoled/test-build/preview/CMakeFiles/install/strip.dir
+/Users/lucaandreacollins/Documents/GitHub/free-sleep/firmware/waveshare-amoled/test-build/preview/lvgl/CMakeFiles/lvgl.dir
+/Users/lucaandreacollins/Documents/GitHub/free-sleep/firmware/waveshare-amoled/test-build/preview/lvgl/CMakeFiles/edit_cache.dir
+/Users/lucaandreacollins/Documents/GitHub/free-sleep/firmware/waveshare-amoled/test-build/preview/lvgl/CMakeFiles/rebuild_cache.dir
+/Users/lucaandreacollins/Documents/GitHub/free-sleep/firmware/waveshare-amoled/test-build/preview/lvgl/CMakeFiles/list_install_components.dir
+/Users/lucaandreacollins/Documents/GitHub/free-sleep/firmware/waveshare-amoled/test-build/preview/lvgl/CMakeFiles/install.dir
+/Users/lucaandreacollins/Documents/GitHub/free-sleep/firmware/waveshare-amoled/test-build/preview/lvgl/CMakeFiles/install/local.dir
+/Users/lucaandreacollins/Documents/GitHub/free-sleep/firmware/waveshare-amoled/test-build/preview/lvgl/CMakeFiles/install/strip.dir
