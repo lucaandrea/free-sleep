@@ -64,8 +64,10 @@ Adaptive control, autonomous base movement and music remain disabled until their
 The reviewed live inventory captured 45,126 installation entries and 70 separate
 Bluetooth-state entries. Both archives were downloaded and fully restored into
 isolated private directories on the FileVault-enabled Mac. A fresh transactional
-data backup also passed the offline Core importer, preserving the same disabled
-schedule/Off comfort defaults. All 40 local script tests passed, including 12 new
+data backup also passed the offline Core importer, preserving its one enabled
+power routine and zero enabled alarms, with comfort defaulting Off. The earlier
+backup had all schedules disabled; these snapshots must not be conflated.
+All 40 local script tests passed, including 12 new
 recovery tests. The tool refuses existing destinations and archive traversal,
 verifies contents and metadata, and deliberately has no live restore-to-`/` mode.
 
@@ -98,8 +100,24 @@ or overnight adaptation. Keep the physical-control and Preview gates open.
 ## Still required before controller migration
 
 1. Complete personal comfort vital-window/artifact and bedtime-phase adapters, then shared-authority application receipts and activation gates. The persisted Preview runtime and manual pause wiring are implemented.
-2. Add versioned measurements/control receipts and the native app's compatibility endpoints.
+2. Adopt the new versioned manual-control receipt endpoint in clients; add versioned measurements and the native app's compatibility endpoints. The receipt follow-up handles duplicate delivery, dispatch expiry and unknown outcomes, but is not deployed.
 3. Complete cutover and attended operational rollback around the tested offline importer and installation file-recovery rehearsal. Qualify overnight editing, resolve changed alarm warm-up behavior and temporary overrides, and expose historical data without changing its metric definitions.
 4. Add dedicated Pod MQTT credentials/ACLs, connect room context and notification delivery, and finish off-host restore and Windows recovery testing.
 5. Qualify actual presence, base movement/Stop and vibration/cancel with the owner. No hardware qualification is implied by demo screenshots.
 6. Record seven real Preview nights and review them before bounded activation and a new TestFlight release.
+
+## Bedtime and control-receipt follow-ups
+
+Merged Core bedtime PR #3 preserves whole overnight routines with revision conflicts,
+atomic moves/replacements and the original parent/child enablement preferences.
+Its production build, all six isolated browser checks, 16 importer tests and
+4,432 related tests passed. The newer private recovery rehearsal verified all
+14 complete routines, including one enabled power routine and no enabled alarms.
+
+The subsequent `lucas-assistant/control-receipts` branch adds durable manual
+control request IDs and deadlines at the DAC/Bluetooth write boundary. It removes
+implicit write replay after socket failure, keeps acknowledgments separate from
+physical evidence and reports interrupted/partial operations as unknown. Its
+4,564-test push gate, production build and seven browser checks passed. See
+[client handoff](CLIENT_INTEGRATION_HANDOFF.md#immediate-control-receipts-core-follow-up).
+Neither follow-up has replaced the working Pod controller or started Preview nights.
