@@ -48,8 +48,8 @@ if options.output:
     options.output.mkdir(parents=True, exist_ok=True)
 count = 0
 with tempfile.TemporaryDirectory(prefix='sleepypod-round-ui-') as temporary:
-    for state in ['demo', 'live', 'stale', 'missing', 'offline', 'device-stale', 'holding', 'off']:
-        selected = routes if state == 'demo' else {name: routes[name] for name in ['temperature', 'temperature-mattress', 'bed', 'sensors', 'readings', 'position', 'alarm']}
+    for state in ['demo', 'live', 'stale', 'missing', 'offline', 'device-stale', 'holding', 'off', 'wifi-only', 'joining']:
+        selected = routes if state == 'demo' else {name: routes[name] for name in ['temperature', 'temperature-mattress', 'bed', 'sensors', 'readings', 'position', 'alarm', 'settings']}
         for name, route in selected.items():
             output = Path(temporary) / (state + '-' + name + '.ppm')
             result = subprocess.run([str(root/'test-build/preview/preview'), route, str(output)],

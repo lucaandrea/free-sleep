@@ -31,6 +31,13 @@ bool parseConfiguration(const std::string &json, Configuration &configuration) {
     candidate.token = string(document.get(), "token");
     candidate.allowLocalHttp = boolean(document.get(), "allowLocalHttp");
     candidate.celsius = boolean(document.get(), "celsius");
+    candidate.networkOnly = boolean(document.get(), "networkOnly");
+    if (candidate.ssid.empty() || candidate.ssid.size() > 32 || candidate.password.size() > 63) return false;
+    if (candidate.networkOnly) {
+        if (!candidate.endpoint.empty() || !candidate.token.empty()) return false;
+        configuration = candidate;
+        return true;
+    }
     while (!candidate.endpoint.empty() && candidate.endpoint.back() == '/') candidate.endpoint.pop_back();
     const bool secure = candidate.endpoint.rfind("https://", 0) == 0;
     const bool local = candidate.allowLocalHttp && candidate.endpoint.rfind("http://", 0) == 0;
@@ -53,6 +60,42 @@ bool parseConfiguration(const std::string &json, Configuration &configuration) {
     }
     configuration = candidate;
     return true;
+}
+
+// Serialize only validated fields for local NVS storage. Never log this result.
+std::string serializeConfiguration(const Configuration &configuration) {
+    Json document(cJSON_CreateObject(), cJSON_Delete);
+    cJSON_AddStringToObject(document.get(), "ssid", configuration.ssid.c_str());
+    cJSON_AddStringToObject(document.get(), "password", configuration.password.c_str());
+    cJSON_AddStringToObject(document.get(), "endpoint", configuration.endpoint.c_str());
+    cJSON_AddStringToObject(document.get(), "token", configuration.token.c_str());
+    cJSON_AddBoolToObject(document.get(), "allowLocalHttp", configuration.allowLocalHttp);
+    cJSON_AddBoolToObject(document.get(), "celsius", configuration.celsius);
+    cJSON_AddBoolToObject(document.get(), "networkOnly", !configuration.hasController());
+    char *encoded = cJSON_PrintUnformatted(document.get());
+    const std::string result = encoded ? encoded : "";
+    cJSON_free(encoded);
+    return result;
+}
+
+std::string connectionSummary(const State &state) {
+    if (state.preview) return "Preview / USB setup needed";
+    if (!state.wifi) return "Joining Wi-Fi...";
+    if (!state.controllerConfigured) return "Wi-Fi ready / Pod setup needed";
+    return state.connected ? "Connected to your controller" : "Pod offline / reconnecting";
+}
+
+// USB diagnostics expose connection/freshness flags, never credentials or measurements.
+std::string diagnostics(const State &state, int64_t now, int64_t epochSeconds) {
+    char result[400];
+    std::snprintf(result, sizeof(result),
+        "{\"preview\":%s,\"wifi\":%s,\"controllerConfigured\":%s,\"connected\":%s,\"statusFresh\":%s,\"baseConnected\":%s,\"thermalFresh\":%s,\"leftAlarmsLoaded\":%s,\"rightAlarmsLoaded\":%s}",
+        state.preview ? "true" : "false", state.wifi ? "true" : "false",
+        state.controllerConfigured ? "true" : "false", state.connected ? "true" : "false",
+        state.connected && now >= state.receivedAt && now - state.receivedAt <= statusLifetimeMs ? "true" : "false",
+        state.base.connected ? "true" : "false", thermalFresh(state, now, epochSeconds) ? "true" : "false",
+        state.alarmsLoaded[0] ? "true" : "false", state.alarmsLoaded[1] ? "true" : "false");
+    return result;
 }
 
 bool parseDevice(const std::string &json, State &state, int64_t now) {
@@ -243,7 +286,7 @@ bool buildRequest(const Command &command, Request &request) {
 
 // Commands expire on disconnect; Stop and alarm dismissal never depend on telemetry freshness.
 bool maySend(const Command &command, const State &state, int64_t now) {
-    if (state.preview) return false;
+    if (state.preview || !state.controllerConfigured) return false;
     if (command.side < 0 || command.side > 1) return false;
     if (!state.wifi || command.createdAt > now || now - command.createdAt > commandLifetimeMs) return false;
     if (command.action == Action::baseStop || command.action == Action::alarmDismiss) return true;

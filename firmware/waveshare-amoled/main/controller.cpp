@@ -195,13 +195,17 @@ static void wifiEvent(void *, esp_event_base_t base, int32_t event, void *) {
     }
     if (base == IP_EVENT && event == IP_EVENT_STA_GOT_IP) {
         xSemaphoreTake(stateLock, portMAX_DELAY);
-        current.wifi = true; current.message = "Connecting to your Pod..."; ++current.revision;
+        current.wifi = true;
+        current.message = current.controllerConfigured ? "Connecting to your Pod..." : "Wi-Fi ready - add your Pod over USB";
+        ++current.revision;
         xSemaphoreGive(stateLock);
     }
 }
 void startController(const Configuration &settings) {
     configuration = settings;
     stateLock = xSemaphoreCreateMutex();
+    current.controllerConfigured = settings.hasController();
+    current.message = "Joining Wi-Fi...";
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
     esp_netif_create_default_wifi_sta();
@@ -217,8 +221,10 @@ void startController(const Configuration &settings) {
     ESP_ERROR_CHECK(esp_wifi_start());
     esp_sntp_config_t timeConfiguration = ESP_NETIF_SNTP_DEFAULT_CONFIG("pool.ntp.org");
     esp_netif_sntp_init(&timeConfiguration);
-    xTaskCreate(worker, "pod_network", 12288, nullptr, 4, nullptr);
-    xTaskCreate(urgentWorker, "pod_stop", 8192, nullptr, 6, nullptr);
+    if (settings.hasController()) {
+        xTaskCreate(worker, "pod_network", 12288, nullptr, 4, nullptr);
+        xTaskCreate(urgentWorker, "pod_stop", 8192, nullptr, 6, nullptr);
+    }
 }
 
 // The unconfigured board can show its controls without opening a network or issuing commands.

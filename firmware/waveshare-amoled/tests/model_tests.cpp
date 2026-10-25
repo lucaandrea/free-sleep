@@ -8,6 +8,7 @@ using namespace bedside;
 
 int main() {
     State state;
+    state.controllerConfigured = true;
     const std::string status = R"({"leftSide":{"currentTemperature":81,"targetTemperature":80,"targetLevel":0,"heatingDuration":3600},"rightSide":{"currentTemperature":null,"targetTemperature":null,"heatingDuration":0},"waterLevel":"ok","isPriming":false,"temperatureControl":{"left":{"source":"manual","holdUntil":1800000000,"blocked":null}}})";
     assert(parseDevice(status, state, 10000));
     assert(state.sides[0].powered); // Neutral temperature is not powered-off.
@@ -53,8 +54,24 @@ int main() {
     assert(!parseAlarms(R"({"alarm":[{"id":23,"side":"right"}]})", state, 0));
     assert(state.alarms.size() == 1); // Invalid replies cannot erase the last valid snapshot.
     Configuration configuration;
+    assert(!parseConfiguration(R"({"ssid":"Home"})", configuration));
+    assert(parseConfiguration(R"({"ssid":"Home","password":"test-only","networkOnly":true})", configuration));
+    assert(!configuration.hasController());
+    Configuration roundTrip;
+    assert(parseConfiguration(serializeConfiguration(configuration), roundTrip));
+    assert(roundTrip.networkOnly && roundTrip.ssid == "Home" && roundTrip.password == "test-only");
+    assert(!parseConfiguration(R"({"ssid":"Home","networkOnly":true,"endpoint":"https://pod.example"})", configuration));
+    State networkState;
+    networkState.wifi = true;
+    assert(connectionSummary(networkState) == "Wi-Fi ready / Pod setup needed");
+    assert(!maySend(stop, networkState, 10001));
+    assert(diagnostics(networkState, 10001, 0).find("\"preview\":false") != std::string::npos);
+    assert(diagnostics(networkState, 10001, 0).find("token") == std::string::npos);
     const std::string key = "01234567890123456789012345678901";
     assert(parseConfiguration("{\"ssid\":\"Home\",\"endpoint\":\"https://pod.example\",\"token\":\"" + key + "\"}", configuration));
+    assert(configuration.hasController());
+    assert(parseConfiguration(serializeConfiguration(configuration), roundTrip));
+    assert(roundTrip.token == key && !roundTrip.networkOnly);
     assert(!parseConfiguration("{\"ssid\":\"Home\",\"endpoint\":\"http://public.example\",\"allowLocalHttp\":true,\"token\":\"" + key + "\"}", configuration));
     assert(parseConfiguration("{\"ssid\":\"Home\",\"endpoint\":\"http://192.168.1.10:3000\",\"allowLocalHttp\":true,\"token\":\"" + key + "\"}", configuration));
     assert(temperatureText(32, true) == "0°C");

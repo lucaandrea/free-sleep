@@ -16,6 +16,8 @@ struct Configuration {
     std::string ssid, password, endpoint, token;
     bool allowLocalHttp = false;
     bool celsius = false;
+    bool networkOnly = false;
+    bool hasController() const { return !endpoint.empty() && !token.empty(); }
 };
 struct SideStatus {
     bool valid = false, powered = false, vibrating = false;
@@ -44,6 +46,7 @@ struct Alarm {
 };
 struct State {
     bool preview = false;
+    bool controllerConfigured = false;
     bool wifi = false, connected = false, priming = false, lowWater = false;
     bool alarmsLoaded[2] = {false, false};
     int64_t receivedAt = 0, baseReceivedAt = 0;
@@ -66,6 +69,9 @@ struct Command {
 struct Request { std::string path, method = "POST", body; };
 
 bool parseConfiguration(const std::string &json, Configuration &configuration);
+std::string serializeConfiguration(const Configuration &configuration);
+std::string connectionSummary(const State &state);
+std::string diagnostics(const State &state, int64_t now, int64_t epochSeconds);
 bool parseDevice(const std::string &json, State &state, int64_t now);
 bool parseThermal(const std::string &json, State &state, int64_t now);
 bool thermalFresh(const State &state, int64_t now, int64_t epochSeconds);

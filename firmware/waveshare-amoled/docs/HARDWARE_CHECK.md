@@ -1,36 +1,23 @@
-# Waveshare update — Thermal UI 0.4.0
+# Waveshare live setup — 0.4.1
 
-Date: 2026-10-25. Updated the same connected board under the owner’s authorization. The owner’s successful screen/touch check for 0.3.0 is preserved in `history/sleepypod-ui-0.3.0-2026-10-25.md`.
+2026-10-25. Updated the same authorized ESP32-S3 revision 0.2 board, with 32 MB physical flash and 8 MB PSRAM. The earlier thermal UI/touch acceptance is preserved in [the 0.4.0 record](history/thermal-ui-0.4.0-2026-10-25.md).
 
-## Observed on the connected board
+## Physical evidence
 
-- USB `/dev/cu.usbmodem101` matches the previously authorized ESP32-S3 revision 0.2 board. It has 8 MB octal PSRAM and 32 MB physical flash; this build retains the vendor’s 16 MB image address space.
-- Firmware **0.4.0**, application **1,656,832 bytes**, SHA-256 **dc9d6747bfd42033ec3c45b2550c9e52571787dd5c8e9a6de47a42dc5ca98803**.
-- A fresh private backup of the first 2 MiB covers every programmed sector. The partition table is identical to the board’s prior layout.
-- Bootloader `0x0`, partition table `0x8000`, application `0x10000`: **all three image hashes verified**. No erase-flash or NVS write was requested.
-- NVS `0x9000–0xefff` was reread after the update and is **byte-for-byte identical** to the backup. Future display-choice changes intentionally write only to the separate `bedside_ui` namespace.
-- Boot logs report 0.4.0, successful display startup, CST9217 identification at **466 × 466**, and Preview ready. No panic occurred during the 12-second captured interval.
-- Renderer warm-up reported **117 ms full detail / 39 ms drag resolution**. These are mesh/raster timings, not end-to-end display frame rates.
-- The board remains unconfigured **Preview**. Cooling/heating and sensor values are labeled sample data; no network connection or bed commands were issued.
-- The owner tested More → Temperature display, the Temperature mattress view and Bed → Sensors, and confirmed: “Yes, everything fits and works.” This verifies the new controls’ physical fit and touch response; live Pod operations remain unverified.
+- Installed application: **0.4.1**, **1,660,384 bytes**, SHA-256 `cc6e043782c4971b17414a869c406f8a14cd72a8a6682755848591b7e1042a3f`.
+- A new private 2 MiB pre-update backup was verified against the installed 0.4.0 app hash. The partition table is unchanged.
+- The initial bootloader, partition and application writes all verified their hashes. The final UI refinement rewrote only the application at `0x10000`, with its hash verified.
+- The owner's supplied Wi-Fi credentials were provisioned over USB without being printed or stored in the repository. The device acknowledged the save and restarted.
+- Read-only USB diagnostics report `preview=false`, `wifi=true`, `controllerConfigured=false`, `connected=false`. The board joined Wi-Fi again after the final firmware update and reset.
+- The entire 24 KiB NVS partition is byte-identical before and after that final update. Display preferences and the newly saved Wi-Fi settings were preserved.
+- The real Core LAN origin/key remains pending the coordinated controller deployment. No real temperature/base/alarm command was sent. Wi-Fi readiness is not evidence of live Pod control.
 
-## Verification and limits
+## Local validation
 
-Two host test suites pass: conversion/state/command/mesh checks and display-preference persistence/error checks. **1,728** mesh configurations and **99** actual production-LVGL route/state captures pass bounds/text checks. Dynamic fixture checks cover heating, cooling, holding and unavailable transitions, and target edits surviving view changes. See [UI verification](UI_VERIFICATION.md).
+Both host suites pass. The production LVGL renderer passes **122 route/state captures** inside the 450 px safe circle, including Wi-Fi-only and joining states. New configuration tests cover explicit two-stage setup, malformed partial configuration, full configuration round-trips, and rejection of commands before controller configuration.
 
-Compatible Core deployment and Wi-Fi/origin/key provisioning are still required for live measurements and controls. Physical temperature changes, base movement/Stop, alarm vibration/snooze, network authentication and overnight operation remain unqualified. HTTP acknowledgement is not proof of physical motion.
+The three images in `previews/live-setup-0.4.1/` are host-rendered fixtures, not photographs. Unknown targets and sensors show unavailable values; the More screen distinguishes joining, Wi-Fi ready, controller offline and connected states.
 
-## Recovery and local evidence
+Logs: `/tmp/waveshare-041-build-final.log`, `/tmp/waveshare-041-flash-final.log`, `/tmp/waveshare-041-ui-check-final2.log`. Private firmware/NVS backups are in `~/Library/Application Support/FreeSleep/firmware-backups/`; they contain configuration and must stay private.
 
-Private pre-update backup (contains NVS; keep private):
-
-`~/Library/Application Support/FreeSleep/firmware-backups/waveshare-before-thermal-ui-0.4.0-2026-10-25.bin`
-
-Original and earlier 0.3.0 backups remain retained in that private directory. Restore only to this same identified board with owner authorization and ESP-IDF activated:
-
-```sh
-python -m esptool --chip esp32s3 --port /dev/cu.usbmodem101 write_flash \
-  0x0 "$HOME/Library/Application Support/FreeSleep/firmware-backups/waveshare-before-thermal-ui-0.4.0-2026-10-25.bin"
-```
-
-Logs: `/tmp/waveshare-04-model-verification.log`, `/tmp/waveshare-04-ui-verification.log`, `/tmp/waveshare-04-build.log`, `/tmp/waveshare-04-flash.log`, `/tmp/waveshare-04-boot.log`, `/tmp/waveshare-04-nvs-read.log`.
+Live authentication, telemetry freshness, actual temperature changes, base movement/Stop, alarms and overnight operation remain unqualified until the compatible controller is connected and those operations are checked.

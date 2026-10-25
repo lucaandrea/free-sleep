@@ -390,11 +390,12 @@ static void render() {
         back(8);
     } else {
         title("SLEEPYPOD");
-        ownerLabel = label(state.preview ? "Preview / USB setup needed" : "Connected to your controller", 83, 96, 300, &lv_font_montserrat_16);
+        ownerLabel = label(connectionSummary(state), 83, 96, 300, &lv_font_montserrat_16);
         resumeButton = button("Resume automatic temperature", 63, 146, 340, 17);
         button("Temperature display", 83, 202, 300, 34);
         connectButton = button("Reconnect base", 103, 258, 260, 12);
         label(state.preview ? "Set up Wi-Fi and your Pod key\nwith the USB provisioning tool.\nPreview cannot operate a bed."
+              : !state.controllerConfigured ? "Add your Pod address and key\nwith the USB provisioning tool.\nLive controls are waiting."
               : "Manual temperature holds for 6h.\nYour Pod runs the routines\nwhen this remote is off.", 83, 319, 300, &lv_font_montserrat_16);
         back();
     }
@@ -408,15 +409,18 @@ static void refreshTemperature() {
         temperatureDirty = false;
     }
     const auto color = activityColor(side, fresh);
-    lv_label_set_text(valueLabel, targetText(requestedTemperature, celsius, preferences.display).c_str());
+    const bool targetAvailable = (fresh && side.targetAvailable) || temperatureDirty;
+    lv_label_set_text(valueLabel, targetAvailable ? targetText(requestedTemperature, celsius, preferences.display).c_str() : "--");
     if (temperatureArc) {
         lv_arc_set_value(temperatureArc, preferences.display == TemperatureDisplay::eightSleep ? eightSleepLevel(requestedTemperature) : requestedTemperature);
         lv_obj_set_style_arc_color(temperatureArc, lv_color_hex(color), LV_PART_INDICATOR);
     }
     const std::string measured = fresh && side.measuredAvailable ? temperatureText(side.measured, celsius) : "--";
-    lv_label_set_text(readings, (temperatureText(requestedTemperature,celsius)+" / bed "+measured).c_str());
+    lv_label_set_text(readings, ((targetAvailable ? temperatureText(requestedTemperature,celsius) : "No target")+" / bed "+measured).c_str());
     const std::string status = state.preview ? "SAMPLE / " : "";
-    lv_label_set_text(ownerLabel, (temperatureDirty ? "TARGET PREVIEW / APPLY" : status + activityName(temperatureActivity(side,fresh))).c_str());
+    const std::string activity = !state.preview && !state.controllerConfigured
+        ? (state.wifi ? "Pod setup needed" : "Joining Wi-Fi...") : status + activityName(temperatureActivity(side,fresh));
+    lv_label_set_text(ownerLabel, (temperatureDirty ? "TARGET PREVIEW / APPLY" : activity).c_str());
     lv_obj_set_style_text_color(ownerLabel, lv_color_hex(temperatureDirty ? foreground : color), 0);
     lv_label_set_text(lv_obj_get_child(powerButton, 0), state.preview ? "Power" : side.powered ? "Turn off" : "Turn on");
 }
@@ -457,6 +461,7 @@ static void tick(lv_timer_t *) {
         }
     }
     if (page == Page::temperature) refreshTemperature();
+    if (page == Page::settings && ownerLabel) lv_label_set_text(ownerLabel, connectionSummary(state).c_str());
     if (page == Page::base && readings) {
         const bool available = fresh && state.base.connected && !state.base.stale && state.base.positionAvailable
             && nowMilliseconds() >= state.baseReceivedAt && nowMilliseconds() - state.baseReceivedAt <= 10000;

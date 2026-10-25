@@ -6,6 +6,7 @@
 #include "lvgl.h"
 #include "esp_system.h"
 #include <cstdio>
+#include <ctime>
 
 // Provisioning is deliberately local to USB; no unauthenticated Wi-Fi setup service is opened.
 static bool loadConfiguration(bedside::Configuration &configuration) {
@@ -26,11 +27,24 @@ static void provision(void *) {
         const int character = std::getchar();
         if (character == EOF) { vTaskDelay(pdMS_TO_TICKS(20)); continue; }
         if (character == '\n' || character == '\r') {
+            if (input == "STATUS") {
+                std::printf("STATUS %s\n", bedside::diagnostics(bedside::snapshot(), bedside::nowMilliseconds(), std::time(nullptr)).c_str());
+                input.clear();
+                continue;
+            }
             bedside::Configuration settings;
             if (bedside::parseConfiguration(input, settings)) {
+                // Updating Wi-Fi preserves an already configured controller and its key.
+                bedside::Configuration saved;
+                if (settings.networkOnly && loadConfiguration(saved) && saved.hasController()) {
+                    saved.ssid = settings.ssid;
+                    saved.password = settings.password;
+                    settings = saved;
+                }
+                const std::string encoded = bedside::serializeConfiguration(settings);
                 nvs_handle_t handle;
-                if (nvs_open("bedside", NVS_READWRITE, &handle) == ESP_OK) {
-                    const bool stored = nvs_set_str(handle, "connection", input.c_str()) == ESP_OK && nvs_commit(handle) == ESP_OK;
+                if (!encoded.empty() && nvs_open("bedside", NVS_READWRITE, &handle) == ESP_OK) {
+                    const bool stored = nvs_set_str(handle, "connection", encoded.c_str()) == ESP_OK && nvs_commit(handle) == ESP_OK;
                     nvs_close(handle);
                     if (stored) { std::puts("Configuration saved. Restarting."); esp_restart(); }
                 }
@@ -45,7 +59,6 @@ extern "C" void app_main() {
     ESP_ERROR_CHECK(nvs_flash_init());
     bsp_display_start();
     bsp_display_brightness_set(55);
-    xTaskCreate(provision, "usb_provision", 6144, nullptr, 3, nullptr);
     bedside::Configuration configuration;
     if (loadConfiguration(configuration)) {
         bedside::startController(configuration);
@@ -55,4 +68,5 @@ extern "C" void app_main() {
         bedside::startUI(false);
         std::puts("Preview ready. Configure Wi-Fi and Pod over USB; bed commands are disabled.");
     }
+    xTaskCreate(provision, "usb_provision", 6144, nullptr, 3, nullptr);
 }
