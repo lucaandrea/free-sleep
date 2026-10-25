@@ -1,6 +1,6 @@
 # Free Sleep web, iPhone and Pod setup
 
-This branch is a software implementation awaiting device qualification. The owner's Pod 4 Ultra still runs stock Eight Sleep software; their subscription has about ten days remaining as of 2026-10-13. Nothing in this work has installed software on, paired with, or moved that Pod. Subscription expiry alone does not install Free Sleep or establish access to its hardware.
+Free Sleep was installed on the owner's Pod 4 on 2026-10-25. The live web/API, authentication, database and Franken hardware connection were checked with the mattress cover disconnected. Physical temperature control, live biometric accuracy, adjustable-base motion and unattended adaptive comfort still require qualification. Subscription expiry alone does not install Free Sleep or establish access to its hardware.
 
 Adaptive comfort is off by default. Its [configuration and qualification guide](ADAPTIVE_COMFORT.md) describes preview mode, feedback learning, temperature limits, manual pauses and the required presence heartbeat. Update the Python biometrics service alongside the server before evaluating this feature.
 
@@ -12,7 +12,7 @@ Adaptive comfort is off by default. Its [configuration and qualification guide](
 4. Qualify temperature and presence collection locally first. Then connect the base read-only and compare reported positions with the physical bed. Follow the small-movement/Stop checklist in [base research](research/base-control.md). Keep the stock controller available during attended tests.
 5. Enable remote access and Apple Home only after those local checks. Cloud connectivity and an iOS build cannot validate motor calibration or a physical stop.
 
-No automated migration, firmware reset, subscription bypass, or stock-service removal is included in this change. The remaining subscription time is a migration window, not proof this branch is ready to replace the stock system unattended.
+The documented installation used temporary U-Boot arguments, preserved stock configuration and disabled the stock controller/updater services before takeover. It did not save U-Boot environment changes, flash firmware or alter partitions. Configuration backups are not full flash images, and a successful installation does not establish readiness for unattended operation.
 
 ## Installing this fork
 
@@ -21,6 +21,8 @@ The installer, updater and client update check use `lucaandrea/free-sleep`. The 
 For an audited offline deployment, the installer accepts `FREE_SLEEP_ARCHIVE_URL=file:///absolute/path/free-sleep.zip`. The ZIP must contain the repository under `free-sleep-main/`, including the built server and web assets. Create that bundle from a reviewed commit with `git archive --format=zip --prefix=free-sleep-main/ COMMIT`. Run the installer from a dedicated empty directory on the Pod; do not run it on your Mac. A failed download or missing compiled server stops before replacing an existing checkout.
 
 Before takeover, confirm the socket in `systemctl show frank.service --property=Environment --value`. Some firmware has no `/opt/eight/bin/frank.sh`; record the verified absolute `DAC_SOCKET` path in `/persistent/free-sleep-data/dac_sock_path.txt` before starting Free Sleep. Keep the `frank` and `capybara` hardware services running. Stop the stock `dac` service when handing the socket to Free Sleep.
+
+The biometrics service launches from the `biometrics` directory using `python -m stream.stream`. Package-qualified imports also preserve the older direct-script launch; `stream.py` must not shadow the `stream` package. Verify the complete processing import graph and the running service, not only that its dependencies import. With the cover disconnected, dependency installation and a live NATS subscription do not establish receipt of usable sensor data. Defer calibration and thermal tests until reassembly and reconnection.
 
 ## Build and local development
 
