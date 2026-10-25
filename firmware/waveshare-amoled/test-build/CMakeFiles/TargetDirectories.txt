@@ -1,0 +1,5 @@
+/Users/lucaandreacollins/Documents/GitHub/free-sleep/firmware/waveshare-amoled/test-build/CMakeFiles/model_tests.dir
+/Users/lucaandreacollins/Documents/GitHub/free-sleep/firmware/waveshare-amoled/test-build/CMakeFiles/preferences_tests.dir
+/Users/lucaandreacollins/Documents/GitHub/free-sleep/firmware/waveshare-amoled/test-build/CMakeFiles/test.dir
+/Users/lucaandreacollins/Documents/GitHub/free-sleep/firmware/waveshare-amoled/test-build/CMakeFiles/edit_cache.dir
+/Users/lucaandreacollins/Documents/GitHub/free-sleep/firmware/waveshare-amoled/test-build/CMakeFiles/rebuild_cache.dir
