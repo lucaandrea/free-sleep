@@ -244,9 +244,9 @@ contract. [Canonical snooze contract](https://github.com/lucaandrea/sleepypod-co
   Imported ownership IDs, parent/child enablement and unrelated settings remain
   intact. The repeat timer rechecks cancellation and lateness after waiting for
   the shared side lock.
-- `features.curveLibrary.implemented` explicitly remains false. The upstream
-  owned library (`PUT /curve-templates`, `POST /curve-templates/active`) is still
-  a separate integration; legacy fallback remains required.
+- This snooze revision initially left `curveLibrary` unavailable. The subsequent
+  `0389b09` library integration below now advertises support. Clients must still
+  discover capabilities from their actual controller, not from this document.
 
 Validation: the final push gate passed 5,225 tests across 310 files (17 tests and
 one file skipped), TypeScript, full ESLint and both Drizzle checks. Production
@@ -299,3 +299,78 @@ This establishes file recovery only: live operational rollback, controller
 cutover and a compatible client origin remain pending. See the
 [recovery runbook](../scripts/migration/RECOVERY.md); do not provision clients
 against Home Assistant or infer physical acceptance from these archives.
+
+
+## Schedule library: reviewed Core follow-up
+
+Core `0389b09` ([PR #6](https://github.com/lucaandrea/sleepypod-core/pull/6))
+adds the owned curve library. The exact schema and ownership constraints are in
+[the contract](https://github.com/lucaandrea/sleepypod-core/blob/0389b09/docs/SCHEDULE_LIBRARY.md).
+
+- `features.curveLibrary.implemented` is true. GET `/curve-templates` includes
+  `days: {left, right}`, `active` and `endAction`. PUT creates/updates by ID;
+  POST `/curve-templates/active` activates or pauses. Deletion uses
+  DELETE `/curve-templates?name=...`, not a DELETE JSON body.
+- Imported bedtime routines retain their versioned complete-night API. Library
+  rewrites cannot claim a side containing bedtime ownership or explicit next-day
+  power offsets. A rejection rolls back both sides atomically.
+- Review the server's returned moved days and `schedulerApplied` separately from
+  saved data. There is no optimistic revision field on the library contract;
+  a preview is a snapshot and a concurrent save can change ownership.
+- Editing a paused curve does not silently enable its existing rows. New points
+  on a fully paused day stay paused; an explicit activation re-enables them.
+
+Validation: 5,301 tests in 315 files passed, with 17 tests and one file skipped;
+TypeScript, full ESLint, both Drizzle checks and 17 importer tests passed. The
+production build and eight browser workflows passed across the suite/focused
+rerun. The subsequent Watch suite exercised the library again successfully.
+An offline upgrade preserved all 14 imported routines and their scheduler rows,
+claimed no imported sides, passed integrity checks and left source hashes intact.
+
+## Apple Watch respiratory rate and SDNN references
+
+Core `94e35ad` ([PR #7](https://github.com/lucaandrea/sleepypod-core/pull/7))
+adds separate Watch reference samples. The full
+[reference contract](https://github.com/lucaandrea/sleepypod-core/blob/94e35ad/docs/biometrics-reference-imports.md)
+is authoritative. These routes do not activate a personal sleep-stage model.
+
+- POST `/biometrics/reference-samples` accepts `side`, `source: apple_watch`,
+  `metric: breathing_rate | hrv_sdnn`, and 1–2000 `{timestamp, value}` samples.
+  Timestamps are Unix seconds; breathing rate is per minute and SDNN is ms.
+  Repeated side/metric/time/source keys are first-write-wins. The response is
+  `{written}`. Do not relabel Pod HRV or RMSSD as Watch SDNN.
+- GET uses `side`, `metric`, optional ISO `startDate`/`endDate`, and `limit`
+  (1–20000, default 5000). It returns `{timestamp, value}[]`, newest bounded
+  results in ascending order. Reverse windows and unsupported metrics fail.
+- POST `/biometrics/watch-upload` accepts the existing multipart export and now
+  returns `breathing`, `hrv`, `matchedBreathing` and `matchedHrv` alongside its
+  prior counts. Known SleepyPod/Free Sleep sources are excluded. Unit conversion
+  is explicit; unsupported units are omitted. Imports commit in bounded batches,
+  so a later failure can leave earlier accepted batches saved.
+- Authentication still applies to both transports. Provenance/import deletion
+  includes the new samples. Existing Pod measurements remain separate.
+
+Validation: 5,369 tests in 320 files passed, with 17 tests and one file skipped;
+TypeScript, lint, both migration checks and importer tests passed. The production
+build, 57 Python parser/dataset tests and all nine browser workflows passed
+across the full run and corrected Watch locator rerun. The built-server test
+uploaded a synthetic export twice, confirmed zero duplicate writes, queried both
+metrics separately, rejected an invalid metric/missing credentials and verified
+unchanged Pod vitals. Offline migration preserved existing configuration and
+biometrics; no real Watch comparison night was claimed.
+
+The personal-model library routes requested by the native task remain a separate
+review. Keep them capability-gated until their full implementation, profile
+adoption safeguards and runtime provenance have been integrated.
+
+## Web presentation alignment
+
+Core `d99902b` restores the original neutral SleepyPod theme and branding, with
+Temp / Schedule / Sleep phone tabs and secondary controls in Settings. Desktop
+navigation remains direct. The 3D renderer loads from the controller itself;
+light/dark fallback controls, Settings access and owner sign-out remain available.
+The underlying temperature/bed controls retain their existing guards. The full
+production build and ten browser workflows passed, followed by two focused
+checks for offline 3D rendering and forced 2D fallback after visual review.
+This aligns navigation and materials with the current native direction; it is
+not a claim that every native/web screen is pixel-identical or hardware-qualified.
