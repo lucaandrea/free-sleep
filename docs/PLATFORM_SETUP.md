@@ -14,6 +14,14 @@ Adaptive comfort is off by default. Its [configuration and qualification guide](
 
 No automated migration, firmware reset, subscription bypass, or stock-service removal is included in this change. The remaining subscription time is a migration window, not proof this branch is ready to replace the stock system unattended.
 
+## Installing this fork
+
+The installer, updater and client update check use `lucaandrea/free-sleep`. The original upstream installer installs a different application and does not include this fork's native integrations and platform features.
+
+For an audited offline deployment, the installer accepts `FREE_SLEEP_ARCHIVE_URL=file:///absolute/path/free-sleep.zip`. The ZIP must contain the repository under `free-sleep-main/`, including the built server and web assets. Create that bundle from a reviewed commit with `git archive --format=zip --prefix=free-sleep-main/ COMMIT`. Run the installer from a dedicated empty directory on the Pod; do not run it on your Mac. A failed download or missing compiled server stops before replacing an existing checkout.
+
+Before takeover, confirm the socket in `systemctl show frank.service --property=Environment --value`. Some firmware has no `/opt/eight/bin/frank.sh`; record the verified absolute `DAC_SOCKET` path in `/persistent/free-sleep-data/dac_sock_path.txt` before starting Free Sleep. Keep the `frank` and `capybara` hardware services running. Stop the stock `dac` service when handing the socket to Free Sleep.
+
 ## Build and local development
 
 Use Node 24.11 or newer. From the repository root:
