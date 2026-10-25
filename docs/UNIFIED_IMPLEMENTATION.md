@@ -108,7 +108,7 @@ or overnight adaptation. Keep the physical-control and Preview gates open.
 
 ## Bedtime and control-receipt follow-ups
 
-Core bedtime PR #3 preserves whole overnight routines with revision conflicts,
+Merged Core bedtime PR #3 preserves whole overnight routines with revision conflicts,
 atomic moves/replacements and the original parent/child enablement preferences.
 Its production build, all six isolated browser checks, 16 importer tests and
 4,432 related tests passed. The newer private recovery rehearsal verified all
@@ -117,6 +117,7 @@ Its production build, all six isolated browser checks, 16 importer tests and
 The subsequent `lucas-assistant/control-receipts` branch adds durable manual
 control request IDs and deadlines at the DAC/Bluetooth write boundary. It removes
 implicit write replay after socket failure, keeps acknowledgments separate from
-physical evidence and reports interrupted/partial operations as unknown. See
+physical evidence and reports interrupted/partial operations as unknown. Its
+4,564-test push gate, production build and seven browser checks passed. See
 [client handoff](CLIENT_INTEGRATION_HANDOFF.md#immediate-control-receipts-core-follow-up).
 Neither follow-up has replaced the working Pod controller or started Preview nights.

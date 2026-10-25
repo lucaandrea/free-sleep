@@ -4,8 +4,8 @@ Updated 2026-10-25. This is a coordination note, not a declaration that the Pod 
 
 ## Revisions and ownership
 
-- Core: `../sleepypod-core`. Foundation PR #1 and migration PR #2 are merged into `main`, currently `50782ab`. Complete bedtime editing follows on `lucas-assistant/bedtime-routines` at `eeb8b49`; its versioned contract is described below. This remains a stable v3.4.0 baseline plus reviewed changes.
-- Free Sleep PR #5 is merged into `lucas-assistant/pod4-installation` at `a727c81`; installation PR #4 remains open against `main`. The current client owner separately maintains `../sleepypod-ios` and `firmware/`. This coordination change touches neither implementation.
+- Core: `../sleepypod-core`. Foundation PR #1, migration PR #2 and complete bedtime PR #3 are merged into `main`, currently `151ba43`. The bedtime implementation is `eeb8b49`; the subsequent control-receipt implementation is `7af9f07`. This remains a stable v3.4.0 baseline plus reviewed changes.
+- Free Sleep PR #5 and bedtime handoff PR #6 are merged into `lucas-assistant/pod4-installation`, currently `0a094e2`; installation PR #4 remains open against `main`. The current client owner separately maintains `../sleepypod-ios` and `firmware/`. This coordination change touches neither implementation.
 - The physical Pod still runs customized Free Sleep. Core is tested locally and has NOT replaced that controller. The home-host/Core work does not change client signing or App Store distribution.
 - Current Core validation: the personal comfort Preview passed 564 targeted tests, followed by 14 UI/runtime regression tests after browser review (one additional test). TypeScript, full ESLint and both Drizzle checks passed. The complete Preview push gate passed 3,124 tests; the final signal-validity/demo follow-up passed 2,745 related tests in 97 files, plus TypeScript/full ESLint/both Drizzle checks. Its focused runs passed 226 automation tests and 90 demo/contract/runtime tests. Earlier capability gates passed 1,249 and 435 tests. These are software checks, not hardware qualification.
 - Production Preview build passed. Isolated loopback checks verified owner authentication, status, Preview configuration, rejected active mode (412), rejected future check-ins (400), OpenAPI and separate Preview/active capabilities. Desktop and 390px browser checks verified the panel and synthetic check-ins. The local CI-mode server correctly showed no evaluated night and a stopped Preview runtime. The demo transport now returns an explicit live-Pod requirement and rejects comfort writes; 90 demo/contract/runtime tests passed. No real hardware or owner key was used.
@@ -215,7 +215,9 @@ for exact action fields and lifecycle semantics.
   outstanding. The existing Stop route remains independently callable.
 
 Validation: 250 focused controller tests, TypeScript, full ESLint, production
-build and all seven isolated production browser/API checks passed. SQLite and
+build and all seven isolated production browser/API checks passed. The full
+push gate passed 4,564 tests across 230 files, both Drizzle checks and 16
+offline importer tests. Syncing the merged bedtime base did not change the tree. SQLite and
 transport failure checks used simulated hardware.
 
 Upstream alarm snooze support at `5cb54f2` has been identified for the next
@@ -233,8 +235,8 @@ legacy fallback remains required until that reviewed integration is published.
 
 Revision `9ff9cd3` passed 14 importer tests, 398 focused tests and the full
 3,832-test related push gate (182 files), TypeScript, full ESLint, both Drizzle
-checks and an isolated production build. Importer PR #2 is now merged into Core main; bedtime PR #3 adds the complete
-versioned editor described above.
+checks and an isolated production build. Importer PR #2 and bedtime PR #3 are now merged into Core main; the latter
+adds the complete versioned editor described above.
 
 The Core importer now stages `free-sleep-migration/1` backups into a new review
 candidate. It does not deploy a controller or create a Core origin/key. The
