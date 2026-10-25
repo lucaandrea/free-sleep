@@ -23,7 +23,7 @@ flowchart LR
 
 | Gate | Evidence required | State |
 | --- | --- | --- |
-| Recoverable migration | SQLite online backup, separate private configuration, restore rehearsal | Live data backed up; archives restored and hashes / SQLite integrity verified locally |
+| Recoverable migration | SQLite online backup, separate private configuration, restore rehearsal | Backup and offline candidate verified; full installation rollback and native/editor qualification still pending |
 | Core integration | Pod 4 occupancy, authentication, comfort arbitration, native compatibility | In progress |
 | Apps | Matching navigation and 3D controls; accessibility; real unavailable states | Five destinations and shared palette implemented; native 3D overview built and inspected in Simulator; full layout parity still pending |
 | Home host | Windows/hypervisor/storage preflight, VM startup, broker and private access | VM running; owner onboarding complete; MQTT and private HTTPS verified; daily backups and an off-host archive verified; graceful VM stop/start recovered HTTPS/MQTT; Pod MQTT credentials, restore rehearsal and Windows reboot tests pending |
@@ -56,12 +56,14 @@ Adaptive control, autonomous base movement and music remain disabled until their
 - Core now restores Autopilot's explicit saved opt-in before starting its timer, defaults new settings to disabled, and stays disabled if settings are absent or unreadable. The generated migration preserves existing device settings; migration tests verify this.
 - Native Simulator build succeeds with five destinations and an independently drawn articulated bed. Tonight opens temperature and position controls explicitly. Native and web layouts are not yet identical, and the Home Assistant card reports its unconnected state.
 - Backup utility: two tests passed, including an active WAL backup and local restore/hash verification. Private archives and credentials remain outside Git.
+- The offline Core importer at `9ff9cd3` now verifies archive hashes/membership, stages generated SQLite schemas and retains original metrics/journal/history privately. It preserves overnight event weekdays through an explicit next-day power-off field; existing Core rows retain their calendar-day default. Personal comfort starts Off, learning cursors/manual pauses are preserved, and imported capacitance profiles remain pending until their different threshold semantics are qualified. Fourteen importer tests and 398 focused scheduler/API/Preview/schema tests passed. A real-backup rehearsal created 14 disabled power rows, 14 disabled alarms, six gestures and two default-Off comfort states; that snapshot had no biometric rows or check-ins. It changed no Pod services. The candidate and source archives remain outside Git. See [Core migration](https://github.com/lucaandrea/sleepypod-core/blob/9ff9cd3/docs/FREE_SLEEP_MIGRATION.md) for alarm warm-up, overnight editor, historical API and full-installation rollback gates.
+
 
 ## Still required before controller migration
 
 1. Complete personal comfort vital-window/artifact and bedtime-phase adapters, then shared-authority application receipts and activation gates. The persisted Preview runtime and manual pause wiring are implemented.
 2. Add versioned measurements/control receipts and the native app's compatibility endpoints.
-3. Build a reversible data importer, preserving routines, timezone, calibration, journal and learning cursors; test rollback against the preserved installation.
+3. Complete cutover and full-installation rollback around the tested offline importer. Qualify overnight editing, resolve changed alarm warm-up behavior and temporary overrides, and expose historical data without changing its metric definitions.
 4. Add dedicated Pod MQTT credentials/ACLs, connect room context and notification delivery, and finish off-host restore and Windows recovery testing.
 5. Qualify actual presence, base movement/Stop and vibration/cancel with the owner. No hardware qualification is implied by demo screenshots.
 6. Record seven real Preview nights and review them before bounded activation and a new TestFlight release.

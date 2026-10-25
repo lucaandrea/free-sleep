@@ -4,7 +4,7 @@ Updated 2026-10-25. This is a coordination note, not a declaration that the Pod 
 
 ## Revisions and ownership
 
-- Core: `../sleepypod-core`, branch `lucas-assistant/unified-sleep`, revision `a016342` (Preview feature `6b51f04`, validation/loading fixes `70e96a0`, signal validity `5767b40`, and explicit demo unavailability) (stable v3.4.0 baseline plus reviewed integration changes). Draft PR: https://github.com/lucaandrea/sleepypod-core/pull/1.
+- Core: `../sleepypod-core`, branch `lucas-assistant/unified-sleep`, revision `9ff9cd3` (offline migration and explicit overnight shutdowns; Preview feature `6b51f04`, validation/loading fixes `70e96a0`, signal validity `5767b40`, and demo unavailability `a016342`) (stable v3.4.0 baseline plus reviewed integration changes). Draft PR: https://github.com/lucaandrea/sleepypod-core/pull/1.
 - Free Sleep native foundation: branch `lucas-assistant/unified-sleepypod`, with the five-destination interface at `6dd26c5`. Draft PR: https://github.com/lucaandrea/free-sleep/pull/5.
 - The physical Pod still runs customized Free Sleep. Core is tested locally and has NOT replaced that controller. The home-host/Core work does not change client signing or App Store distribution.
 - Current Core validation: the personal comfort Preview passed 564 targeted tests, followed by 14 UI/runtime regression tests after browser review (one additional test). TypeScript, full ESLint and both Drizzle checks passed. The complete Preview push gate passed 3,124 tests; the final signal-validity/demo follow-up passed 2,745 related tests in 97 files, plus TypeScript/full ESLint/both Drizzle checks. Its focused runs passed 226 automation tests and 90 demo/contract/runtime tests. Earlier capability gates passed 1,249 and 435 tests. These are software checks, not hardware qualification.
@@ -133,3 +133,26 @@ The client-side Apple Health, local-model, cloud consent/Keychain and HomeKit/Sh
 The endpoint observes existing state without starting DAC, Bluetooth or MQTT. Versioned measurement/control envelopes with durable deduplication, expiry and unknown-outcome reconciliation remain separate pending work. No client-facing Core origin or real owner key has been provisioned on the physical Pod. A Wi-Fi device without Tailscale also needs a separately qualified LAN connection; the Lenovo's private Home Assistant URL is not a substitute.
 
 Base automation, configurable vibration/music and active personal comfort remain gated on their own qualification and seven actual Preview nights. Acknowledgment is never evidence that the bed physically moved or vibrated.
+
+## Offline migration and overnight schedule contract
+
+The Core importer now stages `free-sleep-migration/1` backups into a new review
+candidate. It does not deploy a controller or create a Core origin/key. The
+real saved backup passed an offline rehearsal; all 14 power and 14 alarm rows
+remained disabled. Both legacy baselines are pending physical qualification.
+
+Core power responses now include `offDayOffset` (`0` for the same calendar
+weekday, `1` for the following weekday). Creates default to `0`; individual and
+batch partial updates preserve the stored value. Imported overnight Free Sleep
+rows use `1`. Temperature and alarm rows remain **calendar-day events**, so an
+01:00 Sunday phase belongs to Saturday's overnight Free Sleep routine but is
+stored under Sunday in Core. Clients must preserve this distinction and the
+explicit shutdown offset. Existing curve delete/recreate workflows still need
+qualification for imported routines before cutover.
+
+The importer retains original biometric metrics and full journal/learning files
+under `legacy/`; it does not mix old five-minute averages into Core's live metric
+history or claim they are Preview nights. Core's alarm temperature warm-up/hold
+also differs from Free Sleep and requires explicit migration review. Candidate
+reports always say `readyForCutover: false`. See [Core migration](https://github.com/lucaandrea/sleepypod-core/blob/9ff9cd3/docs/FREE_SLEEP_MIGRATION.md) for
+the complete translation and remaining gates.
