@@ -1,14 +1,14 @@
 import Foundation
 
 enum SleepTab: String, CaseIterable {
-    case tonight = "Tonight", sleep = "Sleep", coach = "Coach", routines = "Routines", settings = "Settings"
+    case tonight = "Tonight", sleep = "Sleep", autopilot = "Autopilot", home = "Home", more = "More"
     var icon: String {
         switch self {
         case .tonight: "moon.stars"
         case .sleep: "chart.bar"
-        case .coach: "sparkles"
-        case .routines: "clock"
-        case .settings: "gearshape"
+        case .autopilot: "sparkles"
+        case .home: "house"
+        case .more: "ellipsis.circle"
         }
     }
 }

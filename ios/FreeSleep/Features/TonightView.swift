@@ -2,21 +2,17 @@ import SwiftUI
 
 struct TonightView: View {
     @Environment(AppModel.self) private var model
-    @Environment(\.sleepWideLayout) private var wide
-    @Environment(\.dynamicTypeSize) private var typeSize
     var body: some View {
-        SleepPage(title: "Make room for rest.", subtitle: "Your bed, your rhythm. A little more comfortable tonight.",
-            badge: model.connected ? "Pod connected" : "Pod unavailable", badgeTone: model.connected ? .success : .neutral, badgeDot: true) {
-            SidePicker().frame(maxWidth: 350)
+        SleepPage(title: "Tonight", subtitle: "Your bed, your rhythm.",
+            badge: model.demo ? "Demo" : model.connected ? "Pod connected" : "Pod unavailable", badgeTone: model.connected && !model.demo ? .success : .neutral, badgeDot: true) {
             PodNotifications()
-            AlarmCard(side: model.side).id("\(model.side.rawValue):\(model.settings?.id ?? "demo")")
             if let message = model.message { Text(message).sleepText(.body).foregroundStyle(SleepTheme.secondary) }
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 20, alignment: .top), count: wide && !typeSize.isAccessibilitySize ? 2 : 1), spacing: 20) {
-                TemperatureCard().id(model.side)
-                BaseCard()
-            }
+            TonightBedCard()
+            SidePicker().frame(maxWidth: 350)
+            AlarmCard(side: model.side).id("\(model.side.rawValue):\(model.settings?.id ?? "demo")")
             if let message = model.actionMessage { Label(message, systemImage: "exclamationmark.circle").foregroundStyle(SleepTheme.error) }
-            ComfortCard().id(model.side)
+            Button("Comfort learning and automations", systemImage: "sparkles") { model.tab = .autopilot }
+                .buttonStyle(SleepButtonStyle(fill: true))
             SleepCard(title: "A glance at last night", eyebrow: "YOUR ROUTINE", actionTitle: "Explore sleep →", action: { model.tab = .sleep }) {
                 let night = model.analytics?.nights.last
                 ViewThatFits(in: .horizontal) {
