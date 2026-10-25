@@ -27,7 +27,7 @@ State snapshot() {
     state.thermal.ambientAvailable = state.thermal.mcuAvailable = state.thermal.humidityAvailable = true;
     const char *mode = std::getenv("PREVIEW_STATE");
     if (mode && std::string(mode) != "demo") {
-        state.preview = false; state.wifi = state.connected = true;
+        state.preview = false; state.wifi = state.connected = true; state.controllerConfigured = true;
         state.thermal.observedAt = std::time(nullptr);
         if (std::string(mode) == "stale") state.thermal.observedAt -= 120;
         if (std::string(mode) == "missing") { state.thermal.available = 9; state.thermal.ambientAvailable = false; }
@@ -38,10 +38,15 @@ State snapshot() {
         if (std::string(mode) == "missing") { state.sides[0].measuredAvailable = false; state.sides[1].targetAvailable = false; }
     }
     state.alarmsLoaded[0] = state.alarmsLoaded[1] = true;
+    if (mode && (std::string(mode) == "wifi-only" || std::string(mode) == "joining")) {
+        state = State{};
+        state.wifi = std::string(mode) == "wifi-only";
+        state.message = connectionSummary(state);
+    }
     if (dynamicState == "heating") { state.sides[0].target = 88; state.sides[0].measured = 70; }
     if (dynamicState == "cooling") { state.sides[0].target = 68; state.sides[0].measured = 88; }
     if (dynamicState == "settled") { state.sides[0].target = 68; state.sides[0].measured = 68; }
-    if (dynamicState == "expired") { state.preview = false; state.connected = false; }
+    if (dynamicState == "expired") { state.preview = false; state.connected = false; state.controllerConfigured = true; }
     return state;
 }
 bool submit(Command) { std::fprintf(stderr,"Unexpected mutation in preview renderer\n"); std::abort(); }

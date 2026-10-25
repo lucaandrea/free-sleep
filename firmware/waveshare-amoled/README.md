@@ -1,8 +1,8 @@
 # Sleepypod bedside remote
 
-A touch controller for **Waveshare ESP32-S3-Touch-AMOLED-1.75**, using its 466 × 466 round AMOLED and touch panel. Firmware 0.4.0 uses Sleepypod’s near-black palette, white capsule controls and a thicker temperature dial, adapted to the circular screen. It adds a rotatable 3D bed, articulated position preview and selectable sensor layers.
+A touch controller for **Waveshare ESP32-S3-Touch-AMOLED-1.75**, using its 466 × 466 round AMOLED and touch panel. Firmware 0.4.1 uses Sleepypod’s near-black palette, white capsule controls and a thicker temperature dial, adapted to the circular screen. It adds a rotatable 3D bed, articulated position preview and selectable sensor layers.
 
-Version 0.4.0 adds Degrees, Offset and Eight Sleep display modes, a mattress view directly on Temperature, and six colored sensor tiles with a live layer preview. **0.4.0 is flashed and boots on the connected board**, with all image hashes verified and NVS unchanged. The owner confirmed that the 0.4.0 temperature display controls, mattress view and colored Sensor Layers all fit the circular screen and respond to touch. Evidence is in `docs/HARDWARE_CHECK.md`. An unconfigured board starts in an explicitly labeled preview with bed commands disabled. Network setup and real bed controls still require attended checks.
+Version 0.4.1 adds two-stage USB setup and read-only connection diagnostics. **0.4.1 is flashed and the board has joined the owner's Wi-Fi with Preview off**, including after a restart. It is waiting for the compatible Core controller's LAN origin and owner key; real bed readings and controls are not connected yet. The previously accepted dial, mattress, color-coded sensors and round-screen navigation are retained. Evidence is in `docs/HARDWARE_CHECK.md`.
 
 ## Included controls
 
@@ -55,7 +55,11 @@ python3 -m pip install pyserial==3.5
 python3 tools/provision.py /dev/cu.usbmodemYOUR_BOARD
 ```
 
-The provisioning tool prompts for SSID, password, controller origin and owner key. It does not write them to a file or print them. The key must be at least 32 characters. HTTPS validates certificates with ESP-IDF's CA bundle. Plain HTTP requires explicit opt-in and a private IPv4 or `.local` address; it exposes the bearer key to that local network. There is no public setup access point or default password. This development build stores configuration in NVS without flash encryption, so physical access to the board can expose it.
+To configure Wi-Fi before the Pod controller is ready, use `python3 tools/provision.py YOUR_PORT --wifi-only`. This preserves an existing controller connection; otherwise it exits sample Preview and shows Pod setup needed with unavailable readings and disabled bed commands. Run the normal setup command later to add the real origin/key. Wi-Fi alone does not establish bed control.
+
+Read redacted connection/freshness flags with `python3 tools/provision.py YOUR_PORT --status`. This does not change configuration or issue hardware commands. It does not print credentials or measurements.
+
+The normal provisioning tool prompts for SSID, password, controller origin and owner key. It does not write them to a file or print them. The key must be at least 32 characters. HTTPS validates certificates with ESP-IDF's CA bundle. Plain HTTP requires explicit opt-in and a private IPv4 or `.local` address; it exposes the bearer key to that local network. There is no public setup access point or default password. This development build stores configuration in NVS without flash encryption, so physical access to the board can expose it.
 
 Use the controller origin only, such as `https://pod.example` or `http://192.168.1.10:3000`; do not include `/api`, credentials, query parameters or fragments. An existing configuration can be replaced by running the provisioning tool again over USB.
 
@@ -70,7 +74,7 @@ cmake --build test-build/preview
 python3 tools/verify_ui.py
 ```
 
-The host test covers request limits, side isolation, absent measurements, powered neutral temperature, telemetry freshness, command expiry, base availability, alarm methods/fields and connection validation. The offscreen preview compiles the actual LVGL UI with synthetic state. The round-screen geometry and all 36 UI captures pass; see [UI verification](docs/UI_VERIFICATION.md) and `docs/previews/sleepypod-0.3.0/`.
+The host test covers request limits, side isolation, absent measurements, powered neutral temperature, telemetry freshness, command expiry, base availability, alarm methods/fields and connection validation. The offscreen preview compiles the actual LVGL UI with synthetic state. The round-screen geometry and all 122 current route/state captures pass, including joining Wi-Fi, connected Wi-Fi without a Pod, missing/stale data and configured controller states. See [UI verification](docs/UI_VERIFICATION.md).
 
 Before relying on it overnight, verify on the actual board: display/touch alignment, Wi-Fi loss and reconnect, TLS and owner-key rejection, each bed side's temperature, whole-bed movement and Stop, alarm timing in the Pod timezone, vibration and snooze, and restart persistence. The controller's alarm edit API lacks an atomic compare-and-swap contract; this client rereads before saving and rejects observed changes, but simultaneous edits can still race between that read and write. Multiple alarms on the same day currently expose the first alarm; use iOS for complex schedules.
 

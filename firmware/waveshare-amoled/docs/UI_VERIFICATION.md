@@ -52,3 +52,7 @@ python3 tools/verify_ui.py --output docs/previews/sleepypod-0.4.0
 - Images in `previews/sleepypod-0.4.0/` are offscreen renders of production LVGL code using synthetic fixtures. They are not photographs of the physical screen or evidence of actual Pod readings.
 
 Physical flashing, boot evidence and the owner’s touch check are recorded separately in HARDWARE_CHECK.md. Network/control qualification depends on the compatible Core deployment.
+
+## 0.4.1 connection states
+
+Both host suites pass and 122 production LVGL route/state captures fit the 450 px safe circle. Wi-Fi-only setup removes sample data and shows unavailable targets, while More shows Pod setup needed. Joining, controller-offline and connected states are distinct. Bed actions remain disabled until a controller is configured. Read-only USB status contains only connection/freshness booleans. Physical Wi-Fi/restart evidence and the pending controller connection are recorded in `HARDWARE_CHECK.md`.
