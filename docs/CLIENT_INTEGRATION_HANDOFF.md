@@ -4,8 +4,8 @@ Updated 2026-10-25. This is a coordination note, not a declaration that the Pod 
 
 ## Revisions and ownership
 
-- Core: `../sleepypod-core`. Foundation PR #1, migration PR #2, complete bedtime PR #3 and control-receipt PR #4 are merged into `main`, currently `b00cc48`. The bedtime implementation is `eeb8b49`; the subsequent control-receipt implementation is `7af9f07`. This remains a stable v3.4.0 baseline plus reviewed changes.
-- Free Sleep PR #5, bedtime handoff PR #6 and control handoff PR #7 are merged into `lucas-assistant/pod4-installation`, currently `98d7f3b`; installation PR #4 remains open against `main`. The current client owner separately maintains `../sleepypod-ios` and `firmware/`. This coordination change touches neither implementation.
+- Core: `../sleepypod-core`. Foundation, migration, bedtime, control receipts, snooze, schedule library, Watch references and web shell PRs #1–#8 are merged into `main` (web shell merge `64143f4`). This is the stable v3.4.0 baseline plus reviewed changes.
+- Free Sleep installation PR #4 is merged into `main` (`b0680140`), including private home setup and recovery tooling. This handoff targets `main`. The client owner separately maintains `../sleepypod-ios` and `firmware/`; this documentation does not modify their source.
 - The physical Pod still runs customized Free Sleep. Core is tested locally and has NOT replaced that controller. The home-host/Core work does not change client signing or App Store distribution.
 - Current Core validation: the personal comfort Preview passed 564 targeted tests, followed by 14 UI/runtime regression tests after browser review (one additional test). TypeScript, full ESLint and both Drizzle checks passed. The complete Preview push gate passed 3,124 tests; the final signal-validity/demo follow-up passed 2,745 related tests in 97 files, plus TypeScript/full ESLint/both Drizzle checks. Its focused runs passed 226 automation tests and 90 demo/contract/runtime tests. Earlier capability gates passed 1,249 and 435 tests. These are software checks, not hardware qualification.
 - Production Preview build passed. Isolated loopback checks verified owner authentication, status, Preview configuration, rejected active mode (412), rejected future check-ins (400), OpenAPI and separate Preview/active capabilities. Desktop and 390px browser checks verified the panel and synthetic check-ins. The local CI-mode server correctly showed no evaluated night and a stopped Preview runtime. The demo transport now returns an explicit live-Pod requirement and rejects comfort writes; 90 demo/contract/runtime tests passed. No real hardware or owner key was used.
@@ -374,3 +374,16 @@ production build and ten browser workflows passed, followed by two focused
 checks for offline 3D rendering and forced 2D fallback after visual review.
 This aligns navigation and materials with the current native direction; it is
 not a claim that every native/web screen is pixel-identical or hardware-qualified.
+
+## Offline Pod runtime staging
+
+Core commit `0051feb` packages the reviewed Linux ARM64 runtime, source/license,
+static assets, migrations and dependency manifests without invoking the destructive
+installer. The final archive digest matched on the actual Pod; Node 24.22.1, an
+in-memory SQLite integrity check and one-pixel image encoding passed there. The
+probe did not import or start the application. Free Sleep, its stream service and
+Franken retained their original process IDs. See Core's `docs/OFFLINE_POD_STAGING.md`.
+
+This is dependency compatibility evidence only. Python environments, protected
+controller origin, quiesced import, attended operational rollback and controller
+cutover remain pending. Core is still not the live bed controller.

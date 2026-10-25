@@ -1,0 +1,9 @@
+/build/
+/managed_components/
+/sdkconfig
+/sdkconfig.old
+/config.private.json
+/test-build/
+/dist/
+/.venv/
+__pycache__/

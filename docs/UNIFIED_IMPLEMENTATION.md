@@ -159,3 +159,16 @@ backups stayed unchanged. Details and client caveats are in the
 Both follow-ups remain software/offline evidence. The working Pod is still on
 Free Sleep; physical qualification, a compatible deployed origin, real Watch
 comparisons and seven Preview nights remain outstanding.
+
+## Main integration and inert runtime verification
+
+The owner requested that completed work merge into `main`. Core PRs #1–#8 and
+Free Sleep installation PR #4 are now merged. The installation merge preserves
+the complete handoff and removes previously tracked generated ESP files under
+the existing ignore rules; source, locks, defaults and documentation remain.
+All 9,864 local generated files were hash-verified unchanged during untracking.
+
+The final offline Core bundle (`0051feb`) passed its actual Pod dependency probe
+using Node 24.22.1, SQLite in memory and image encoding. No controller was started,
+and the three existing control/stream/firmware service process IDs were unchanged.
+The cutover and physical/overnight gates above remain required.
