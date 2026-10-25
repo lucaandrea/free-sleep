@@ -4,7 +4,7 @@ Updated 2026-10-25. This is a coordination note, not a declaration that the Pod 
 
 ## Revisions and ownership
 
-- Core: `../sleepypod-core`, branch `lucas-assistant/unified-sleep`, revision `9ff9cd3` (offline migration and explicit overnight shutdowns; Preview feature `6b51f04`, validation/loading fixes `70e96a0`, signal validity `5767b40`, and demo unavailability `a016342`) (stable v3.4.0 baseline plus reviewed integration changes). Draft PR: https://github.com/lucaandrea/sleepypod-core/pull/1.
+- Core: `../sleepypod-core`, branch `lucas-assistant/unified-sleep`, revision `9ff9cd3` (offline migration and explicit overnight shutdowns; Preview feature `6b51f04`, validation/loading fixes `70e96a0`, signal validity `5767b40`, and demo unavailability `a016342`) (stable v3.4.0 baseline plus reviewed integration changes). Migration follow-up draft PR: https://github.com/lucaandrea/sleepypod-core/pull/2. Foundation PR #1 was merged into Core main at `3c3dccd`.
 - Free Sleep native foundation: branch `lucas-assistant/unified-sleepypod`, with the five-destination interface at `6dd26c5`. Draft PR: https://github.com/lucaandrea/free-sleep/pull/5.
 - The physical Pod still runs customized Free Sleep. Core is tested locally and has NOT replaced that controller. The home-host/Core work does not change client signing or App Store distribution.
 - Current Core validation: the personal comfort Preview passed 564 targeted tests, followed by 14 UI/runtime regression tests after browser review (one additional test). TypeScript, full ESLint and both Drizzle checks passed. The complete Preview push gate passed 3,124 tests; the final signal-validity/demo follow-up passed 2,745 related tests in 97 files, plus TypeScript/full ESLint/both Drizzle checks. Its focused runs passed 226 automation tests and 90 demo/contract/runtime tests. Earlier capability gates passed 1,249 and 435 tests. These are software checks, not hardware qualification.
@@ -135,6 +135,11 @@ The endpoint observes existing state without starting DAC, Bluetooth or MQTT. Ve
 Base automation, configurable vibration/music and active personal comfort remain gated on their own qualification and seven actual Preview nights. Acknowledgment is never evidence that the bed physically moved or vibrated.
 
 ## Offline migration and overnight schedule contract
+
+Revision `9ff9cd3` passed 14 importer tests, 398 focused tests and the full
+3,832-test related push gate (182 files), TypeScript, full ESLint, both Drizzle
+checks and an isolated production build. The new follow-up PR is #2; merged
+foundation PR #1 does not include this importer.
 
 The Core importer now stages `free-sleep-migration/1` backups into a new review
 candidate. It does not deploy a controller or create a Core origin/key. The
