@@ -29,6 +29,7 @@ $relayAddress = '127.0.0.1'
 $relayPort = 18123
 $relayKey = 'HKLM:\SYSTEM\CurrentControlSet\Services\PortProxy\v4tov4\tcp'
 $relayName = "$relayAddress/$relayPort"
+. (Join-Path $PSScriptRoot 'PrivateAccess.Common.ps1')
 
 function Invoke-Tailscale([string[]]$Arguments) {
     $output = & $tailscale @Arguments
@@ -45,22 +46,6 @@ function Get-ServeConfiguration {
     return ((Invoke-Tailscale @('serve', 'status', '--json')) -join "`n") | ConvertFrom-Json
 }
 
-function Test-OwnedServe([object]$Configuration) {
-    # Compare the complete expected service, refusing unrelated handlers/ports.
-    if ($null -eq $Configuration) { return $false }
-    $rootKeys = @($Configuration.PSObject.Properties | ForEach-Object { $_.Name })
-    if (@($rootKeys | Where-Object { $_ -ne 'TCP' }).Count -ne 0) { return $false }
-    if ('TCP' -notin $rootKeys) { return $false }
-    if ($null -eq $Configuration.TCP) { return $false }
-    $portKeys = @($Configuration.TCP.PSObject.Properties | ForEach-Object { $_.Name })
-    if ($portKeys.Count -ne 1 -or '443' -notin $portKeys) { return $false }
-    $handler = $Configuration.TCP.'443'
-    if ($null -eq $handler) { return $false }
-    $handlerKeys = @($handler.PSObject.Properties | ForEach-Object { $_.Name })
-    if ($handlerKeys.Count -ne 2 -or 'TCPForward' -notin $handlerKeys -or 'TerminateTLS' -notin $handlerKeys) { return $false }
-    return $handler.TCPForward -eq "$relayAddress`:$relayPort" -and $handler.TerminateTLS -eq $script:nodeHostname
-}
-
 if (-not (Test-Path -LiteralPath $tailscale)) { throw 'Tailscale is not installed.' }
 if (-not (Test-Path -LiteralPath (Join-Path $rootDirectory 'host.json'))) { throw 'Create the managed Home Assistant VM first.' }
 $status = ((Invoke-Tailscale @('status', '--json')) -join "`n") | ConvertFrom-Json
@@ -70,22 +55,24 @@ if ($script:nodeHostname -notmatch '^[a-zA-Z0-9.-]+\.ts\.net$') { throw 'No vali
 $configuration = Get-ServeConfiguration
 $relayTarget = Get-RelayTarget
 $ownedRecord = if (Test-Path -LiteralPath $recordFile) { Get-Content -LiteralPath $recordFile -Raw | ConvertFrom-Json } else { $null }
+$podRecordFile = Join-Path $rootDirectory 'private-pod-access.json'
+$podRecord = if (Test-Path -LiteralPath $podRecordFile) { Get-Content -LiteralPath $podRecordFile -Raw | ConvertFrom-Json } else { $null }
 
 if ($Action -eq 'Status') {
     [pscustomobject]@{Managed=($null -ne $ownedRecord); PrivateURL="https://$script:nodeHostname"; RelayTarget=$relayTarget; Serve=$configuration} | ConvertTo-Json -Depth 8
     return
 }
 
-if ($null -ne $ownedRecord -and ($ownedRecord.SchemaVersion -ne 1 -or $ownedRecord.RelayAddress -ne $relayAddress -or $ownedRecord.RelayPort -ne $relayPort -or $ownedRecord.NodeHostname -ne $script:nodeHostname)) { throw 'The saved private-access identity does not match this host.' }
-$hasServe = @($configuration.PSObject.Properties).Count -gt 0
-if ($hasServe -and ($null -eq $ownedRecord -or -not (Test-OwnedServe $configuration))) { throw 'An existing Tailscale Serve configuration is not owned by this setup. No changes made.' }
+$ownedPorts = Get-PrivateAccessPorts $ownedRecord $podRecord $script:nodeHostname
+if (-not (Test-PrivateServeConfiguration $configuration $ownedPorts $script:nodeHostname)) { throw 'An existing Tailscale Serve configuration is not owned by this setup. No changes made.' }
+$hasHomeServe = Test-PrivateServePort $configuration '443'
 $expectedRelay = if ($ownedRecord) { "$($ownedRecord.GuestHostname)/$($ownedRecord.GuestPort)" } else { $null }
 if ($relayTarget -and ($null -eq $expectedRelay -or $relayTarget -ne $expectedRelay)) { throw 'The loopback relay is already configured by another owner. No changes made.' }
 
 if ($Action -eq 'Disable') {
     if (-not $ownedRecord) { throw 'No managed private access exists to remove.' }
     if ($PSCmdlet.ShouldProcess($script:nodeHostname, 'Disable only managed private HTTPS and loopback relay')) {
-        if ($hasServe) { Invoke-Tailscale @('serve', '--tls-terminated-tcp=443', 'off') | Out-Null }
+        if ($hasHomeServe) { Invoke-Tailscale @('serve', '--tls-terminated-tcp=443', 'off') | Out-Null }
         if ($relayTarget) {
             & netsh.exe interface portproxy delete v4tov4 "listenaddress=$relayAddress" "listenport=$relayPort" | Out-Null
             if ($LASTEXITCODE -ne 0) { throw 'Could not remove the managed loopback relay.' }
@@ -126,6 +113,7 @@ if ($PSCmdlet.ShouldProcess($script:nodeHostname, 'Enable private TLS on 443 thr
     # changes account-level HTTPS/access settings or enables Funnel on its own.
     Invoke-Tailscale @('serve', '--bg', '--tls-terminated-tcp=443', "tcp://$relayAddress`:$relayPort") | Out-Null
     $configuration = Get-ServeConfiguration
-    if (-not (Test-OwnedServe $configuration)) { throw 'Private TLS configuration did not match the expected sole handler.' }
+    $ownedPorts = Get-PrivateAccessPorts $record $podRecord $script:nodeHostname
+    if (-not (Test-PrivateServeConfiguration $configuration $ownedPorts $script:nodeHostname) -or -not (Test-PrivateServePort $configuration '443')) { throw 'Private TLS configuration did not match the managed services.' }
     [pscustomobject]@{Success=$true; PrivateURL="https://$script:nodeHostname"; GuestHostname=$GuestHostname; Authentication='Home Assistant login retained'; Exposure='Tailscale only'} | ConvertTo-Json
 }

@@ -170,3 +170,52 @@ Sources: [Microsoft OpenSSH installation](https://learn.microsoft.com/en-us/wind
 [Mosquitto configuration](https://github.com/home-assistant/apps/blob/master/mosquitto/DOCS.md),
 [Tailscale Serve CLI](https://tailscale.com/docs/reference/tailscale-cli/serve),
 [Tailscale HTTPS certificates](https://tailscale.com/docs/how-to/set-up-https-certificates).
+
+## Private Pod access alongside Home Assistant
+
+`Enable-PrivatePodAccess.ps1` adds two separate TLS listeners after a successful
+Core controller handoff. Copy it and `PrivateAccess.Common.ps1` together into
+the protected home-host script directory. Update `Enable-PrivateHomeAccess.ps1`
+at the same time; the older version intentionally refuses additional services.
+
+```powershell
+.\Enable-PrivatePodAccess.ps1 -Action Enable -PodAddress '<verified private IPv4>' -WhatIf
+.\Enable-PrivatePodAccess.ps1 -Action Enable -PodAddress '<verified private IPv4>'
+.\Enable-PrivatePodAccess.ps1 -Action Status
+.\Enable-PrivatePodAccess.ps1 -Action Disable
+.\Test-PrivateHomeAccess.ps1
+```
+
+```mermaid
+flowchart LR
+  Client[Authorized Tailscale device] -->|HTTPS 8443| API[Loopback relay 18300]
+  Client -->|WSS 3001| Stream[Loopback relay 18301]
+  API -->|LAN 3000| Pod[Authenticated Core controller]
+  Stream -->|LAN 3001| Pod
+  Client -->|HTTPS 443| Existing[Existing Home Assistant relay]
+```
+
+The relay terminates TLS without rewriting HTTP Host, Origin, cookies or
+WebSocket upgrades. Core must retain owner authentication, the exact private
+hostname allowlist and secure cookies. The tool never reads or stores the owner
+connection key. Before exposing a listener it requires configured Core session
+readiness and a 401 response from the unauthenticated capabilities endpoint.
+That check is not authenticated controller identity or hardware acceptance;
+verify the deployed revision and authenticated streaming from an actual client.
+
+Each tool changes only its own ports. Shared checks require saved ownership
+records and reject changed destinations, unknown handlers, unrelated ports and
+Funnel configuration. Partial configurations remain removable after an
+interrupted setup. `Disable` removes only the Pod listeners/relays and preserves
+Home Assistant. No command resets Tailscale Serve globally. Failure leaves a
+record for explicit retry or removal; it is not reported as success.
+
+The Pod address must be verified and stable through a router reservation or
+managed local addressing before unattended use. These scripts do not configure
+the router or assume a DHCP lease is permanent. TCP on the final Lenovo-to-Pod
+LAN leg is unencrypted; this private home architecture does not provide
+end-to-end TLS to the embedded Pod. Do not publish the listeners using Funnel.
+
+These additions are prepared source, not an activated Pod endpoint. The
+controller handoff, actual Windows checks, TLS/authentication/WebSocket probes,
+Home Assistant regression and client provisioning must be recorded separately.
