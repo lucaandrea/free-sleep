@@ -4,9 +4,9 @@ Updated 2026-10-25. This is a coordination note, not a declaration that the Pod 
 
 ## Revisions and ownership
 
-- Core: `../sleepypod-core`. PRs #1–#12 are merged into `main`, most recently `38a501c5`. This includes the foundation, migration, bedtime, control receipts, snooze, schedule library, Watch references, web shell, offline runtime, personal stage models, production sensor dependencies and bounded controller handoff. This is the stable v3.4.0 baseline plus reviewed changes.
-- Free Sleep installation PR #4 is merged into `main` (`b0680140`), including private home setup and recovery tooling. This handoff targets `main`. The client owner separately maintains `../sleepypod-ios` and `firmware/`; this documentation does not modify their source.
-- The physical Pod still runs customized Free Sleep. Core is tested locally and has NOT replaced that controller. The home-host/Core work does not change client signing or App Store distribution.
+- Core: `../sleepypod-core`. PRs #1–#15 are merged into `main`, most recently `26236636`. The corrected runtime is built from `9d9e39a9`; the later commit adds deployment tooling. This includes the foundation, migration, bedtime, control receipts, snooze, schedule library, Watch references, web shell, offline runtime, personal stage models, production sensor dependencies, bounded handoff and guarded activation/rollback. This is the stable v3.4.0 baseline plus reviewed changes.
+- Free Sleep installation PR #4 and private-access PR #15 are merged into `main` (latest `7a591abe`). The latter preserves Home Assistant while adding separately owned Pod proxy ports. This handoff targets `main`. The client owner separately maintains `../sleepypod-ios` and `firmware/`; this documentation does not modify their source.
+- The physical Pod still runs customized Free Sleep. Corrected Core passed a live bounded idle trial and automatically returned to Free Sleep; it has NOT become the permanent controller. The home-host/Core work does not change client signing or App Store distribution.
 - Current Core validation: the personal comfort Preview passed 564 targeted tests, followed by 14 UI/runtime regression tests after browser review (one additional test). TypeScript, full ESLint and both Drizzle checks passed. The complete Preview push gate passed 3,124 tests; the final signal-validity/demo follow-up passed 2,745 related tests in 97 files, plus TypeScript/full ESLint/both Drizzle checks. Its focused runs passed 226 automation tests and 90 demo/contract/runtime tests. Earlier capability gates passed 1,249 and 435 tests. These are software checks, not hardware qualification.
 - Production Preview build passed. Isolated loopback checks verified owner authentication, status, Preview configuration, rejected active mode (412), rejected future check-ins (400), OpenAPI and separate Preview/active capabilities. Desktop and 390px browser checks verified the panel and synthetic check-ins. The local CI-mode server correctly showed no evaluated night and a stopped Preview runtime. The demo transport now returns an explicit live-Pod requirement and rejects comfort writes; 90 demo/contract/runtime tests passed. No real hardware or owner key was used.
 
@@ -95,13 +95,42 @@ Sleep without changing boot selection.
 the left side had started an eight-hour session. Core had treated a retained
 temperature target with zero countdown as active. The side was explicitly
 returned to off, and both sides were verified off. The correction requires
-per-side heating-session evidence before passive writes; its focused tests pass,
-but a rebuilt release and another live trial are required.
+per-side heating-session evidence before passive writes. That fix merged in
+PR #14 (`9d9e39a9`) and the corrected live trial below passed. The first release
+must not be reused.
+
+On 25 October, the owner confirmed an empty mattress, connected cover, filled
+reservoir and attendance. The verified corrected runtime then passed a bounded
+idle trial: authenticated revision `9d9e39a9`, fresh firmware telemetry and
+30 continuous settled seconds with zero heating countdowns. All five Core
+services were independently observed active, with both legacy processes stopped.
+After approximately 53 seconds, the trial automatically stopped Core and
+restored Free Sleep without changing boot selection. An independent follow-up
+confirmed Free Sleep active/enabled, every Core service stopped/disabled,
+priming/vibration off and both countdowns zero. Both candidate databases passed
+the activation checks; retained configuration still matched the import.
+
+Private machine receipts were copied off the Pod. Human confirmation of no
+unexpected physical effect, ordinary heating/cooling operation, empty/occupied
+presence, base/Stop, vibration/cancellation, restart recovery and seven actual
+Preview nights remain separate gates. The idle trial issued no manual actuator
+test commands and does not establish those behaviors.
+
+Core PR #15 (`26236636`) adds explicit permanent activation and retained-service
+rollback with a durable journal. Its 57 deployment tests, 20 migration tests,
+5,460 pre-push regression tests and GitHub CI passed. The reviewed tools and
+new service plan are staged on the Pod. Activation has **not** been run.
+
+The Lenovo's four private-access scripts were transferred with matching source
+hashes and passed all 40 ownership/address tests on its actual Windows runtime.
+The status check confirmed that only the existing Home Assistant TLS port 443
+is configured. Pod TLS ports 8443/3001 remain disabled until activation and
+their authentication checks pass. No owner key is stored on Windows.
 
 Core still has **no accepted live client origin or provisioned client connection
 key**. A private owner key exists only for deployment diagnostics. Keep ESP32
-and native Core controls unconfigured until the corrected release passes the
-handoff and its intended connection is documented here. The Home Assistant URL
+and native Core controls unconfigured until permanent activation and the
+intended connection are verified and documented here. The Home Assistant URL
 is not that endpoint. Do not reuse the first trial's release.
 
 ## Implemented Core transport

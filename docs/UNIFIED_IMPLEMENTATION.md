@@ -200,8 +200,8 @@ runtime/data paths and automatic return to Free Sleep. Core authenticated and
 read fresh firmware/NATS data. The follow-up power check caught an unintended
 left-side restart caused by a retained target with a zero countdown. The left
 side was restored to off and both sides verified off. This trial is not accepted
-as an operational migration. The session-evidence fix passes 400 focused tests;
-merge, rebuild and another live trial are required.
+as an operational migration. The session-evidence fix subsequently merged in
+Core PR #14 (`9d9e39a9`); its corrected live trial is recorded below.
 
 The import also exposed missing IANA timezone files on the Pod. A separate
 hash-verified Python timezone environment enabled a fresh consistent import;
@@ -212,3 +212,33 @@ Free Sleep remains the active controller and boot default. No accepted Core
 connection is available for physical clients; successful ESP32 Wi-Fi provisioning
 is separate from Core connectivity. Final cutover, owner-attended qualification,
 room context and the seven actual Preview nights remain open.
+
+## Corrected idle controller trial and deployment tooling
+
+The verified `9d9e39a9` runtime passed a live bounded trial on 25 October after
+the owner confirmed the empty, connected, filled bed and attendance. Core
+identified the exact release, supplied fresh telemetry and maintained zero
+heating countdowns for 30 continuous seconds. All five Core services were seen
+active while both legacy services were stopped. The approximately 53-second
+operation restored Free Sleep automatically. Independent post-trial checks
+confirmed both sides idle, Free Sleep active/enabled, Core stopped/disabled,
+healthy candidate databases and unchanged imported configuration. Private
+receipts are retained on the Pod and off-host.
+
+This is accepted evidence for an idle software handoff and restoration. Human
+observation of physical effects, normal heating/cooling, presence accuracy,
+base movement/Stop, vibration/cancel and restart tests are still required.
+Neither controller activation nor any actual Preview night is claimed.
+
+Core PR #15 (`26236636`) adds explicit activation and rollback, requiring a
+recent exact-release idle trial, unchanged retained settings and passive initial
+policies. It passed 57 deployment tests, 20 migration tests, 5,460 pre-push
+regression tests and all CI. Its tooling and the corrected plan are staged;
+permanent activation has not been run. Boot-selection writes are not atomic
+across power loss, so the journal and SSH recovery remain necessary.
+
+Free Sleep PR #15 (`7a591abe`) adds owned Tailscale Pod proxy ports alongside
+Home Assistant. The transferred scripts passed hash verification and all 40
+tests on the Lenovo itself. Only Home Assistant's private TLS443 is currently
+enabled; Pod TLS8443 and sensor TLS3001 are not published yet. No client owner
+key has been provisioned, and Home Assistant is not a Pod-control endpoint.
