@@ -1,4 +1,6 @@
-> **Platform development branch:** Native iOS, adjustable-base control, analytics/coaching and an authenticated Replit gateway are implemented here. Start with [setup and migration](docs/PLATFORM_SETUP.md), [research](docs/research/base-control.md), and [validation boundaries](docs/VALIDATION.md). The owner's stock Pod has not been modified or qualified with this version.
+> **Unified SleepyPod integration:** The custom Free Sleep, SleepyPod Core and native app changes are merged into their owner repositories. Start with [current delivery status](docs/DELIVERY_STATUS.md) for verified revisions and remaining deployment work. The owner's Pod was last verified running Free Sleep; the latest Core runtime is staged and awaits attended qualification.
+>
+> Earlier platform setup, research and software validation remain in [setup and migration](docs/PLATFORM_SETUP.md), [base-control research](docs/research/base-control.md), and [validation boundaries](docs/VALIDATION.md).
 
 # Free Sleep — Local Control for 8 Sleep Pods
 
