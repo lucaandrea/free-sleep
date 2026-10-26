@@ -1,6 +1,10 @@
 # Unified client contract and implementation status
 
-Updated 2026-10-25. This is a coordination note, not a declaration that the Pod has migrated.
+Historical contract and trial record, last updated 2026-10-25. For the latest
+verified source revisions, merged PRs and remaining deployment work, start with
+[Delivery status](DELIVERY_STATUS.md). The implementation counts, client release
+and runtime revisions below describe that earlier checkpoint; they do not declare
+that the latest Core package has become the Pod's permanent controller.
 
 ## Revisions and ownership
 
