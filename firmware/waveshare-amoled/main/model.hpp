@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include "bedroom.hpp"
 
 namespace bedside {
 constexpr int minimumTemperature = 55;
@@ -11,6 +12,9 @@ constexpr int maximumHead = 60;
 constexpr int maximumFeet = 45;
 constexpr int64_t commandLifetimeMs = 5000;
 constexpr int64_t statusLifetimeMs = 15000;
+constexpr int64_t thermalReceiptLifetimeMs = 30000;
+// Core stores bed temperatures every 60 seconds; allow the next poll and ingestion delay.
+constexpr int64_t thermalSampleLifetimeSeconds = 90;
 
 struct Configuration {
     std::string ssid, password, endpoint, token;
@@ -54,6 +58,7 @@ struct State {
     std::array<SideStatus, 2> sides;
     BaseStatus base;
     ThermalStatus thermal;
+    BedroomContext bedroom;
     std::vector<Alarm> alarms;
     std::string timezone = "Pod local time", message = "Connect USB to provision Wi-Fi and Pod";
 };

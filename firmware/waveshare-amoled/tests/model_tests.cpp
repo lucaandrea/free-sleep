@@ -113,8 +113,15 @@ int main() {
     state.connected=true;
     assert(thermalFresh(state,10000,1792958410));
     assert(!thermalFresh(state,10000,1792958399));
-    assert(!thermalFresh(state,10000,1792958431));
+    // Core persists this sensor once per minute; healthy samples survive the next poll.
+    for (int ageSeconds : {31, 60, 75, 90}) {
+        assert(thermalFresh(state,22000,state.thermal.observedAt+ageSeconds));
+    }
+    assert(!thermalFresh(state,10000,state.thermal.observedAt+91));
     assert(!thermalFresh(state,40001,1792958410));
+    state.connected=false;
+    assert(!thermalFresh(state,10000,1792958410));
+    state.connected=true;
     assert(!parseThermal(R"({"timestamp":"2026-02-30T20:00:00Z"})",state,10000));
     assert(!parseThermal(R"({"timestamp":"2026-10-25T20:00:00-07:00"})",state,10000));
     assert(!parseThermal("{}",state,10000));

@@ -8,6 +8,8 @@
 #include <cstdio>
 #include <vector>
 #include <string>
+#include <fstream>
+#include <iterator>
 static std::vector<uint8_t> pixels(466 * 466 * 3);
 namespace bedside {
 static DisplayPreferences savedPreferences;
@@ -47,6 +49,11 @@ State snapshot() {
     if (dynamicState == "cooling") { state.sides[0].target = 68; state.sides[0].measured = 88; }
     if (dynamicState == "settled") { state.sides[0].target = 68; state.sides[0].measured = 68; }
     if (dynamicState == "expired") { state.preview = false; state.connected = false; state.controllerConfigured = true; }
+    if (const char *fixturePath = std::getenv("BEDROOM_FIXTURE")) {
+        std::ifstream fixture(fixturePath);
+        const std::string json((std::istreambuf_iterator<char>(fixture)), std::istreambuf_iterator<char>());
+        if (!parseBedroom(json, state.bedroom, 0)) std::abort();
+    }
     return state;
 }
 bool submit(Command) { std::fprintf(stderr,"Unexpected mutation in preview renderer\n"); std::abort(); }

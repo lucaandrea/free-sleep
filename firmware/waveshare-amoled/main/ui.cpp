@@ -10,7 +10,7 @@
 #include <cstdio>
 
 namespace bedside {
-enum class Page { temperature, stage, base, sensors, sensorDetails, presets, alarms, settings, alarmOptions, appearance };
+enum class Page { temperature, stage, base, sensors, sensorDetails, bedroom, presets, alarms, settings, alarmOptions, appearance };
 static Page page = Page::temperature;
 static bool celsius = false, dimmed = false, alarmDirty = false, temperatureDirty = false;
 static DisplayPreferences preferences;
@@ -22,6 +22,9 @@ static std::vector<uint16_t> scenePixels;
 static std::vector<float> sceneDepth;
 static uint8_t sensorMask = 63;
 static int speed = 50;
+static size_t bedroomOffset = 0;
+static std::array<lv_obj_t *, 3> bedroomLabels{};
+static lv_obj_t *bedroomHeader = nullptr, *bedroomFooter = nullptr;
 static lv_obj_t *sceneView = nullptr, *sceneCanvas = nullptr, *sceneStatus = nullptr;
 static std::array<lv_obj_t *,6> thermalLabels{}, sensorButtons{};
 static std::array<lv_obj_t *,2> sideLabels{};
@@ -123,6 +126,11 @@ static void action(lv_event_t *event) {
     case 32: sensorMask = 56; render(); return;
     case 33: preferences.mattressView = !preferences.mattressView; persistAppearance(); render(); return;
     case 34: page = Page::appearance; render(); return;
+    case 38: page = Page::bedroom; bedroomOffset = 0; render(); return;
+    case 39: bedroomOffset = bedroomOffset >= 3 ? bedroomOffset - 3 : 0; render(); return;
+    case 52:
+        if (bedroomOffset + 3 < snapshot().bedroom.readings.size()) bedroomOffset += 3;
+        render(); return;
     case 35: case 36: case 37:
         preferences.display = static_cast<TemperatureDisplay>(identifier - 35); persistAppearance(); render(); return;
     case 40: head = std::max(0, head - 1); render(); return;
@@ -245,6 +253,26 @@ static void bedViewport(int horizontal, int vertical, int width, int height, con
 }
 static void title(const std::string &text) { label(text, 133, 34, 200, &lv_font_montserrat_20); }
 static void back(int identifier = 9) { button("Back", 183, 397, 100, identifier); }
+static void refreshBedroom(const State &state) {
+    const auto &room = state.bedroom;
+    const bool current = state.connected && bedroomFresh(room, nowMilliseconds());
+    const char *heading = !room.loaded ? "SET UP IN THE APP" : !room.enabled ? "ROOM CONTEXT DISABLED" : current ? "DEVICE REPORTS" : "STALE OR UNAVAILABLE";
+    lv_label_set_text(bedroomHeader, heading);
+    if (bedroomOffset >= room.readings.size()) bedroomOffset = 0;
+    for (size_t index = 0; index < bedroomLabels.size(); ++index) {
+        const size_t position = bedroomOffset + index;
+        std::string line;
+        if (position < room.readings.size()) {
+            const auto &reading = room.readings[position];
+            const auto value = current ? bedroomValue(reading, room, nowMilliseconds(), celsius) : "--";
+            const auto stateName = reading.status == "cached" ? "saved / not live" : value == "--" ? "unavailable" : "reported";
+            line = reading.device + "\n" + reading.label + ": " + value + " / " + stateName;
+        } else if (index == 0) line = "No bedroom devices connected\nUse Home in the web or iOS app";
+        lv_label_set_text(bedroomLabels[index], line.c_str());
+    }
+    const std::string footer = room.readings.empty() ? "Routines stay on your Pod" : std::to_string(bedroomOffset + 1) + "-" + std::to_string(std::min(bedroomOffset + 3, room.readings.size())) + " of " + std::to_string(room.readings.size()) + " readings";
+    lv_label_set_text(bedroomFooter, footer.c_str());
+}
 static std::string sensorReading(const State &state, int sensor) {
     if (!(state.thermal.available & (1 << sensor)) || (!state.preview && !thermalFresh(state, nowMilliseconds(), std::time(nullptr)))) return "--";
     char value[24]; std::snprintf(value, sizeof(value), "%.1f°", celsius ? (state.thermal.zones[sensor]-32)*5/9 : state.thermal.zones[sensor]);
@@ -255,6 +283,7 @@ static void render() {
     const auto state = snapshot();
     lv_obj_clean(content);
     thermalLabels.fill(nullptr); sensorButtons.fill(nullptr); sideLabels.fill(nullptr); environmentLabel = mcuLabel = nullptr;
+    bedroomLabels.fill(nullptr); bedroomHeader = bedroomFooter = nullptr;
     temperatureArc = nullptr;
     valueLabel = readings = ownerLabel = headLabel = feetLabel = sceneView = sceneCanvas = sceneStatus = nullptr;
     powerButton = applyButton = moveButton = stopButton = connectButton = dismissButton = saveAlarmButton = snoozeButton = resumeButton = nullptr;
@@ -349,7 +378,17 @@ static void render() {
         environmentLabel = label("Room " + (available && state.thermal.ambientAvailable ? temperatureText(state.thermal.ambient,celsius) : "--")
             + " / RH " + (available && state.thermal.humidityAvailable ? std::to_string(static_cast<int>(state.thermal.humidity))+"%" : "--"),83,311,300,&lv_font_montserrat_16);
         mcuLabel = label("MCU " + (available && state.thermal.mcuAvailable ? temperatureText(state.thermal.mcu,celsius) : "--"),113,340,240,&lv_font_montserrat_16);
-        back(27);
+        button("Back", 130, 391, 100, 27); button("Bedroom", 236, 391, 100, 38);
+    } else if (page == Page::bedroom) {
+        title("BEDROOM");
+        bedroomHeader = label("", 83, 84, 300, &lv_font_montserrat_16);
+        for (size_t index = 0; index < bedroomLabels.size(); ++index) {
+            bedroomLabels[index] = label("Device\nReading", 76, 132 + static_cast<int>(index) * 62, 314, &lv_font_montserrat_16);
+        }
+        bedroomFooter = label("", 93, 322, 280, &lv_font_montserrat_16);
+        button("Previous", 103, 348, 125, 39); button("Next", 238, 348, 125, 52);
+        back(28);
+        refreshBedroom(state);
     } else if (page == Page::alarms) {
         title("WAKE ALARM");
         button(side, 103, 76, 125, 1); button(days[selectedDay], 238, 76, 125, 13);
@@ -462,6 +501,7 @@ static void tick(lv_timer_t *) {
     }
     if (page == Page::temperature) refreshTemperature();
     if (page == Page::settings && ownerLabel) lv_label_set_text(ownerLabel, connectionSummary(state).c_str());
+    if (page == Page::bedroom) refreshBedroom(state);
     if (page == Page::base && readings) {
         const bool available = fresh && state.base.connected && !state.base.stale && state.base.positionAvailable
             && nowMilliseconds() >= state.baseReceivedAt && nowMilliseconds() - state.baseReceivedAt <= 10000;
