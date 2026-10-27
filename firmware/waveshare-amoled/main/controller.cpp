@@ -148,7 +148,7 @@ static void publish(State &state) {
     xSemaphoreGive(stateLock);
 }
 static void worker(void *) {
-    int64_t nextPoll = 0, nextSchedules = 0, nextThermal = 0;
+    int64_t nextPoll = 0, nextSchedules = 0, nextThermal = 0, nextBedroom = 0;
     while (true) {
         Command command;
         if (takeCommand(false, command)) { execute(command); nextPoll = 0; if (command.action == Action::alarmSave) nextSchedules = 0; }
@@ -177,6 +177,11 @@ static void worker(void *) {
                     if (get("/api/settings", response, status)) parseSettings(response, state);
                     publish(state);
                     nextSchedules = nowMilliseconds() + 30000;
+                }
+                if (nowMilliseconds() >= nextBedroom) {
+                    if (!get("/api/v1/home/bedroom", response, status) || !parseBedroom(response, state.bedroom, nowMilliseconds())) state.bedroom = {};
+                    publish(state);
+                    nextBedroom = nowMilliseconds() + 5000;
                 }
             }
             nextPoll = nowMilliseconds() + 3000;

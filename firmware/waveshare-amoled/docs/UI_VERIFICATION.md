@@ -28,7 +28,7 @@ On Temperature and Bed, each mattress side uses the reported target-minus-measur
 
 On Sensor Layers, the six colors represent **outer, center and inner across each bed side**, repeated along the length. They are schematic regions, not head-to-foot measurements. The fixed measured-temperature scale is 64.4–96.8°F, with blue, pale blue, neutral (80°F), pale red and red stops. Hidden zones have a neutral surface; missing or stale selected zones are gray.
 
-The existing Core route `GET /api/environment/bed-temp/latest?unit=F` provides readings. Freshness requires a valid UTC observation timestamp within 30 seconds, a recent receipt and a connected controller. An unsynchronized clock cannot make readings appear live. HTTP success alone cannot refresh an old database sample. Demo readings are explicitly marked SAMPLE DATA and cannot issue commands.
+The existing Core route `GET /api/environment/bed-temp/latest?unit=F` provides readings. Core persists these samples every 60 seconds. Firmware 0.4.2 accepts a valid UTC observation timestamp up to 90 seconds old, allowing the next poll and ingestion delay, while still requiring a receipt within 30 seconds and a connected controller. An unsynchronized clock cannot make readings appear live. HTTP success alone cannot refresh an old database sample. Demo readings are explicitly marked SAMPLE DATA and cannot issue commands.
 
 ## Reproducible checks
 
@@ -56,3 +56,11 @@ Physical flashing, boot evidence and the owner’s touch check are recorded sepa
 ## 0.4.1 connection states
 
 Both host suites pass and 122 production LVGL route/state captures fit the 450 px safe circle. Wi-Fi-only setup removes sample data and shows unavailable targets, while More shows Pod setup needed. Joining, controller-offline and connected states are distinct. Bed actions remain disabled until a controller is configured. Read-only USB status contains only connection/freshness booleans. Physical Wi-Fi/restart evidence and the pending controller connection are recorded in `HARDWARE_CHECK.md`.
+
+## 0.5.0 bedroom context
+
+Open **Bed → Sensors → Readings → Bedroom** to see individual bedroom measurements. The controller's authenticated `/api/v1/home/bedroom` response supplies the device inventory; the remote does not invent HomePod or Govee sensors. Three readings fit each page, with Previous/Next navigation. Values follow the selected temperature units. Cached, unavailable, expired and disconnected observations show `--`.
+
+The parser bounds the response and source count, checks metric units and values, rejects missing/future clocks and leases that exceed their source lifetime, and uses monotonic receipt age. Room values expire after 15 seconds without a successful response or sooner when their source lease ends. This screen cannot issue device or temperature commands. Firmware 0.5.0 also retains the pending 0.4.2 fix for Core's 60-second thermal-sample cadence described above.
+
+Three host suites pass, including the shared synthetic Core bedroom fixture. All **127 production LVGL route/state captures** pass the circle and text bounds checks, including pagination and loss of connection. Run with an alternate build directory using `python3 tools/verify_ui.py --renderer /path/to/preview`. The ESP-IDF build and host renders do not establish physical flashing or sensor accuracy; those checks remain in the hardware qualification record.

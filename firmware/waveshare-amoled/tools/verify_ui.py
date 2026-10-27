@@ -8,8 +8,10 @@ import tempfile
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--output', type=Path)
+parser.add_argument('--renderer', type=Path, help='Built preview executable (defaults to test-build/preview/preview)')
 options = parser.parse_args()
 root = Path(__file__).resolve().parent.parent
+renderer = options.renderer or root / 'test-build/preview/preview'
 routes = {
     'temperature': 'Temp', 'temperature-right': 'Right side >',
     'bed': 'Bed', 'bed-rotated': 'Bed|@drag', 'bed-frame': 'Bed|Mattress on',
@@ -52,7 +54,7 @@ with tempfile.TemporaryDirectory(prefix='sleepypod-round-ui-') as temporary:
         selected = routes if state == 'demo' else {name: routes[name] for name in ['temperature', 'temperature-mattress', 'bed', 'sensors', 'readings', 'position', 'alarm', 'settings']}
         for name, route in selected.items():
             output = Path(temporary) / (state + '-' + name + '.ppm')
-            result = subprocess.run([str(root/'test-build/preview/preview'), route, str(output)],
+            result = subprocess.run([str(renderer), route, str(output)],
                                     env={**os.environ, 'PREVIEW_STATE': state}, capture_output=True, text=True)
             if result.returncode:
                 raise SystemExit(f'{state}/{name}: {result.stderr}')
@@ -63,4 +65,21 @@ with tempfile.TemporaryDirectory(prefix='sleepypod-round-ui-') as temporary:
                 picture.putalpha(mask)
                 picture.save(options.output / (state + '-' + name + '.png'))
             count += 1
+    bedroom_routes = {
+        'first': 'Bed|Sensors|Readings|Bedroom|@expect=1-3 of 7 readings',
+        'second': 'Bed|Sensors|Readings|Bedroom|Next|@expect=4-6 of 7 readings',
+        'last': 'Bed|Sensors|Readings|Bedroom|Next|Next|@expect=7-7 of 7 readings',
+        'previous': 'Bed|Sensors|Readings|Bedroom|Next|Next|Previous|@expect=4-6 of 7 readings',
+        'disconnect': 'Bed|Sensors|Readings|Bedroom|@state=expired|@expect=STALE OR UNAVAILABLE|@expect=Fixture left bedside\nTemperature: -- / unavailable',
+    }
+    for name, route in bedroom_routes.items():
+        output = Path(temporary) / ('bedroom-' + name + '.ppm')
+        result = subprocess.run([str(renderer), route, str(output)], env={**os.environ,
+                                'PREVIEW_STATE': 'live', 'BEDROOM_FIXTURE': str(root/'tests/fixtures/bedroom-core.json')},
+                                capture_output=True, text=True)
+        if result.returncode:
+            raise SystemExit(f'bedroom/{name}: {result.stderr}')
+        if image_library:
+            Image.open(output).save(options.output / ('bedroom-' + name + '.png'))
+        count += 1
 print(f'{count} actual LVGL routes/state captures passed; every control fits the 450px safe circle.')

@@ -187,8 +187,10 @@ bool parseThermal(const std::string &json, State &state, int64_t now) {
     reading.receivedAt=now; state.thermal=reading; return true;
 }
 bool thermalFresh(const State &state,int64_t now,int64_t epochSeconds) {
-    return !state.preview && state.connected && now>=state.thermal.receivedAt && now-state.thermal.receivedAt<=30000
-        && state.thermal.observedAt>0 && epochSeconds>=state.thermal.observedAt && epochSeconds-state.thermal.observedAt<=30;
+    return !state.preview && state.connected && now>=state.thermal.receivedAt
+        && now-state.thermal.receivedAt<=thermalReceiptLifetimeMs
+        && state.thermal.observedAt>0 && epochSeconds>=state.thermal.observedAt
+        && epochSeconds-state.thermal.observedAt<=thermalSampleLifetimeSeconds;
 }
 
 bool parseAlarms(const std::string &json, State &state, int side) {
