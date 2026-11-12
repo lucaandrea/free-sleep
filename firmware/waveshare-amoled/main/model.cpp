@@ -32,6 +32,14 @@ bool parseConfiguration(const std::string &json, Configuration &configuration) {
     candidate.allowLocalHttp = boolean(document.get(), "allowLocalHttp");
     candidate.celsius = boolean(document.get(), "celsius");
     candidate.networkOnly = boolean(document.get(), "networkOnly");
+    candidate.personal = boolean(document.get(), "personal");
+    const auto *identity = field(document.get(), "identity");
+    candidate.identity = {string(identity, "podId"), string(identity, "householdId"),
+                          string(identity, "accountId"), string(identity, "sleeperId")};
+    if (candidate.personal && (!validPersonalIdentity(candidate.identity) || candidate.networkOnly
+        || candidate.token.size() < 43 || candidate.token.size() > 128
+        || candidate.token.find_first_not_of("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-") != std::string::npos)) return false;
+    if (!candidate.personal && identity) return false;
     if (candidate.ssid.empty() || candidate.ssid.size() > 32 || candidate.password.size() > 63) return false;
     if (candidate.networkOnly) {
         if (!candidate.endpoint.empty() || !candidate.token.empty()) return false;
@@ -72,6 +80,14 @@ std::string serializeConfiguration(const Configuration &configuration) {
     cJSON_AddBoolToObject(document.get(), "allowLocalHttp", configuration.allowLocalHttp);
     cJSON_AddBoolToObject(document.get(), "celsius", configuration.celsius);
     cJSON_AddBoolToObject(document.get(), "networkOnly", !configuration.hasController());
+    cJSON_AddBoolToObject(document.get(), "personal", configuration.personal);
+    if (configuration.personal) {
+        auto *identity = cJSON_AddObjectToObject(document.get(), "identity");
+        cJSON_AddStringToObject(identity, "podId", configuration.identity.podId.c_str());
+        cJSON_AddStringToObject(identity, "householdId", configuration.identity.householdId.c_str());
+        cJSON_AddStringToObject(identity, "accountId", configuration.identity.accountId.c_str());
+        cJSON_AddStringToObject(identity, "sleeperId", configuration.identity.sleeperId.c_str());
+    }
     char *encoded = cJSON_PrintUnformatted(document.get());
     const std::string result = encoded ? encoded : "";
     cJSON_free(encoded);
@@ -231,6 +247,7 @@ static bool validTime(const std::string &value) {
         && value[4] >= '0' && value[4] <= '9' && (value[0] < '2' || value[1] <= '3');
 }
 bool buildRequest(const Command &command, Request &request) {
+    if (command.personal) return false;
     if (command.side < 0 || command.side > 1) return false;
     request = {};
     Json document(cJSON_CreateObject(), cJSON_Delete);
@@ -291,6 +308,7 @@ bool maySend(const Command &command, const State &state, int64_t now) {
     if (state.preview || !state.controllerConfigured) return false;
     if (command.side < 0 || command.side > 1) return false;
     if (!state.wifi || command.createdAt > now || now - command.createdAt > commandLifetimeMs) return false;
+    if (state.personalMode || command.personal) return maySendPersonal(command, state, now);
     if (command.action == Action::baseStop || command.action == Action::alarmDismiss) return true;
     if (!state.connected || now < state.receivedAt || now - state.receivedAt > statusLifetimeMs) return false;
     if (command.action == Action::basePosition)

@@ -2,6 +2,11 @@
 
 A touch controller for **Waveshare ESP32-S3-Touch-AMOLED-1.75**, using its 466 × 466 round AMOLED and touch panel. Firmware 0.4.1 uses Sleepypod’s near-black palette, white capsule controls and a thicker temperature dial, adapted to the circular screen. It adds a rotatable 3D bed, articulated position preview and selectable sensor layers.
 
+The current source version is **0.6.0**. It adds separate personal-device pairing,
+account-derived temperature/power/vibration-Stop controls and a private next-wake
+view. This source and its simulated tests do not establish installation on the
+physical remote. Earlier hardware observations below are dated historical evidence.
+
 Version 0.4.1 adds two-stage USB setup and read-only connection diagnostics. **0.4.1 is flashed and the board has joined the owner's Wi-Fi with Preview off**, including after a restart. It is waiting for the compatible Core controller's LAN origin and owner key; real bed readings and controls are not connected yet. The previously accepted dial, mattress, color-coded sensors and round-screen navigation are retained. Evidence is in `docs/HARDWARE_CHECK.md`.
 
 ## Included controls
@@ -59,6 +64,32 @@ To configure Wi-Fi before the Pod controller is ready, use `python3 tools/provis
 
 Read redacted connection/freshness flags with `python3 tools/provision.py YOUR_PORT --status`. This does not change configuration or issue hardware commands. It does not print credentials or measurements.
 
+### Personal access
+
+First create an **own-device invitation** in your existing Sleepypod personal
+account. Run `python3 tools/provision.py YOUR_PORT --personal` and enter that
+invitation when prompted. The tool creates a separate random credential for this
+remote, verifies its account and installation, then writes it over USB. It does
+not copy the household owner key or store credentials in a setup file. If setup
+is interrupted after joining, revoke the unused “Sleepypod bedside remote” device
+in your account before creating another invitation.
+
+The remote follows the current account assignment. Solo-anywhere shows both bed
+measurements and sends the requested setting to the zones chosen by the Pod;
+assigned accounts show only their own side. Personal temperature edits hold for
+30 minutes. Account, assignment and configuration are rechecked before each
+five-second request; changed or revoked access requires review rather than falling
+back to owner access. Stop can supersede a queued adjustment. Neither lost replies
+nor reconnects replay a command. An acknowledged receipt is not proof of physical
+temperature or vibration.
+
+Personal **Alarm** shows the server's effective next wake time and timezone, plus
+Stop vibration. Edit schedules in the phone/web app. Whole-bed base movement,
+priming, raw schedule editing and owner-wide sensor queries are unavailable with
+a personal credential. Existing owner setup remains available explicitly. Revoke
+the remote's personal device in your account if it is lost; the physical NVS
+storage limitations described below still apply.
+
 The normal provisioning tool prompts for SSID, password, controller origin and owner key. It does not write them to a file or print them. The key must be at least 32 characters. HTTPS validates certificates with ESP-IDF's CA bundle. Plain HTTP requires explicit opt-in and a private IPv4 or `.local` address; it exposes the bearer key to that local network. There is no public setup access point or default password. This development build stores configuration in NVS without flash encryption, so physical access to the board can expose it.
 
 Use the controller origin only, such as `https://pod.example` or `http://192.168.1.10:3000`; do not include `/api`, credentials, query parameters or fragments. An existing configuration can be replaced by running the provisioning tool again over USB.
@@ -69,6 +100,7 @@ Use the controller origin only, such as `https://pod.example` or `http://192.168
 cmake -S tests -B test-build
 cmake --build test-build
 ctest --test-dir test-build --output-on-failure
+python3 -m unittest discover -s tests -p 'test_*.py' -v
 cmake -S tests/preview -B test-build/preview
 cmake --build test-build/preview
 python3 tools/verify_ui.py

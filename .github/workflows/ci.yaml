@@ -4,6 +4,29 @@ on:
   pull_request:
 
 jobs:
+  bedside:
+    name: Bedside account and control contracts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5
+        with:
+          repository: espressif/esp-idf
+          ref: b774170ff46c393eeb5e495ea37936038d3f4f4f
+          path: .bedside-sdk
+          persist-credentials: false
+      - name: Read the SDK's pinned JSON dependency
+        run: git -C .bedside-sdk submodule update --init --depth 1 components/json/cJSON
+      - name: Test firmware contracts and private pairing
+        env:
+          IDF_PATH: ${{ github.workspace }}/.bedside-sdk
+        working-directory: firmware/waveshare-amoled
+        run: |
+          cmake -S tests -B test-build
+          cmake --build test-build --parallel 2
+          ctest --test-dir test-build --output-on-failure
+          python3 -m unittest discover -s tests -p 'test_*.py' -v
+
   private-access:
     name: Windows private-access ownership
     runs-on: windows-latest
@@ -33,7 +56,8 @@ jobs:
 
   biometrics:
     name: Biometrics (Python ${{ matrix.python-version }}, cbor2 ${{ matrix.cbor-version }})
-    runs-on: ubuntu-latest
+    # Keep the Pod's older Python compatibility checks on a supported runner.
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         include:

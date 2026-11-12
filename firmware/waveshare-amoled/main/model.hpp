@@ -16,8 +16,25 @@ constexpr int64_t thermalReceiptLifetimeMs = 30000;
 // Core stores bed temperatures every 60 seconds; allow the next poll and ingestion delay.
 constexpr int64_t thermalSampleLifetimeSeconds = 90;
 
+struct PersonalIdentity {
+    std::string podId, householdId, accountId, sleeperId;
+};
+struct PersonalScope {
+    std::string podId, householdId, sleeperId, configurationRevision;
+    int64_t sessionRevision = 0, assignmentRevision = 0;
+};
+struct PersonalStatus {
+    bool authenticated = false, controlsAllowed = false, ready = false, observationFresh = false;
+    std::string name, assignment, wake = "Next wake unavailable";
+    PersonalScope scope;
+    uint8_t temperatureZones = 0, powerZones = 0, vibrationZones = 0;
+    int routineSide = -1;
+    int64_t sessionReceivedAt = 0, observationAt = 0, observationExpiresAt = 0, wakeReceivedAt = -1;
+};
 struct Configuration {
     std::string ssid, password, endpoint, token;
+    bool personal = false;
+    PersonalIdentity identity;
     bool allowLocalHttp = false;
     bool celsius = false;
     bool networkOnly = false;
@@ -51,6 +68,8 @@ struct Alarm {
 struct State {
     bool preview = false;
     bool controllerConfigured = false;
+    bool personalMode = false;
+    PersonalStatus personal;
     bool wifi = false, connected = false, priming = false, lowWater = false;
     bool alarmsLoaded[2] = {false, false};
     int64_t receivedAt = 0, baseReceivedAt = 0;
@@ -70,6 +89,10 @@ struct Command {
     int64_t createdAt = 0;
     Alarm alarm;
     Alarm originalAlarm;
+    bool personal = false;
+    PersonalScope scope;
+    uint8_t resolvedZones = 0;
+    uint32_t intentRevision = 0;
 };
 struct Request { std::string path, method = "POST", body; };
 
@@ -85,6 +108,15 @@ bool parseAlarms(const std::string &json, State &state, int side);
 void parseSettings(const std::string &json, State &state);
 bool buildRequest(const Command &command, Request &request);
 bool maySend(const Command &command, const State &state, int64_t now);
+bool validPersonalIdentity(const PersonalIdentity &identity);
+bool samePersonalScope(const PersonalScope &first, const PersonalScope &second);
+bool parsePersonalSession(const std::string &json, const Configuration &configuration, State &state, int64_t now);
+bool parsePersonalBed(const std::string &json, const Configuration &configuration, State &state, int64_t now, int64_t epochMs);
+bool parsePersonalWake(const std::string &json, State &state, int64_t now, int64_t epochMs);
+bool maySendPersonal(const Command &command, const State &state, int64_t now);
+bool buildPersonalRequest(const Command &command, const State &state, int64_t now, int64_t epochMs,
+                          const std::string &requestId, Request &request);
+bool personalReceiptAcknowledged(const std::string &json, const Request &request, uint8_t expectedZones);
 const char *sideName(int side);
 std::string temperatureText(double fahrenheit, bool celsius);
 }

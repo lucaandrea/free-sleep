@@ -1,5 +1,33 @@
 # Sleepypod round UI — 0.4.0
 
+## 0.6.0 personal remote
+
+The 0.6.0 source adds a separate own-device credential and pins the installation,
+household, account and sleeper identities. It reads only personal session, bed and
+next-wake endpoints. Before temperature or power changes it rechecks the current
+scope; explicit Stop may use a still-current scope, which Core independently
+revalidates. Requests expire after five seconds and are never retried on reconnect.
+
+The account chooses the controlled zones. The solo view shows both measurements
+and visibly different targets; it requires a new target selection before Apply
+can collapse differing targets to one value. Assigned accounts show only their
+own side. Unassigned, revoked, stale and low-water conditions withdraw relevant
+controls. Personal Alarm reads the next effective wake and offers vibration Stop;
+it does not expose owner schedule, base or maintenance routes.
+
+Four host contract suites and eight Python pairing cases pass. The production
+LVGL renderer passes **151 route/state captures**, including the earlier owner
+flows and 24 personal cases covering solo, assigned, unassigned, offline,
+low-water and 80-character names. All labels and control rectangles fit the
+450-pixel safe circle. Visual inspection corrected clipped explanatory text,
+long-name wrapping and the misleading single target when solo side targets differ.
+The C++ design detector reports no findings; that is not a hardware test.
+
+The ESP-IDF 5.5.5 target build is separately required after the final source
+revision. Flashing, real credential enrollment, touch interaction, assignment
+changes and actual bed behavior remain physical acceptance checks. These host
+fixtures are synthetic and contain no personal Health data.
+
 The 466 × 466 display uses an inset **450-pixel circular safe area**. Primary content sits on the wider middle chords; navigation at the bottom is deliberately narrow. The actual LVGL layout, including button-label extents and untruncated labels, is checked by the offscreen test driver.
 
 ## Screens and interaction
