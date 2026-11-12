@@ -56,7 +56,8 @@ jobs:
 
   biometrics:
     name: Biometrics (Python ${{ matrix.python-version }}, cbor2 ${{ matrix.cbor-version }})
-    runs-on: ubuntu-latest
+    # Keep the Pod's older Python compatibility checks on a supported runner.
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         include:
