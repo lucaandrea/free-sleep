@@ -54,6 +54,25 @@ State snapshot() {
         const std::string json((std::istreambuf_iterator<char>(fixture)), std::istreambuf_iterator<char>());
         if (!parseBedroom(json, state.bedroom, 0)) std::abort();
     }
+    if (mode && std::string(mode).rfind("personal-", 0) == 0) {
+        state.personalMode = true; state.personal.authenticated = state.personal.controlsAllowed = state.personal.ready = true;
+        state.personal.name = std::string(mode) == "personal-long-name" ? std::string(80, 'W') : "Marissa";
+        state.personal.assignment = std::string(mode) == "personal-solo" ? "solo" : "right";
+        state.personal.temperatureZones = state.personal.powerZones = state.personal.vibrationZones = state.personal.assignment == "solo" ? 3 : 2;
+        state.personal.scope = {"00000000-0000-4000-8000-000000000001", "00000000-0000-4000-8000-000000000002",
+            "00000000-0000-4000-8000-000000000003", std::string(64, 'a'), 1, 1};
+        state.personal.observationFresh = true; state.personal.observationExpiresAt = 15000;
+        state.personal.wake = "Next wake 07:00\nAmerica/Los_Angeles"; state.personal.wakeReceivedAt = 0;
+        if (state.personal.assignment != "solo") state.sides[0] = {};
+        state.base = {}; state.thermal = {}; state.bedroom = {}; state.alarms.clear();
+        state.alarmsLoaded[0] = state.alarmsLoaded[1] = false;
+        if (std::string(mode) == "personal-offline") { state.connected = false; state.wifi = false; state.personal.authenticated = false; }
+        if (std::string(mode) == "personal-unassigned") {
+            state.personal.assignment = "unassigned"; state.personal.ready = false;
+            state.personal.wake = "Next wake unavailable"; state.personal.wakeReceivedAt = -1; state.sides = {};
+        }
+        if (std::string(mode) == "personal-low-water") state.lowWater = true;
+    }
     return state;
 }
 bool submit(Command) { std::fprintf(stderr,"Unexpected mutation in preview renderer\n"); std::abort(); }
@@ -106,7 +125,12 @@ static bool checkBounds() {
         auto checkText=[&](lv_obj_t *label) {
             if(!lv_obj_check_type(label,&lv_label_class)) return;
             lv_point_t measured;
-            lv_text_get_size(&measured,lv_label_get_text(label),lv_obj_get_style_text_font(label,LV_PART_MAIN),0,0,LV_COORD_MAX,LV_TEXT_FLAG_EXPAND);
+            const bool wraps = lv_label_get_long_mode(label) == LV_LABEL_LONG_WRAP;
+            lv_text_get_size(&measured,lv_label_get_text(label),lv_obj_get_style_text_font(label,LV_PART_MAIN),0,0,
+                wraps ? lv_obj_get_width(label) : LV_COORD_MAX, wraps ? LV_TEXT_FLAG_NONE : LV_TEXT_FLAG_EXPAND);
+            if(wraps && measured.y>lv_obj_get_height(label)) {
+                std::fprintf(stderr,"Wrapped text exceeds its height: %s\n",lv_label_get_text(label)); valid=false;
+            }
             if(measured.x>lv_obj_get_width(label)) {
                 std::fprintf(stderr,"Truncated text: %s (%d > %d)\n",lv_label_get_text(label),measured.x,lv_obj_get_width(label));valid=false;
             }

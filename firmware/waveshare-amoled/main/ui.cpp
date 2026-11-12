@@ -34,6 +34,7 @@ static lv_point_t dragOrigin;
 static float dragYaw = 0, dragPitch = 0;
 static bool ignoreDrag = false;
 static std::string lastMessage;
+static std::string renderedPersonalContext;
 static uint32_t messageUntil = 0;
 static lv_obj_t *content, *messageLabel, *readings, *valueLabel, *ownerLabel, *headLabel, *feetLabel;
 static lv_obj_t *temperatureArc, *hourRoller, *minuteRoller, *enabledSwitch;
@@ -48,7 +49,17 @@ static void persistAppearance() {
     if (!saveDisplayPreferences(preferences)) setMessage("Display choice could not be saved");
 }
 static bool deviceFresh(const State &state) {
+    if (state.personalMode && (!state.personal.observationFresh || nowMilliseconds() > state.personal.observationExpiresAt)) return false;
     return state.preview || (state.connected && nowMilliseconds() >= state.receivedAt && nowMilliseconds() - state.receivedAt <= statusLifetimeMs);
+}
+static bool mixedPersonalTargets(const State &state) {
+    return state.personalMode && state.personal.assignment == "solo"
+        && (!state.sides[0].targetAvailable || !state.sides[1].targetAvailable
+            || state.sides[0].target != state.sides[1].target);
+}
+static bool personalPowerOn(const State &state) {
+    return state.personal.assignment == "solo" ? state.sides[0].powered || state.sides[1].powered
+        : state.sides[selectedSide].powered;
 }
 
 static lv_obj_t *label(const std::string &text, int horizontal, int vertical, int width, const lv_font_t *font = &lv_font_montserrat_20) {
@@ -73,12 +84,18 @@ static void action(lv_event_t *event) {
     const int identifier = static_cast<int>(reinterpret_cast<intptr_t>(lv_event_get_user_data(event)));
     Command command; command.side = selectedSide;
     switch (identifier) {
-    case 1: selectedSide = 1 - selectedSide; alarmDirty = temperatureDirty = false; render(); return;
+    case 1:
+        if (snapshot().personalMode) return;
+        selectedSide = 1 - selectedSide; alarmDirty = temperatureDirty = false; render(); return;
     case 2: case 3:
         requestedTemperature = stepTemperature(requestedTemperature, identifier == 2 ? -1 : 1, celsius, preferences.display);
         temperatureDirty = true; refreshTemperature(); return;
     case 4: command.action = Action::temperature; command.value = requestedTemperature; submit(command); return;
-    case 5: command.action = Action::power; command.enabled = !snapshot().sides[selectedSide].powered; submit(command); return;
+    case 5: {
+        const auto state = snapshot(); command.action = Action::power;
+        command.enabled = !(state.personalMode ? personalPowerOn(state) : state.sides[selectedSide].powered);
+        submit(command); return;
+    }
     case 6: {
         const auto base = snapshot().base;
         if (base.positionAvailable && !base.stale) {
@@ -281,6 +298,8 @@ static std::string sensorReading(const State &state, int sensor) {
 // Pages use the middle chord for content and a narrow footer inside the 450px safe circle.
 static void render() {
     const auto state = snapshot();
+    if (state.personalMode) selectedSide = state.personal.assignment == "right" ? 1 : 0;
+    renderedPersonalContext = state.personal.assignment + state.personal.name + state.personal.scope.configurationRevision;
     lv_obj_clean(content);
     thermalLabels.fill(nullptr); sensorButtons.fill(nullptr); sideLabels.fill(nullptr); environmentLabel = mcuLabel = nullptr;
     bedroomLabels.fill(nullptr); bedroomHeader = bedroomFooter = nullptr;
@@ -290,7 +309,9 @@ static void render() {
     const std::string side = selectedSide == 0 ? "Left side" : "Right side";
     if (page == Page::temperature) {
         title(state.preview ? "PREVIEW" : "TEMPERATURE");
-        button(side + " >", 103, 65, 125, 1);
+        if (state.personalMode) label(state.personal.assignment == "solo" ? "Both sides"
+            : state.personal.assignment == "unassigned" ? "Not assigned" : "My " + side, 83, 72, 150, &lv_font_montserrat_16);
+        else button(side + " >", 103, 65, 125, 1);
         button(preferences.mattressView ? "Dial view" : "Mattress view", 238, 65, 125, 33);
         if (!temperatureDirty && state.sides[selectedSide].targetAvailable)
             requestedTemperature = std::clamp(static_cast<int>(std::round(state.sides[selectedSide].target)), minimumTemperature, maximumTemperature);
@@ -390,6 +411,17 @@ static void render() {
         back(28);
         refreshBedroom(state);
     } else if (page == Page::alarms) {
+        if (state.personalMode) {
+            title("NEXT WAKE");
+            auto *personName = label(state.personal.name.empty() ? "Your account" : state.personal.name, 83, 78, 300, &lv_font_montserrat_16);
+            lv_label_set_long_mode(personName, LV_LABEL_LONG_WRAP); lv_obj_set_height(personName, 100);
+            ownerLabel = label("", 83, 184, 300, &lv_font_montserrat_20);
+            lv_obj_set_height(ownerLabel, 72);
+            lv_label_set_long_mode(ownerLabel, LV_LABEL_LONG_WRAP);
+            label("Change your wake plan in\nthe iPhone or web app.", 83, 267, 300, &lv_font_montserrat_16);
+            dismissButton = button("Stop vibration", 103, 322, 260, 15);
+            back(); return;
+        }
         title("WAKE ALARM");
         button(side, 103, 76, 125, 1); button(days[selectedDay], 238, 76, 125, 13);
         if (!alarmDirty) loadDraft(state);
@@ -433,7 +465,8 @@ static void render() {
         resumeButton = button("Resume automatic temperature", 63, 146, 340, 17);
         button("Temperature display", 83, 202, 300, 34);
         connectButton = button("Reconnect base", 103, 258, 260, 12);
-        label(state.preview ? "Set up Wi-Fi and your Pod key\nwith the USB provisioning tool.\nPreview cannot operate a bed."
+        label(state.personalMode ? "Temperature holds for 30 minutes.\nYour account chooses the sides.\nManage access in the phone app."
+              : state.preview ? "Set up Wi-Fi and your Pod key\nwith the USB provisioning tool.\nPreview cannot operate a bed."
               : !state.controllerConfigured ? "Add your Pod address and key\nwith the USB provisioning tool.\nLive controls are waiting."
               : "Manual temperature holds for 6h.\nYour Pod runs the routines\nwhen this remote is off.", 83, 319, 300, &lv_font_montserrat_16);
         back();
@@ -447,31 +480,53 @@ static void refreshTemperature() {
         requestedTemperature = std::clamp(static_cast<int>(std::round(side.target)), minimumTemperature, maximumTemperature);
         temperatureDirty = false;
     }
-    const auto color = activityColor(side, fresh);
+    const bool mixed = mixedPersonalTargets(state) && !temperatureDirty;
+    const auto color = mixed ? muted : activityColor(side, fresh);
     const bool targetAvailable = (fresh && side.targetAvailable) || temperatureDirty;
     lv_label_set_text(valueLabel, targetAvailable ? targetText(requestedTemperature, celsius, preferences.display).c_str() : "--");
+    lv_obj_set_style_text_font(valueLabel, preferences.mattressView || mixed ? &lv_font_montserrat_32 : &lv_font_montserrat_48, 0);
+    if (mixed) {
+        auto sideTarget = [&](int index) { return fresh && state.sides[index].targetAvailable
+            ? temperatureText(state.sides[index].target, celsius) : "--"; };
+        lv_label_set_text(valueLabel, (sideTarget(0) + " / " + sideTarget(1)).c_str());
+    }
     if (temperatureArc) {
         lv_arc_set_value(temperatureArc, preferences.display == TemperatureDisplay::eightSleep ? eightSleepLevel(requestedTemperature) : requestedTemperature);
         lv_obj_set_style_arc_color(temperatureArc, lv_color_hex(color), LV_PART_INDICATOR);
     }
     const std::string measured = fresh && side.measuredAvailable ? temperatureText(side.measured, celsius) : "--";
     lv_label_set_text(readings, ((targetAvailable ? temperatureText(requestedTemperature,celsius) : "No target")+" / bed "+measured).c_str());
+    if (state.personalMode && state.personal.assignment == "solo") {
+        auto measuredSide = [&](int index) { return fresh && state.sides[index].measuredAvailable
+            ? temperatureText(state.sides[index].measured, celsius) : "--"; };
+        lv_label_set_text(readings, ("Bed L " + measuredSide(0) + " / R " + measuredSide(1)).c_str());
+    }
     const std::string status = state.preview ? "SAMPLE / " : "";
     const std::string activity = !state.preview && !state.controllerConfigured
         ? (state.wifi ? "Pod setup needed" : "Joining Wi-Fi...") : status + activityName(temperatureActivity(side,fresh));
-    lv_label_set_text(ownerLabel, (temperatureDirty ? "TARGET PREVIEW / APPLY" : activity).c_str());
+    lv_label_set_text(ownerLabel, (temperatureDirty ? "TARGET PREVIEW / APPLY" : mixed ? "Different side targets" : activity).c_str());
     lv_obj_set_style_text_color(ownerLabel, lv_color_hex(temperatureDirty ? foreground : color), 0);
-    lv_label_set_text(lv_obj_get_child(powerButton, 0), state.preview ? "Power" : side.powered ? "Turn off" : "Turn on");
+    lv_label_set_text(lv_obj_get_child(powerButton, 0), state.preview ? "Power"
+        : (state.personalMode ? personalPowerOn(state) : side.powered) ? "Turn off" : "Turn on");
 }
 static void updateEnabled(lv_obj_t *object, Action action, const State &state, bool enabled = false) {
     if (!object) return;
     Command command; command.action = action; command.side = selectedSide;
     command.enabled = enabled; command.createdAt = nowMilliseconds();
+    if (state.personalMode) {
+        command.personal = true; command.scope = state.personal.scope;
+        command.resolvedZones = action == Action::temperature ? state.personal.temperatureZones
+            : action == Action::power ? state.personal.powerZones
+            : action == Action::alarmDismiss ? state.personal.vibrationZones : 0;
+    }
     if (maySend(command, state, command.createdAt)) lv_obj_remove_state(object, LV_STATE_DISABLED);
     else lv_obj_add_state(object, LV_STATE_DISABLED);
 }
 static void tick(lv_timer_t *) {
     const auto state = snapshot();
+    if (state.personalMode && renderedPersonalContext != state.personal.assignment + state.personal.name + state.personal.scope.configurationRevision) {
+        temperatureDirty = alarmDirty = false; render(); return;
+    }
     const bool fresh = state.connected && nowMilliseconds() >= state.receivedAt && nowMilliseconds() - state.receivedAt <= statusLifetimeMs;
     if (state.message != lastMessage) {
         lastMessage = state.message; messageUntil = lv_tick_get() + 4000;
@@ -481,7 +536,8 @@ static void tick(lv_timer_t *) {
     if (static_cast<int32_t>(lv_tick_get() - messageUntil) > 0) lv_obj_add_flag(messageLabel, LV_OBJ_FLAG_HIDDEN);
     const auto &side = state.sides[selectedSide];
     updateEnabled(applyButton, Action::temperature, state);
-    updateEnabled(powerButton, Action::power, state, !side.powered);
+    if (applyButton && mixedPersonalTargets(state) && !temperatureDirty) lv_obj_add_state(applyButton, LV_STATE_DISABLED);
+    updateEnabled(powerButton, Action::power, state, !(state.personalMode ? personalPowerOn(state) : side.powered));
     updateEnabled(moveButton, Action::basePosition, state);
     updateEnabled(stopButton, Action::baseStop, state);
     updateEnabled(connectButton, Action::baseConnect, state);
@@ -501,6 +557,12 @@ static void tick(lv_timer_t *) {
     }
     if (page == Page::temperature) refreshTemperature();
     if (page == Page::settings && ownerLabel) lv_label_set_text(ownerLabel, connectionSummary(state).c_str());
+    if (page == Page::alarms && state.personalMode && ownerLabel) {
+        const bool currentWake = state.connected && state.personal.wakeReceivedAt >= 0
+            && nowMilliseconds() >= state.personal.wakeReceivedAt && nowMilliseconds() - state.personal.wakeReceivedAt <= statusLifetimeMs;
+        lv_label_set_text(ownerLabel, state.personal.assignment == "unassigned" ? "Your side is not assigned\nFinish setup in the app"
+            : currentWake ? state.personal.wake.c_str() : "Next wake unavailable\nReconnect to refresh");
+    }
     if (page == Page::bedroom) refreshBedroom(state);
     if (page == Page::base && readings) {
         const bool available = fresh && state.base.connected && !state.base.stale && state.base.positionAvailable

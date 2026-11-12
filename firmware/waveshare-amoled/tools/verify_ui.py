@@ -82,4 +82,14 @@ with tempfile.TemporaryDirectory(prefix='sleepypod-round-ui-') as temporary:
         if image_library:
             Image.open(output).save(options.output / ('bedroom-' + name + '.png'))
         count += 1
+    for state in ['personal-solo', 'personal-right', 'personal-offline', 'personal-unassigned', 'personal-low-water', 'personal-long-name']:
+        for name, route in {'temperature': 'Temp', 'mattress': 'Mattress view', 'alarm': 'Alarm', 'settings': 'More'}.items():
+            output = Path(temporary) / (state + '-' + name + '.ppm')
+            result = subprocess.run([str(renderer), route, str(output)], env={**os.environ, 'PREVIEW_STATE': state},
+                                    capture_output=True, text=True)
+            if result.returncode:
+                raise SystemExit(f'{state}/{name}: {result.stderr}')
+            if image_library:
+                Image.open(output).save(options.output / (state + '-' + name + '.png'))
+            count += 1
 print(f'{count} actual LVGL routes/state captures passed; every control fits the 450px safe circle.')
